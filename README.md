@@ -1,6 +1,6 @@
 # MEMORA — Snippets pour Keyboard Maestro
 
-> Auteur : **MEMORA solutions** — https://memora.solutions — info@memora.ca · Licence MIT
+> Auteur : **MEMORA solutions** — https://memora.solutions — info@memora.ca · Licence **Apache-2.0**
 
 Une fenêtre simple et rapide pour **insérer vos textes réutilisables** (snippets) dans n'importe quelle application sur macOS, propulsée par **Keyboard Maestro**. Pensée pour être installée **en un double-clic**, même par un débutant.
 
@@ -58,7 +58,10 @@ docs/        captures d'écran
 
 ## 📝 Licence
 
-MIT — voir [LICENSE](LICENSE). Utilisez, modifiez et partagez librement.
+**Apache License 2.0** — voir [LICENSE](LICENSE) et [NOTICE](NOTICE). Open source : utilisez,
+modifiez et partagez librement, **à condition de conserver l'attribution à MEMORA solutions**
+(notices de copyright + contenu du fichier `NOTICE`) dans toute redistribution ou œuvre dérivée
+(Apache-2.0, art. 4). En clair : libre d'utilisation, mais le crédit **MEMORA solutions** reste.
 
 ---
 
