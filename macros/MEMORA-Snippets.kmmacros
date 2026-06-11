@@ -1,11 +1,43 @@
-<!-- MEMORA — Snippets pour Keyboard Maestro. Auteur: MEMORA solutions, https://memora.solutions ; info@memora.ca. Licence: Apache-2.0 (SPDX-License-Identifier: Apache-2.0). Copyright 2026 MEMORA solutions. -->
-<!DOCTYPE html>
-<html lang='fr'>
-<head>
-  <meta charset='UTF-8'>
-  <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>MEMORA — Snippets</title>
-  <style>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+<dict>
+	<key>Activate</key>
+	<string>Normal</string>
+	<key>CreationDate</key>
+	<real>802885377.49551499</real>
+	<key>Macros</key>
+	<array>
+		<dict>
+			<key>Actions</key>
+			<array>
+				<dict>
+					<key>ActionUID</key>
+					<integer>156128</integer>
+					<key>MacroActionType</key>
+					<string>SetVariableToText</string>
+					<key>Text</key>
+					<string></string>
+					<key>Variable</key>
+					<string>memora_texte</string>
+				</dict>
+				<dict>
+					<key>ActionUID</key>
+					<integer>156130</integer>
+					<key>Floating</key>
+					<false/>
+					<key>MacroActionType</key>
+					<string>CustomPrompt</string>
+					<key>Text</key>
+					<string>&lt;!-- MEMORA — Snippets pour Keyboard Maestro. Auteur: MEMORA solutions, https://memora.solutions ; info@memora.ca. Licence: Apache-2.0 (SPDX-License-Identifier: Apache-2.0). Copyright 2026 MEMORA solutions. --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang='fr'&gt;
+&lt;head&gt;
+  &lt;meta charset='UTF-8'&gt;
+  &lt;meta name='viewport' content='width=device-width, initial-scale=1'&gt;
+  &lt;title&gt;MEMORA — Snippets&lt;/title&gt;
+  &lt;style&gt;
     :root{--bg:#f5f5f7;--surface:#fff;--surface2:#f0f0f3;--border:#d8d8de;--text:#1d1d1f;--text2:#6e6e73;--accent:#0071e3;--accent-weak:#e8f1fe;--danger:#ff3b30;--radius:12px;--shadow:0 1px 2px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.06);}
     @media (prefers-color-scheme:dark){:root{--bg:#1c1c1e;--surface:#2c2c2e;--surface2:#3a3a3c;--border:#48484a;--text:#f5f5f7;--text2:#a1a1a6;--accent:#0a84ff;--accent-weak:rgba(10,132,255,.18);--danger:#ff453a;--shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.55);}}
     *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
@@ -60,36 +92,36 @@
     .btns{display:flex;gap:10px;margin-top:4px;}
     .btns .btn{flex:1;}
     :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
-  </style>
-</head>
-<body data-kmwindow='720,640'>
-  <div class='header'>
-    <h1>Snippets</h1>
-    <div class='search'><input type='text' id='search-input' placeholder='Rechercher un snippet…' aria-label='Rechercher un snippet'></div>
-    <button class='close-btn' id='close-btn' aria-label='Fermer'>✕</button>
-  </div>
-  <div class='content'>
-    <div class='grid' id='snippets-grid'></div>
-    <button class='add-btn' id='add-snippet' type='button' aria-label='Ajouter un snippet'>➕ Ajouter un snippet</button>
-  </div>
-  <div class='footer'>
-    <span class='count' id='count'>0 sélectionné</span>
-    <button class='btn btn-primary' id='insert-btn' type='button' disabled>Insérer</button>
-  </div>
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body data-kmwindow='720,640'&gt;
+  &lt;div class='header'&gt;
+    &lt;h1&gt;Snippets&lt;/h1&gt;
+    &lt;div class='search'&gt;&lt;input type='text' id='search-input' placeholder='Rechercher un snippet…' aria-label='Rechercher un snippet'&gt;&lt;/div&gt;
+    &lt;button class='close-btn' id='close-btn' aria-label='Fermer'&gt;✕&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class='content'&gt;
+    &lt;div class='grid' id='snippets-grid'&gt;&lt;/div&gt;
+    &lt;button class='add-btn' id='add-snippet' type='button' aria-label='Ajouter un snippet'&gt;➕ Ajouter un snippet&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class='footer'&gt;
+    &lt;span class='count' id='count'&gt;0 sélectionné&lt;/span&gt;
+    &lt;button class='btn btn-primary' id='insert-btn' type='button' disabled&gt;Insérer&lt;/button&gt;
+  &lt;/div&gt;
 
-  <script>
+  &lt;script&gt;
     let snippets = [];
     let editingIndex = -1;
 
-    const normalize = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-    const formatDate = () => new Intl.DateTimeFormat('fr-CA', { month: 'long', year: 'numeric' }).format(new Date());
-    const escapeHtml = (str) => String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[s]));
-    const rnd = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const normalize = (s) =&gt; String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    const formatDate = () =&gt; new Intl.DateTimeFormat('fr-CA', { month: 'long', year: 'numeric' }).format(new Date());
+    const escapeHtml = (str) =&gt; String(str).replace(/[&amp;&lt;&gt;"']/g, s =&gt; ({ '&amp;': '&amp;amp;', '&lt;': '&amp;lt;', '&gt;': '&amp;gt;', '"': '&amp;quot;', "'": '&amp;#039;' }[s]));
+    const rnd = (arr) =&gt; arr[Math.floor(Math.random() * arr.length)];
 
     function hasVars(t) { return /{{(champ|choix):[^}]+}}/.test(t); }
     function extractVars(t) {
       const vars = []; const re = /{{(champ|choix):([^}=]+)(?:=([^}]+))?}}/g; let m;
-      while ((m = re.exec(t)) !== null) vars.push({ type: m[1], label: m[2], choices: m[1] === 'choix' && m[3] ? m[3].split('|') : [] });
+      while ((m = re.exec(t)) !== null) vars.push({ type: m[1], label: m[2], choices: m[1] === 'choix' &amp;&amp; m[3] ? m[3].split('|') : [] });
       return vars;
     }
     function collectVars(checked) {
@@ -98,14 +130,14 @@
       return [...map.values()];
     }
     function resolve(text, values) {
-      let r = text.replace(/{{date}}/g, formatDate()).replace(/{{alea:([^}]+)}}/g, (m, o) => rnd(o.split('|')));
+      let r = text.replace(/{{date}}/g, formatDate()).replace(/{{alea:([^}]+)}}/g, (m, o) =&gt; rnd(o.split('|')));
       for (const label in values) {
-        const re = new RegExp('{{(?:champ|choix):' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^}]*}}', 'g');
+        const re = new RegExp('{{(?:champ|choix):' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&amp;') + '[^}]*}}', 'g');
         r = r.replace(re, values[label]);
       }
       return r;
     }
-    function assemble(checked, values) { return checked.map(s => resolve(s.texte, values)).join('\n\n'); }
+    function assemble(checked, values) { return checked.map(s =&gt; resolve(s.texte, values)).join('\n\n'); }
 
     // Exemples au tout premier lancement (variable jamais définie) — montrent les 4 types de variables
     const DEFAULTS = [
@@ -122,7 +154,7 @@
       try {
         snippets = JSON.parse(raw) || [];
         if (!Array.isArray(snippets)) snippets = [];
-        snippets = snippets.map(s => ({ terme: typeof s.terme === 'string' ? s.terme : '', texte: typeof s.texte === 'string' ? s.texte : '', coché: !!s.coché }));
+        snippets = snippets.map(s =&gt; ({ terme: typeof s.terme === 'string' ? s.terme : '', texte: typeof s.texte === 'string' ? s.texte : '', coché: !!s.coché }));
       } catch (e) { snippets = []; }
     }
     function persist() { if (window.KeyboardMaestro) window.KeyboardMaestro.SetVariable('memora_snippets', JSON.stringify(snippets)); }
@@ -132,25 +164,25 @@
       const term = normalize(document.getElementById('search-input').value);
       grid.innerHTML = '';
       let shown = 0;
-      snippets.forEach((s, index) => { // index = index RÉEL dans snippets[]
-        if (term && !(normalize(s.terme).includes(term) || normalize(s.texte).includes(term))) return;
+      snippets.forEach((s, index) =&gt; { // index = index RÉEL dans snippets[]
+        if (term &amp;&amp; !(normalize(s.terme).includes(term) || normalize(s.texte).includes(term))) return;
         shown++;
         const last = snippets.length - 1;
         const card = document.createElement('div');
         card.className = 'card'; card.draggable = true; card.dataset.index = index;
         card.innerHTML =
-          "<div class='card-header'>" +
-            "<span class='drag-handle' aria-hidden='true'>⠿</span>" +
-            "<input type='checkbox' " + (s.coché ? 'checked' : '') + " data-index='" + index + "' aria-label='Cocher'>" +
-            "<span class='card-label' data-index='" + index + "'>" + escapeHtml(s.terme) + "</span>" +
-            (hasVars(s.texte) ? "<span class='badge' title='Contient des variables'>{ }</span>" : '') +
-          "</div>" +
-          "<div class='card-actions'>" +
-            "<button class='edit-btn' data-index='" + index + "' aria-label='Modifier'>✎</button>" +
-            "<button class='move-up' data-index='" + index + "' aria-label='Monter' " + (index === 0 ? 'disabled' : '') + ">▲</button>" +
-            "<button class='move-down' data-index='" + index + "' aria-label='Descendre' " + (index === last ? 'disabled' : '') + ">▼</button>" +
-            "<button class='delete-btn danger' data-index='" + index + "' aria-label='Supprimer'>🗑</button>" +
-          "</div>";
+          "&lt;div class='card-header'&gt;" +
+            "&lt;span class='drag-handle' aria-hidden='true'&gt;⠿&lt;/span&gt;" +
+            "&lt;input type='checkbox' " + (s.coché ? 'checked' : '') + " data-index='" + index + "' aria-label='Cocher'&gt;" +
+            "&lt;span class='card-label' data-index='" + index + "'&gt;" + escapeHtml(s.terme) + "&lt;/span&gt;" +
+            (hasVars(s.texte) ? "&lt;span class='badge' title='Contient des variables'&gt;{ }&lt;/span&gt;" : '') +
+          "&lt;/div&gt;" +
+          "&lt;div class='card-actions'&gt;" +
+            "&lt;button class='edit-btn' data-index='" + index + "' aria-label='Modifier'&gt;✎&lt;/button&gt;" +
+            "&lt;button class='move-up' data-index='" + index + "' aria-label='Monter' " + (index === 0 ? 'disabled' : '') + "&gt;▲&lt;/button&gt;" +
+            "&lt;button class='move-down' data-index='" + index + "' aria-label='Descendre' " + (index === last ? 'disabled' : '') + "&gt;▼&lt;/button&gt;" +
+            "&lt;button class='delete-btn danger' data-index='" + index + "' aria-label='Supprimer'&gt;🗑&lt;/button&gt;" +
+          "&lt;/div&gt;";
         grid.appendChild(card);
       });
       if (shown === 0) {
@@ -158,8 +190,8 @@
         e.textContent = snippets.length === 0 ? 'Aucun snippet. Cliquez sur « Ajouter un snippet ».' : 'Aucun résultat pour cette recherche.';
         grid.appendChild(e);
       }
-      const n = snippets.filter(s => s.coché).length;
-      document.getElementById('count').textContent = n + (n > 1 ? ' sélectionnés' : ' sélectionné');
+      const n = snippets.filter(s =&gt; s.coché).length;
+      document.getElementById('count').textContent = n + (n &gt; 1 ? ' sélectionnés' : ' sélectionné');
       document.getElementById('insert-btn').disabled = n === 0;
     }
 
@@ -169,20 +201,20 @@
       const s = isNew ? { terme: '', texte: '', coché: false } : snippets[index];
       const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'edit-overlay';
       ov.innerHTML =
-        "<div class='modal'>" +
-          "<h2>" + (isNew ? 'Ajouter un snippet' : 'Modifier le snippet') + "</h2>" +
-          "<div class='form-group'><label for='edit-terme'>Terme</label><input type='text' id='edit-terme' value=\"" + escapeHtml(s.terme) + "\"></div>" +
-          "<div class='form-group'><label for='edit-texte'>Texte</label><textarea id='edit-texte' placeholder='Texte du snippet…'>" + escapeHtml(s.texte) + "</textarea></div>" +
-          "<div class='checkbox-group'><input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "><label for='edit-coche'>Coché par défaut</label></div>" +
-          "<div class='help'><strong>Variables :</strong><ul>" +
-            "<li><code>{{date}}</code> → mois et année (ex. juin 2026)</li>" +
-            "<li><code>{{champ:Étiquette}}</code> → champ texte demandé à l'insertion</li>" +
-            "<li><code>{{choix:Étiquette=A|B|C}}</code> → menu déroulant</li>" +
-            "<li><code>{{alea:A|B|C}}</code> → valeur au hasard</li>" +
-          "</ul></div>" +
-          "<div class='btns'><button class='btn btn-secondary' id='edit-cancel' type='button'>Annuler</button>" +
-          "<button class='btn btn-primary' id='edit-save' type='button'>" + (isNew ? 'Ajouter' : 'Enregistrer') + "</button></div>" +
-        "</div>";
+        "&lt;div class='modal'&gt;" +
+          "&lt;h2&gt;" + (isNew ? 'Ajouter un snippet' : 'Modifier le snippet') + "&lt;/h2&gt;" +
+          "&lt;div class='form-group'&gt;&lt;label for='edit-terme'&gt;Terme&lt;/label&gt;&lt;input type='text' id='edit-terme' value=\"" + escapeHtml(s.terme) + "\"&gt;&lt;/div&gt;" +
+          "&lt;div class='form-group'&gt;&lt;label for='edit-texte'&gt;Texte&lt;/label&gt;&lt;textarea id='edit-texte' placeholder='Texte du snippet…'&gt;" + escapeHtml(s.texte) + "&lt;/textarea&gt;&lt;/div&gt;" +
+          "&lt;div class='checkbox-group'&gt;&lt;input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "&gt;&lt;label for='edit-coche'&gt;Coché par défaut&lt;/label&gt;&lt;/div&gt;" +
+          "&lt;div class='help'&gt;&lt;strong&gt;Variables :&lt;/strong&gt;&lt;ul&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{date}}&lt;/code&gt; → mois et année (ex. juin 2026)&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{champ:Étiquette}}&lt;/code&gt; → champ texte demandé à l'insertion&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{choix:Étiquette=A|B|C}}&lt;/code&gt; → menu déroulant&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{alea:A|B|C}}&lt;/code&gt; → valeur au hasard&lt;/li&gt;" +
+          "&lt;/ul&gt;&lt;/div&gt;" +
+          "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='edit-cancel' type='button'&gt;Annuler&lt;/button&gt;" +
+          "&lt;button class='btn btn-primary' id='edit-save' type='button'&gt;" + (isNew ? 'Ajouter' : 'Enregistrer') + "&lt;/button&gt;&lt;/div&gt;" +
+        "&lt;/div&gt;";
       document.body.appendChild(ov);
       document.getElementById('edit-terme').focus();
     }
@@ -196,10 +228,10 @@
       persist(); closeEdit(); render();
     }
     function del(i) { snippets.splice(i, 1); persist(); render(); }
-    function move(i, d) { const j = i + d; if (j < 0 || j >= snippets.length) return; const t = snippets[i]; snippets[i] = snippets[j]; snippets[j] = t; persist(); render(); }
+    function move(i, d) { const j = i + d; if (j &lt; 0 || j &gt;= snippets.length) return; const t = snippets[i]; snippets[i] = snippets[j]; snippets[j] = t; persist(); render(); }
 
     function doInsert() {
-      const checked = snippets.filter(s => s.coché);
+      const checked = snippets.filter(s =&gt; s.coché);
       if (!checked.length) return;
       const vars = collectVars(checked);
       if (!vars.length) { submitText(assemble(checked, {})); return; }
@@ -211,20 +243,20 @@
     function openFill(vars, checked) {
       const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'fill-overlay';
       let inputs = '';
-      vars.forEach((v, i) => {
-        if (v.type === 'champ') inputs += "<div class='var-group'><label for='vf-" + i + "'>" + escapeHtml(v.label) + "</label><input type='text' id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\" placeholder='Saisir…'></div>";
-        else inputs += "<div class='var-group'><label for='vf-" + i + "'>" + escapeHtml(v.label) + "</label><select id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\">" + v.choices.map(o => "<option value=\"" + escapeHtml(o) + "\">" + escapeHtml(o) + "</option>").join('') + "</select></div>";
+      vars.forEach((v, i) =&gt; {
+        if (v.type === 'champ') inputs += "&lt;div class='var-group'&gt;&lt;label for='vf-" + i + "'&gt;" + escapeHtml(v.label) + "&lt;/label&gt;&lt;input type='text' id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\" placeholder='Saisir…'&gt;&lt;/div&gt;";
+        else inputs += "&lt;div class='var-group'&gt;&lt;label for='vf-" + i + "'&gt;" + escapeHtml(v.label) + "&lt;/label&gt;&lt;select id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\"&gt;" + v.choices.map(o =&gt; "&lt;option value=\"" + escapeHtml(o) + "\"&gt;" + escapeHtml(o) + "&lt;/option&gt;").join('') + "&lt;/select&gt;&lt;/div&gt;";
       });
-      ov.innerHTML = "<div class='modal'><h2>Compléter les variables</h2>" + inputs +
-        "<label style='font-size:13px;color:var(--text2);font-weight:500;'>Aperçu</label><div class='preview' id='fill-preview'></div>" +
-        "<div class='btns'><button class='btn btn-secondary' id='fill-cancel' type='button'>Annuler</button>" +
-        "<button class='btn btn-primary' id='fill-insert' type='button'>Insérer</button></div></div>";
+      ov.innerHTML = "&lt;div class='modal'&gt;&lt;h2&gt;Compléter les variables&lt;/h2&gt;" + inputs +
+        "&lt;label style='font-size:13px;color:var(--text2);font-weight:500;'&gt;Aperçu&lt;/label&gt;&lt;div class='preview' id='fill-preview'&gt;&lt;/div&gt;" +
+        "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='fill-cancel' type='button'&gt;Annuler&lt;/button&gt;" +
+        "&lt;button class='btn btn-primary' id='fill-insert' type='button'&gt;Insérer&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;";
       document.body.appendChild(ov);
-      const readValues = () => { const vals = {}; ov.querySelectorAll('[data-label]').forEach(el => vals[el.dataset.label] = el.value); return vals; };
-      const upd = () => { document.getElementById('fill-preview').textContent = assemble(checked, readValues()); };
-      ov.querySelectorAll('[data-label]').forEach(el => { el.addEventListener('input', upd); el.addEventListener('change', upd); });
-      ov.querySelector('#fill-cancel').addEventListener('click', () => ov.remove());
-      ov.querySelector('#fill-insert').addEventListener('click', () => { submitText(assemble(checked, readValues())); ov.remove(); });
+      const readValues = () =&gt; { const vals = {}; ov.querySelectorAll('[data-label]').forEach(el =&gt; vals[el.dataset.label] = el.value); return vals; };
+      const upd = () =&gt; { document.getElementById('fill-preview').textContent = assemble(checked, readValues()); };
+      ov.querySelectorAll('[data-label]').forEach(el =&gt; { el.addEventListener('input', upd); el.addEventListener('change', upd); });
+      ov.querySelector('#fill-cancel').addEventListener('click', () =&gt; ov.remove());
+      ov.querySelector('#fill-insert').addEventListener('click', () =&gt; { submitText(assemble(checked, readValues())); ov.remove(); });
       upd();
       const f = ov.querySelector('[data-label]'); if (f) f.focus();
     }
@@ -232,12 +264,12 @@
     function init() {
       loadState(); render();
       document.getElementById('search-input').addEventListener('input', render);
-      document.getElementById('add-snippet').addEventListener('click', () => openEdit(-1));
-      document.getElementById('close-btn').addEventListener('click', () => { if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel'); });
+      document.getElementById('add-snippet').addEventListener('click', () =&gt; openEdit(-1));
+      document.getElementById('close-btn').addEventListener('click', () =&gt; { if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel'); });
       document.getElementById('insert-btn').addEventListener('click', doInsert);
 
       const grid = document.getElementById('snippets-grid');
-      grid.addEventListener('click', e => {
+      grid.addEventListener('click', e =&gt; {
         const el = e.target.closest('[data-index]'); if (!el) return;
         const i = parseInt(el.dataset.index, 10);
         if (e.target.matches('.edit-btn')) openEdit(i);
@@ -249,35 +281,82 @@
       });
 
       let dragIndex = -1;
-      grid.addEventListener('dragstart', e => { const c = e.target.closest('.card'); if (c) { dragIndex = parseInt(c.dataset.index, 10); c.style.opacity = '.5'; } });
-      grid.addEventListener('dragend', e => { const c = e.target.closest('.card'); if (c) c.style.opacity = '1'; });
-      grid.addEventListener('drop', e => {
-        e.preventDefault(); const c = e.target.closest('.card'); if (!c || dragIndex < 0) return;
+      grid.addEventListener('dragstart', e =&gt; { const c = e.target.closest('.card'); if (c) { dragIndex = parseInt(c.dataset.index, 10); c.style.opacity = '.5'; } });
+      grid.addEventListener('dragend', e =&gt; { const c = e.target.closest('.card'); if (c) c.style.opacity = '1'; });
+      grid.addEventListener('drop', e =&gt; {
+        e.preventDefault(); const c = e.target.closest('.card'); if (!c || dragIndex &lt; 0) return;
         const to = parseInt(c.dataset.index, 10);
         if (to !== dragIndex) { const it = snippets.splice(dragIndex, 1)[0]; snippets.splice(to, 0, it); persist(); render(); }
         dragIndex = -1;
       });
-      grid.addEventListener('dragover', e => e.preventDefault());
+      grid.addEventListener('dragover', e =&gt; e.preventDefault());
 
-      document.addEventListener('click', e => {
+      document.addEventListener('click', e =&gt; {
         if (e.target.id === 'edit-save') saveEdit();
         else if (e.target.id === 'edit-cancel') closeEdit();
       });
-      document.getElementById('edit-terme') && null;
-      document.body.addEventListener('input', e => { if (e.target.id === 'edit-terme') e.target.classList.remove('input-error'); });
+      document.getElementById('edit-terme') &amp;&amp; null;
+      document.body.addEventListener('input', e =&gt; { if (e.target.id === 'edit-terme') e.target.classList.remove('input-error'); });
 
-      document.addEventListener('keydown', e => {
+      document.addEventListener('keydown', e =&gt; {
         if (e.key === 'Escape') {
           const fill = document.getElementById('fill-overlay'); const ed = document.getElementById('edit-overlay');
           if (fill) fill.remove(); else if (ed) ed.remove();
           else if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel');
-        } else if (e.key === 'Enter' && !e.target.matches('input, textarea, select') && !document.getElementById('edit-overlay') && !document.getElementById('fill-overlay')) {
+        } else if (e.key === 'Enter' &amp;&amp; !e.target.matches('input, textarea, select') &amp;&amp; !document.getElementById('edit-overlay') &amp;&amp; !document.getElementById('fill-overlay')) {
           doInsert();
         }
       });
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
-  </script>
-</body>
-</html>
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</string>
+					<key>TimeOutAbortsMacro</key>
+					<true/>
+					<key>UseText</key>
+					<true/>
+				</dict>
+				<dict>
+					<key>Action</key>
+					<string>ByPasting</string>
+					<key>ActionUID</key>
+					<integer>156132</integer>
+					<key>MacroActionType</key>
+					<string>InsertText</string>
+					<key>Text</key>
+					<string>%Variable%memora_texte%</string>
+				</dict>
+			</array>
+			<key>CreationDate</key>
+			<real>802885377.75442004</real>
+			<key>ModificationDate</key>
+			<real>802889776.17006195</real>
+			<key>Name</key>
+			<string>MEMORA — Snippets</string>
+			<key>Triggers</key>
+			<array>
+				<dict>
+					<key>MacroTriggerType</key>
+					<string>TypedString</string>
+					<key>SimulateDeletes</key>
+					<true/>
+					<key>TypedString</key>
+					<string>;mem</string>
+				</dict>
+			</array>
+			<key>UID</key>
+			<string>B2296510-525B-4BEC-80BA-5243969FD2C4</string>
+		</dict>
+	</array>
+	<key>Name</key>
+	<string>MEMORA Snippets</string>
+	<key>ToggleMacroUID</key>
+	<string>B425D678-A73D-4196-B035-2CCCD1795375</string>
+	<key>UID</key>
+	<string>34272D1B-7790-48E3-989E-7718566ECFA7</string>
+</dict>
+</array>
+</plist>

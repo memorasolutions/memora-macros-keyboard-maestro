@@ -4,6 +4,18 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [2.0.0] - 2026-06-11
+
+### Ajouté
+- **Variables dynamiques** dans les snippets : `{{champ:Étiquette}}` (texte libre), `{{choix:Étiquette=A|B|C}}` (menu déroulant), `{{date}}` (mois + année fr-CA), `{{alea:A|B|C}}` (valeur au hasard). Panneau **« Compléter les variables »** avec **aperçu** avant insertion.
+- **Recherche instantanée** (insensible casse/accents). Badge `{ }` sur les snippets contenant des variables.
+- **Look « tendances 2026 »** : minimalisme macOS, **dark mode automatique** (`prefers-color-scheme`), profondeur douce, en-tête + recherche **translucides**, micro-transitions, accessibilité WCAG 2.2.
+- **Bouton « Insérer »** + compteur de sélection ; **Entrée = Insérer**.
+- **Snippets d'exemple au 1er lancement** illustrant les 4 types de variables.
+
+### Modifié
+- Fenêtre agrandie (720×640) ; édition et complétion via panneaux modaux.
+
 ## [1.0.0] - 2026-06-11
 
 ### Ajouté

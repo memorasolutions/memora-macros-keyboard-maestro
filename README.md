@@ -11,10 +11,15 @@ Une fenêtre simple et rapide pour **insérer vos textes réutilisables** (snipp
 ## ✨ Ce que ça fait
 
 - Une seule fenêtre : **cochez** les textes à insérer, cliquez **Insérer** (ou appuyez sur **Entrée**).
-- **Gérez vos snippets dans la fenêtre** : ➕ ajouter · ✎ modifier · 🗑 supprimer · glisser ou ▲▼ pour réordonner · « Tout sélectionner ».
-- **Grille 2 colonnes** responsive, accents parfaits, navigation clavier.
-- Jeton **`{{date}}`** dans un snippet → remplacé à l'insertion par le **mois + année** courants (ex. « juin 2026 »).
-- Vos snippets sont mémorisés dans une variable Keyboard Maestro (`memora_snippets`).
+- **Variables dynamiques** dans vos snippets, demandées à l'insertion (avec **aperçu**) :
+  - `{{champ:Étiquette}}` → champ texte libre.
+  - `{{choix:Étiquette=A|B|C}}` → menu déroulant.
+  - `{{date}}` → mois + année courants (ex. « juin 2026 »).
+  - `{{alea:A|B|C}}` → une valeur au hasard.
+- **Recherche** instantanée ; badge `{ }` sur les snippets qui contiennent des variables.
+- **Gérez tout dans la fenêtre** : ➕ ajouter · ✎ modifier · 🗑 supprimer · glisser ou ▲▼ pour réordonner.
+- **Look 2026** : minimaliste, **dark mode automatique**, accessible (WCAG 2.2).
+- Vos snippets sont mémorisés dans la variable Keyboard Maestro `memora_snippets`.
 
 ---
 
@@ -49,7 +54,7 @@ Une fenêtre simple et rapide pour **insérer vos textes réutilisables** (snipp
 ## 📦 Contenu du dépôt
 
 ```
-macros/      MEMORA-Snippets-vX.Y.kmmacros   (installation 1 double-clic)
+macros/      MEMORA-Snippets.kmmacros        (installation 1 double-clic)
 templates/   memora-snippets.template.html   (code source de la fenêtre)
 docs/        captures d'écran
 ```
