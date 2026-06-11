@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+<dict>
+	<key>Activate</key>
+	<string>Normal</string>
+	<key>CreationDate</key>
+	<real>802885377.49551499</real>
+	<key>Macros</key>
+	<array>
+		<dict>
+			<key>Actions</key>
+			<array>
+				<dict>
+					<key>ActionUID</key>
+					<integer>156122</integer>
+					<key>MacroActionType</key>
+					<string>SetVariableToText</string>
+					<key>Text</key>
+					<string></string>
+					<key>Variable</key>
+					<string>memora_texte</string>
+				</dict>
+				<dict>
+					<key>ActionUID</key>
+					<integer>156124</integer>
+					<key>Floating</key>
+					<false/>
+					<key>MacroActionType</key>
+					<string>CustomPrompt</string>
+					<key>Text</key>
+					<string>&lt;!--
+  ============================================================================
+  MEMORA — Snippets pour Keyboard Maestro
+  Auteur: MEMORA solutions, https://memora.solutions ; info@memora.ca.
+  Licence: MIT.
+  ----------------------------------------------------------------------------
+  Fenêtre unique de snippets : liste cochable, glisser-déposer, ajouter / éditer
+  / supprimer en fenêtre, « Tout sélectionner / désélectionner », clic = cocher,
+  Entrée = Insérer, grille responsive 2 colonnes. Source unique = la variable
+  Keyboard Maestro « memora_snippets » (JSON [{terme, texte, coché}]). Le token
+  « {{date}} » dans un snippet est remplacé à l’insertion par le mois + année
+  courants (fr-CA). Macro = 3 actions : SetVariableToText(memora_texte = "") -&gt;
+  CustomPrompt(ce HTML) -&gt; InsertText « Coller » %Variable%memora_texte%.
+  ============================================================================
+--&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="fr"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;MEMORA — Snippets&lt;/title&gt;
+  &lt;style&gt;
+    :root {
+      --bg: #f5f5f7; --card: #ffffff; --border: #d2d2d7; --text: #1d1d1f;
+      --text-secondary: #86868b; --accent: #0071e3; --danger: #ff3b30; --success: #30d158;
+      --radius: 10px; --shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px; font-size: 14px; line-height: 1.5; max-width: 760px; margin: 0 auto; }
+    h1 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+    .help { color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; }
+    .list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; margin-bottom: 16px; align-items: start; }
+    .term-card, .empty, .edit-panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); }
+    .empty { text-align: center; color: var(--text-secondary); padding: 24px; grid-column: 1 / -1; }
+    .term-row { display: flex; align-items: center; gap: 10px; }
+    .drag-handle { cursor: grab; color: var(--text-secondary); font-size: 16px; padding: 4px; border-radius: 4px; }
+    .drag-handle:active { cursor: grabbing; }
+    .term-checkbox { margin: 0; width: 18px; height: 18px; flex: none; }
+    .term-label { flex: 1; cursor: pointer; padding: 4px 0; word-break: break-word; }
+    .term-actions { display: flex; gap: 6px; }
+    .btn { border: none; background: none; color: var(--text-secondary); cursor: pointer; font-size: 14px; padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; }
+    .btn:hover { background-color: rgba(0,0,0,0.05); }
+    .btn:focus-visible, .term-checkbox:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .btn.danger:hover { background-color: rgba(255,59,48,0.1); color: var(--danger); }
+    .btn.edit:hover { color: var(--accent); }
+    .btn:disabled { opacity: .35; cursor: default; }
+    .confirm-delete { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .confirm-delete .mini { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff; cursor: pointer; width: auto; height: auto; }
+    .edit-panel { margin-top: 4px; margin-bottom: 16px; }
+    .edit-panel h2 { font-size: 16px; margin-bottom: 12px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; margin-bottom: 4px; font-weight: 500; }
+    .form-group input, .form-group textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+    .form-group textarea { min-height: 110px; resize: vertical; }
+    .edit-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+    .btn-primary { background-color: var(--accent); color: white; font-weight: 500; padding: 8px 14px; border-radius: 6px; min-width: 90px; border: none; cursor: pointer; }
+    .btn-secondary { background-color: transparent; color: var(--text-secondary); font-weight: 500; padding: 8px 14px; border-radius: 6px; min-width: 90px; border: 1px solid var(--border); cursor: pointer; }
+    .footer { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .counter { color: var(--text-secondary); font-size: 13px; }
+    .footer-actions { display: flex; gap: 10px; }
+    .btn-footer { padding: 8px 18px; border-radius: 6px; font-weight: 500; min-width: 90px; border: none; cursor: pointer; }
+    .btn-cancel { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+    .btn-insert { background-color: var(--accent); color: white; }
+    .btn-insert:disabled { background-color: #d0d0d4; color: #86868b; cursor: not-allowed; }
+    .add-btn { width: 100%; text-align: center; cursor: pointer; font-weight: 500; color: var(--accent); }
+    .hidden { display: none !important; }
+    .drag-over { border-top: 2px dashed var(--accent); }
+    .dragging { opacity: .45; }
+    .footer-left { display: flex; align-items: center; gap: 12px; }
+    .btn-toggle-all { background: transparent; color: var(--accent); border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 13px; }
+    .btn-toggle-all:hover { background-color: rgba(0,113,227,0.08); }
+    .btn-toggle-all:disabled { opacity: .35; cursor: default; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body data-kmwindow="780,660"&gt;
+  &lt;h1&gt;MEMORA — Snippets&lt;/h1&gt;
+  &lt;p class="help"&gt;Coche les snippets à insérer · ✎ éditer · glisser ou ▲▼ pour ordonner · ➕ ajouter · Entrée pour insérer. {{date}} = mois courant.&lt;/p&gt;
+
+  &lt;div class="list" id="termList"&gt;&lt;/div&gt;
+
+  &lt;button id="addBtn" class="term-card add-btn"&gt;➕ Ajouter un snippet&lt;/button&gt;
+
+  &lt;div id="editPanel" class="edit-panel hidden"&gt;
+    &lt;h2 id="editTitle"&gt;Ajouter un terme&lt;/h2&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="editTerm"&gt;Terme (affiché dans la liste)&lt;/label&gt;
+      &lt;input type="text" id="editTerm" placeholder="Nom court du terme"&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="editText"&gt;Texte inséré&lt;/label&gt;
+      &lt;textarea id="editText" placeholder="Contenu qui sera collé"&gt;&lt;/textarea&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label style="display:flex;align-items:center;gap:8px;font-weight:500;cursor:pointer;"&gt;&lt;input type="checkbox" id="editCoche" style="width:18px;height:18px;flex:none;"&gt; Coché par défaut&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="edit-actions"&gt;
+      &lt;button id="editCancel" class="btn-secondary"&gt;Annuler&lt;/button&gt;
+      &lt;button id="editSave" class="btn-primary"&gt;Enregistrer&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="footer"&gt;
+    &lt;div class="footer-left"&gt;
+      &lt;button id="toggleAllBtn" class="btn-toggle-all" type="button"&gt;Tout sélectionner&lt;/button&gt;
+      &lt;span class="counter" id="counter"&gt;0 sélectionné&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="footer-actions"&gt;
+      &lt;button id="cancelBtn" class="btn-footer btn-cancel"&gt;Annuler&lt;/button&gt;
+      &lt;button id="insertBtn" class="btn-footer btn-insert" disabled&gt;Insérer&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    let state = [];
+    let editingIndex = -1;
+    let dragStartIndex = -1;
+
+    // Remplace le token {{date}} par le mois + année courants (fr-CA), ex. « juin 2026 »
+    function applyTokens(s) { var d = new Intl.DateTimeFormat('fr-CA', { month: 'long', year: 'numeric' }).format(new Date()); return String(s).replace(/\{\{date\}\}/g, d); }
+
+    function loadState() {
+      let raw = '';
+      if (window.KeyboardMaestro) raw = window.KeyboardMaestro.GetVariable('memora_snippets') || '';
+      try { const p = JSON.parse(raw); state = Array.isArray(p) ? p : []; } catch (e) { state = []; }
+    }
+
+    // Persiste en retirant le flag transitoire _deleting
+    function persist() {
+      if (!window.KeyboardMaestro) return;
+      const clean = state.map(function (t) { const c = Object.assign({}, t); delete c._deleting; return c; });
+      window.KeyboardMaestro.SetVariable('memora_snippets', JSON.stringify(clean));
+    }
+
+    function allChecked() { return state.length &gt; 0 &amp;&amp; state.every(function (t) { return t.coché; }); }
+    function updateToggleAllBtn() {
+      const btn = document.getElementById('toggleAllBtn');
+      if (!btn) return;
+      btn.disabled = state.length === 0;
+      btn.textContent = allChecked() ? 'Tout désélectionner' : 'Tout sélectionner';
+    }
+    function toggleAll() {
+      const target = !allChecked();
+      state.forEach(function (t) { t.coché = target; });
+      persist(); render();
+    }
+
+    function updateCounter() {
+      const n = state.filter(function (t) { return t.coché; }).length;
+      document.getElementById('counter').textContent = n + (n &gt; 1 ? ' sélectionnés' : ' sélectionné');
+      document.getElementById('insertBtn').disabled = n === 0;
+      updateToggleAllBtn();
+    }
+
+    function render() {
+      const listEl = document.getElementById('termList');
+      listEl.innerHTML = '';
+      if (state.length === 0) {
+        const e = document.createElement('div');
+        e.className = 'empty';
+        e.textContent = 'Aucun terme. Clique ➕ pour en ajouter.';
+        listEl.appendChild(e);
+        updateCounter();
+        return;
+      }
+
+      state.forEach(function (term, index) {
+        const row = document.createElement('div');
+        row.className = 'term-card';
+        row.draggable = true;
+        row.dataset.index = index;
+        row.addEventListener('dragstart', function (e) { dragStartIndex = index; e.dataTransfer.effectAllowed = 'move'; row.classList.add('dragging'); });
+        row.addEventListener('dragend', function () { row.classList.remove('dragging'); dragStartIndex = -1; });
+
+        if (term._deleting) {
+          const c = document.createElement('div');
+          c.className = 'confirm-delete';
+          const span = document.createElement('span');
+          span.textContent = 'Supprimer « ' + term.terme + ' » ?';
+          const yes = document.createElement('button'); yes.className = 'mini'; yes.textContent = 'Oui';
+          const no = document.createElement('button'); no.className = 'mini'; no.textContent = 'Non';
+          yes.addEventListener('click', function () { state.splice(index, 1); persist(); render(); });
+          no.addEventListener('click', function () { delete term._deleting; render(); });
+          c.appendChild(span); c.appendChild(yes); c.appendChild(no);
+          row.appendChild(c);
+          listEl.appendChild(row);
+          return;
+        }
+
+        const r = document.createElement('div');
+        r.className = 'term-row';
+        const handle = document.createElement('div'); handle.className = 'drag-handle'; handle.textContent = '⠿'; handle.setAttribute('aria-hidden', 'true');
+        const cb = document.createElement('input'); cb.type = 'checkbox'; cb.className = 'term-checkbox'; cb.checked = !!term.coché;
+        cb.addEventListener('change', function () { state[index].coché = cb.checked; persist(); updateCounter(); });
+        const label = document.createElement('div'); label.className = 'term-label'; label.textContent = applyTokens(term.terme);
+        label.addEventListener('click', function () { const v = !state[index].coché; state[index].coché = v; cb.checked = v; persist(); updateCounter(); });
+
+        const actions = document.createElement('div'); actions.className = 'term-actions';
+        const editBtn = document.createElement('button'); editBtn.className = 'btn edit'; editBtn.textContent = '✎'; editBtn.setAttribute('aria-label', 'Éditer');
+        editBtn.addEventListener('click', function (e) { e.stopPropagation(); openEdit(index); });
+        const up = document.createElement('button'); up.className = 'btn move'; up.textContent = '▲'; up.setAttribute('aria-label', 'Monter'); up.disabled = index === 0;
+        up.addEventListener('click', function () { if (index &gt; 0) { const t = state[index]; state[index] = state[index - 1]; state[index - 1] = t; persist(); render(); } });
+        const down = document.createElement('button'); down.className = 'btn move'; down.textContent = '▼'; down.setAttribute('aria-label', 'Descendre'); down.disabled = index === state.length - 1;
+        down.addEventListener('click', function () { if (index &lt; state.length - 1) { const t = state[index]; state[index] = state[index + 1]; state[index + 1] = t; persist(); render(); } });
+        const del = document.createElement('button'); del.className = 'btn danger'; del.textContent = '🗑'; del.setAttribute('aria-label', 'Supprimer');
+        del.addEventListener('click', function (e) { e.stopPropagation(); state.forEach(function (t, i) { if (i === index) t._deleting = true; else delete t._deleting; }); render(); });
+
+        actions.appendChild(editBtn); actions.appendChild(up); actions.appendChild(down); actions.appendChild(del);
+        r.appendChild(handle); r.appendChild(cb); r.appendChild(label); r.appendChild(actions);
+        row.appendChild(r);
+
+        row.addEventListener('dragover', function (e) { e.preventDefault(); if (dragStartIndex !== -1 &amp;&amp; dragStartIndex !== index) row.classList.add('drag-over'); });
+        row.addEventListener('dragleave', function () { row.classList.remove('drag-over'); });
+        row.addEventListener('drop', function (e) {
+          e.preventDefault(); row.classList.remove('drag-over');
+          if (dragStartIndex === -1 || dragStartIndex === index) return;
+          const moved = state.splice(dragStartIndex, 1)[0];
+          state.splice(index, 0, moved);
+          persist(); render();
+        });
+
+        listEl.appendChild(row);
+      });
+      updateCounter();
+    }
+
+    function openEdit(index) {
+      editingIndex = index;
+      const panel = document.getElementById('editPanel');
+      const t = document.getElementById('editTerm');
+      const x = document.getElementById('editText');
+      if (index === -1) { document.getElementById('editTitle').textContent = 'Ajouter un terme'; t.value = ''; x.value = ''; document.getElementById('editCoche').checked = false; }
+      else { document.getElementById('editTitle').textContent = 'Éditer le terme'; t.value = state[index].terme || ''; x.value = state[index].texte || ''; document.getElementById('editCoche').checked = !!state[index].coché; }
+      panel.classList.remove('hidden');
+      t.focus();
+    }
+    function closeEdit() { document.getElementById('editPanel').classList.add('hidden'); editingIndex = -1; }
+    function saveEdit() {
+      const terme = document.getElementById('editTerm').value.trim();
+      const texte = document.getElementById('editText').value;
+      if (!terme) { document.getElementById('editTerm').focus(); return; }
+      const coche = document.getElementById('editCoche').checked;
+      if (editingIndex === -1) state.push({ terme: terme, texte: texte, coché: coche });
+      else { state[editingIndex].terme = terme; state[editingIndex].texte = texte; state[editingIndex].coché = coche; }
+      persist(); closeEdit(); render();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      loadState(); render();
+      document.getElementById('addBtn').addEventListener('click', function () { openEdit(-1); });
+      document.getElementById('toggleAllBtn').addEventListener('click', toggleAll);
+      document.getElementById('editCancel').addEventListener('click', closeEdit);
+      document.getElementById('editSave').addEventListener('click', saveEdit);
+      document.getElementById('cancelBtn').addEventListener('click', function () { if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel'); });
+      document.getElementById('insertBtn').addEventListener('click', function () {
+        const sel = state.filter(function (t) { return t.coché; }).map(function (t) { return applyTokens((t.texte &amp;&amp; t.texte.trim()) ? t.texte : t.terme); });
+        if (!sel.length) return;
+        persist();
+        if (window.KeyboardMaestro) { window.KeyboardMaestro.SetVariable('memora_texte', sel.join(String.fromCharCode(10))); window.KeyboardMaestro.Submit('OK'); }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          if (document.getElementById('editPanel').classList.contains('hidden')) { if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel'); }
+          else closeEdit();
+        } else if (e.key === 'Enter') {
+          // Entrée = Insérer (sauf si panneau d'édition ouvert ou focus dans un champ)
+          var tag = document.activeElement ? document.activeElement.tagName : '';
+          if (document.getElementById('editPanel').classList.contains('hidden') &amp;&amp; tag !== 'INPUT' &amp;&amp; tag !== 'TEXTAREA') {
+            var ins = document.getElementById('insertBtn');
+            if (ins &amp;&amp; !ins.disabled) { e.preventDefault(); ins.click(); }
+          }
+        }
+      });
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</string>
+					<key>TimeOutAbortsMacro</key>
+					<true/>
+					<key>UseText</key>
+					<true/>
+				</dict>
+				<dict>
+					<key>Action</key>
+					<string>ByPasting</string>
+					<key>ActionUID</key>
+					<integer>156126</integer>
+					<key>MacroActionType</key>
+					<string>InsertText</string>
+					<key>Text</key>
+					<string>%Variable%memora_texte%</string>
+				</dict>
+			</array>
+			<key>CreationDate</key>
+			<real>802885377.75442004</real>
+			<key>ModificationDate</key>
+			<real>802885378.26792896</real>
+			<key>Name</key>
+			<string>MEMORA — Snippets</string>
+			<key>Triggers</key>
+			<array>
+				<dict>
+					<key>MacroTriggerType</key>
+					<string>TypedString</string>
+					<key>SimulateDeletes</key>
+					<true/>
+					<key>TypedString</key>
+					<string>;mem</string>
+				</dict>
+			</array>
+			<key>UID</key>
+			<string>B2296510-525B-4BEC-80BA-5243969FD2C4</string>
+		</dict>
+	</array>
+	<key>Name</key>
+	<string>MEMORA Snippets</string>
+	<key>ToggleMacroUID</key>
+	<string>B425D678-A73D-4196-B035-2CCCD1795375</string>
+	<key>UID</key>
+	<string>34272D1B-7790-48E3-989E-7718566ECFA7</string>
+</dict>
+</array>
+</plist>
