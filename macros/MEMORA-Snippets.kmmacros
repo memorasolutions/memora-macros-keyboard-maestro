@@ -14,7 +14,7 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156128</integer>
+					<integer>156134</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -24,7 +24,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156130</integer>
+					<integer>156136</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -49,6 +49,10 @@
     .search::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text2);}
     .close-btn{background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;}
     .close-btn:hover{background:var(--surface2);}
+    .folders{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px 0;}
+    .chip{padding:5px 12px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text2);cursor:pointer;font-size:13px;transition:background .15s,color .15s;}
+    .chip:hover{background:var(--surface2);}
+    .chip.active{background:var(--accent);color:#fff;border-color:var(--accent);}
     .content{padding:12px 16px 90px;}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;}
     .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s,background .15s,transform .05s;}
@@ -100,6 +104,7 @@
     &lt;div class='search'&gt;&lt;input type='text' id='search-input' placeholder='Rechercher un snippet…' aria-label='Rechercher un snippet'&gt;&lt;/div&gt;
     &lt;button class='close-btn' id='close-btn' aria-label='Fermer'&gt;✕&lt;/button&gt;
   &lt;/div&gt;
+  &lt;div class='folders' id='folders'&gt;&lt;/div&gt;
   &lt;div class='content'&gt;
     &lt;div class='grid' id='snippets-grid'&gt;&lt;/div&gt;
     &lt;button class='add-btn' id='add-snippet' type='button' aria-label='Ajouter un snippet'&gt;➕ Ajouter un snippet&lt;/button&gt;
@@ -112,6 +117,7 @@
   &lt;script&gt;
     let snippets = [];
     let editingIndex = -1;
+    let activeFolder = '';
 
     const normalize = (s) =&gt; String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
     const formatDate = () =&gt; new Intl.DateTimeFormat('fr-CA', { month: 'long', year: 'numeric' }).format(new Date());
@@ -141,11 +147,11 @@
 
     // Exemples au tout premier lancement (variable jamais définie) — montrent les 4 types de variables
     const DEFAULTS = [
-      { terme: 'Salutation', texte: 'Bonjour {{champ:Prénom}},', coché: false },
-      { terme: 'Réponse (ton)', texte: '{{choix:Ton=Formel|Amical}} — merci pour votre message.', coché: false },
-      { terme: 'Mois courant', texte: 'Nous sommes en {{date}}.', coché: false },
-      { terme: 'Intro variée', texte: '{{alea:Bonjour|Salut|Allô}} !', coché: false },
-      { terme: 'Coordonnées MEMORA', texte: 'MEMORA solutions — https://memora.solutions — info@memora.ca', coché: false }
+      { terme: 'Salutation', texte: 'Bonjour {{champ:Prénom}},', coché: false, dossier: 'Courriel' },
+      { terme: 'Réponse (ton)', texte: '{{choix:Ton=Formel|Amical}} — merci pour votre message.', coché: false, dossier: 'Courriel' },
+      { terme: 'Mois courant', texte: 'Nous sommes en {{date}}.', coché: false, dossier: 'Général' },
+      { terme: 'Intro variée', texte: '{{alea:Bonjour|Salut|Allô}} !', coché: false, dossier: 'Courriel' },
+      { terme: 'Coordonnées MEMORA', texte: 'MEMORA solutions — https://memora.solutions — info@memora.ca', coché: false, dossier: 'Général' }
     ];
     function loadState() {
       if (!window.KeyboardMaestro) return;
@@ -154,17 +160,32 @@
       try {
         snippets = JSON.parse(raw) || [];
         if (!Array.isArray(snippets)) snippets = [];
-        snippets = snippets.map(s =&gt; ({ terme: typeof s.terme === 'string' ? s.terme : '', texte: typeof s.texte === 'string' ? s.texte : '', coché: !!s.coché }));
+        snippets = snippets.map(s =&gt; ({ terme: typeof s.terme === 'string' ? s.terme : '', texte: typeof s.texte === 'string' ? s.texte : '', coché: !!s.coché, dossier: typeof s.dossier === 'string' ? s.dossier : '' }));
       } catch (e) { snippets = []; }
     }
     function persist() { if (window.KeyboardMaestro) window.KeyboardMaestro.SetVariable('memora_snippets', JSON.stringify(snippets)); }
 
+    function getFolders() { return [...new Set(snippets.map(s =&gt; (s.dossier || '').trim()).filter(Boolean))].sort((a, b) =&gt; a.localeCompare(b, 'fr')); }
+    function renderFolders() {
+      const bar = document.getElementById('folders');
+      const fs = getFolders();
+      if (activeFolder &amp;&amp; !fs.includes(activeFolder)) activeFolder = '';
+      bar.innerHTML = '';
+      if (fs.length === 0) { bar.style.display = 'none'; return; }
+      bar.style.display = 'flex';
+      const mk = (label, val) =&gt; { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip' + (activeFolder === val ? ' active' : ''); b.textContent = label; b.onclick = () =&gt; { activeFolder = val; render(); }; return b; };
+      bar.appendChild(mk('Tous', ''));
+      fs.forEach(f =&gt; bar.appendChild(mk(f, f)));
+    }
+
     function render() {
       const grid = document.getElementById('snippets-grid');
       const term = normalize(document.getElementById('search-input').value);
+      renderFolders();
       grid.innerHTML = '';
       let shown = 0;
       snippets.forEach((s, index) =&gt; { // index = index RÉEL dans snippets[]
+        if (activeFolder &amp;&amp; (s.dossier || '') !== activeFolder) return;
         if (term &amp;&amp; !(normalize(s.terme).includes(term) || normalize(s.texte).includes(term))) return;
         shown++;
         const last = snippets.length - 1;
@@ -205,6 +226,7 @@
           "&lt;h2&gt;" + (isNew ? 'Ajouter un snippet' : 'Modifier le snippet') + "&lt;/h2&gt;" +
           "&lt;div class='form-group'&gt;&lt;label for='edit-terme'&gt;Terme&lt;/label&gt;&lt;input type='text' id='edit-terme' value=\"" + escapeHtml(s.terme) + "\"&gt;&lt;/div&gt;" +
           "&lt;div class='form-group'&gt;&lt;label for='edit-texte'&gt;Texte&lt;/label&gt;&lt;textarea id='edit-texte' placeholder='Texte du snippet…'&gt;" + escapeHtml(s.texte) + "&lt;/textarea&gt;&lt;/div&gt;" +
+          "&lt;div class='form-group'&gt;&lt;label for='edit-dossier'&gt;Dossier (optionnel)&lt;/label&gt;&lt;input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'&gt;&lt;datalist id='folder-list'&gt;" + getFolders().map(f =&gt; "&lt;option value=\"" + escapeHtml(f) + "\"&gt;&lt;/option&gt;").join('') + "&lt;/datalist&gt;&lt;/div&gt;" +
           "&lt;div class='checkbox-group'&gt;&lt;input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "&gt;&lt;label for='edit-coche'&gt;Coché par défaut&lt;/label&gt;&lt;/div&gt;" +
           "&lt;div class='help'&gt;&lt;strong&gt;Variables :&lt;/strong&gt;&lt;ul&gt;" +
             "&lt;li&gt;&lt;code&gt;{{date}}&lt;/code&gt; → mois et année (ex. juin 2026)&lt;/li&gt;" +
@@ -223,7 +245,7 @@
       const t = document.getElementById('edit-terme');
       const terme = t.value.trim();
       if (!terme) { t.classList.add('input-error'); t.focus(); return; } // validation inline (pas d'alert natif)
-      const tile = { terme, texte: document.getElementById('edit-texte').value, coché: document.getElementById('edit-coche').checked };
+      const tile = { terme, texte: document.getElementById('edit-texte').value, coché: document.getElementById('edit-coche').checked, dossier: document.getElementById('edit-dossier').value.trim() };
       if (editingIndex === -1) snippets.push(tile); else snippets[editingIndex] = tile;
       persist(); closeEdit(); render();
     }
@@ -323,7 +345,7 @@
 					<key>Action</key>
 					<string>ByPasting</string>
 					<key>ActionUID</key>
-					<integer>156132</integer>
+					<integer>156138</integer>
 					<key>MacroActionType</key>
 					<string>InsertText</string>
 					<key>Text</key>
@@ -333,7 +355,7 @@
 			<key>CreationDate</key>
 			<real>802885377.75442004</real>
 			<key>ModificationDate</key>
-			<real>802889776.17006195</real>
+			<real>802893245.61045694</real>
 			<key>Name</key>
 			<string>MEMORA — Snippets</string>
 			<key>Triggers</key>

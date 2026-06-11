@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [3.0.0] - 2026-06-11
+
+### Ajouté
+- **Dossiers / catégories** : un champ « Dossier » par snippet + une **barre de chips** (Tous + chaque dossier) pour **filtrer** la liste, combinable avec la recherche. Le champ Dossier propose les dossiers existants (autocomplétion).
+
 ## [2.0.0] - 2026-06-11
 
 ### Ajouté
