@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [4.0.0] - 2026-06-11
+
+### Ajouté
+- **Bibliothèque (Import / Export)** : bouton 📚 → exporter vos snippets en **JSON** (copier pour sauvegarder/partager) et importer un JSON (**Fusionner** ou **Remplacer tout**), avec validation et messages en ligne. Permet sauvegarde, migration entre Macs et partage manuel d'une bibliothèque.
+
 ## [3.0.0] - 2026-06-11
 
 ### Ajouté

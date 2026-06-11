@@ -14,7 +14,7 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156134</integer>
+					<integer>156140</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -24,7 +24,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156136</integer>
+					<integer>156142</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -102,6 +102,7 @@
   &lt;div class='header'&gt;
     &lt;h1&gt;Snippets&lt;/h1&gt;
     &lt;div class='search'&gt;&lt;input type='text' id='search-input' placeholder='Rechercher un snippet…' aria-label='Rechercher un snippet'&gt;&lt;/div&gt;
+    &lt;button class='close-btn' id='lib-btn' title='Importer / Exporter la bibliothèque' aria-label='Bibliothèque'&gt;📚&lt;/button&gt;
     &lt;button class='close-btn' id='close-btn' aria-label='Fermer'&gt;✕&lt;/button&gt;
   &lt;/div&gt;
   &lt;div class='folders' id='folders'&gt;&lt;/div&gt;
@@ -283,8 +284,39 @@
       const f = ov.querySelector('[data-label]'); if (f) f.focus();
     }
 
+    function openLibrary() {
+      const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'lib-overlay';
+      ov.innerHTML =
+        "&lt;div class='modal'&gt;&lt;h2&gt;Bibliothèque&lt;/h2&gt;" +
+        "&lt;div class='form-group'&gt;&lt;label&gt;Exporter — copiez ce JSON pour sauvegarder ou partager&lt;/label&gt;" +
+        "&lt;textarea id='lib-export' readonly&gt;" + escapeHtml(JSON.stringify(snippets, null, 2)) + "&lt;/textarea&gt;&lt;/div&gt;" +
+        "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='lib-copy' type='button'&gt;Copier&lt;/button&gt;&lt;/div&gt;" +
+        "&lt;div class='form-group'&gt;&lt;label&gt;Importer — collez un JSON de snippets&lt;/label&gt;" +
+        "&lt;textarea id='lib-import' placeholder='[ { &amp;quot;terme&amp;quot;: &amp;quot;…&amp;quot;, &amp;quot;texte&amp;quot;: &amp;quot;…&amp;quot; } ]'&gt;&lt;/textarea&gt;" +
+        "&lt;div id='lib-msg' style='font-size:13px;'&gt;&lt;/div&gt;&lt;/div&gt;" +
+        "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='lib-merge' type='button'&gt;Fusionner&lt;/button&gt;" +
+        "&lt;button class='btn btn-primary' id='lib-replace' type='button'&gt;Remplacer tout&lt;/button&gt;&lt;/div&gt;" +
+        "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='lib-close' type='button'&gt;Fermer&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;";
+      document.body.appendChild(ov);
+      const msg = (t, ok) =&gt; { const e = ov.querySelector('#lib-msg'); e.textContent = t; e.style.color = ok ? 'var(--accent)' : 'var(--danger)'; };
+      ov.querySelector('#lib-copy').addEventListener('click', () =&gt; { const ta = ov.querySelector('#lib-export'); try { navigator.clipboard.writeText(ta.value); msg('Copié ✓', true); } catch (e) { ta.select(); msg('Sélectionné — ⌘C pour copier.', true); } });
+      const doImport = (replace) =&gt; {
+        let arr; try { arr = JSON.parse(ov.querySelector('#lib-import').value); } catch (e) { msg('JSON invalide.', false); return; }
+        if (!Array.isArray(arr)) { msg('Le JSON doit être une liste [ … ].', false); return; }
+        const clean = arr.filter(x =&gt; x &amp;&amp; typeof x === 'object').map(x =&gt; ({ terme: String(x.terme || ''), texte: String(x.texte || ''), coché: !!x.coché, dossier: typeof x.dossier === 'string' ? x.dossier : '' })).filter(x =&gt; x.terme || x.texte);
+        if (!clean.length) { msg('Aucun snippet valide trouvé.', false); return; }
+        if (replace) snippets = clean;
+        else { const have = new Set(snippets.map(s =&gt; s.terme)); clean.forEach(c =&gt; { if (!have.has(c.terme)) snippets.push(c); }); }
+        persist(); render(); ov.remove();
+      };
+      ov.querySelector('#lib-merge').addEventListener('click', () =&gt; doImport(false));
+      ov.querySelector('#lib-replace').addEventListener('click', () =&gt; doImport(true));
+      ov.querySelector('#lib-close').addEventListener('click', () =&gt; ov.remove());
+    }
+
     function init() {
       loadState(); render();
+      document.getElementById('lib-btn').addEventListener('click', openLibrary);
       document.getElementById('search-input').addEventListener('input', render);
       document.getElementById('add-snippet').addEventListener('click', () =&gt; openEdit(-1));
       document.getElementById('close-btn').addEventListener('click', () =&gt; { if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel'); });
@@ -322,10 +354,10 @@
 
       document.addEventListener('keydown', e =&gt; {
         if (e.key === 'Escape') {
-          const fill = document.getElementById('fill-overlay'); const ed = document.getElementById('edit-overlay');
-          if (fill) fill.remove(); else if (ed) ed.remove();
+          const fill = document.getElementById('fill-overlay'); const ed = document.getElementById('edit-overlay'); const lib = document.getElementById('lib-overlay');
+          if (fill) fill.remove(); else if (ed) ed.remove(); else if (lib) lib.remove();
           else if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel');
-        } else if (e.key === 'Enter' &amp;&amp; !e.target.matches('input, textarea, select') &amp;&amp; !document.getElementById('edit-overlay') &amp;&amp; !document.getElementById('fill-overlay')) {
+        } else if (e.key === 'Enter' &amp;&amp; !e.target.matches('input, textarea, select') &amp;&amp; !document.getElementById('edit-overlay') &amp;&amp; !document.getElementById('fill-overlay') &amp;&amp; !document.getElementById('lib-overlay')) {
           doInsert();
         }
       });
@@ -345,7 +377,7 @@
 					<key>Action</key>
 					<string>ByPasting</string>
 					<key>ActionUID</key>
-					<integer>156138</integer>
+					<integer>156144</integer>
 					<key>MacroActionType</key>
 					<string>InsertText</string>
 					<key>Text</key>
@@ -355,7 +387,7 @@
 			<key>CreationDate</key>
 			<real>802885377.75442004</real>
 			<key>ModificationDate</key>
-			<real>802893245.61045694</real>
+			<real>802894712.21722102</real>
 			<key>Name</key>
 			<string>MEMORA — Snippets</string>
 			<key>Triggers</key>

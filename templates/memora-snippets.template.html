@@ -70,6 +70,7 @@
   <div class='header'>
     <h1>Snippets</h1>
     <div class='search'><input type='text' id='search-input' placeholder='Rechercher un snippet…' aria-label='Rechercher un snippet'></div>
+    <button class='close-btn' id='lib-btn' title='Importer / Exporter la bibliothèque' aria-label='Bibliothèque'>📚</button>
     <button class='close-btn' id='close-btn' aria-label='Fermer'>✕</button>
   </div>
   <div class='folders' id='folders'></div>
@@ -251,8 +252,39 @@
       const f = ov.querySelector('[data-label]'); if (f) f.focus();
     }
 
+    function openLibrary() {
+      const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'lib-overlay';
+      ov.innerHTML =
+        "<div class='modal'><h2>Bibliothèque</h2>" +
+        "<div class='form-group'><label>Exporter — copiez ce JSON pour sauvegarder ou partager</label>" +
+        "<textarea id='lib-export' readonly>" + escapeHtml(JSON.stringify(snippets, null, 2)) + "</textarea></div>" +
+        "<div class='btns'><button class='btn btn-secondary' id='lib-copy' type='button'>Copier</button></div>" +
+        "<div class='form-group'><label>Importer — collez un JSON de snippets</label>" +
+        "<textarea id='lib-import' placeholder='[ { &quot;terme&quot;: &quot;…&quot;, &quot;texte&quot;: &quot;…&quot; } ]'></textarea>" +
+        "<div id='lib-msg' style='font-size:13px;'></div></div>" +
+        "<div class='btns'><button class='btn btn-secondary' id='lib-merge' type='button'>Fusionner</button>" +
+        "<button class='btn btn-primary' id='lib-replace' type='button'>Remplacer tout</button></div>" +
+        "<div class='btns'><button class='btn btn-secondary' id='lib-close' type='button'>Fermer</button></div></div>";
+      document.body.appendChild(ov);
+      const msg = (t, ok) => { const e = ov.querySelector('#lib-msg'); e.textContent = t; e.style.color = ok ? 'var(--accent)' : 'var(--danger)'; };
+      ov.querySelector('#lib-copy').addEventListener('click', () => { const ta = ov.querySelector('#lib-export'); try { navigator.clipboard.writeText(ta.value); msg('Copié ✓', true); } catch (e) { ta.select(); msg('Sélectionné — ⌘C pour copier.', true); } });
+      const doImport = (replace) => {
+        let arr; try { arr = JSON.parse(ov.querySelector('#lib-import').value); } catch (e) { msg('JSON invalide.', false); return; }
+        if (!Array.isArray(arr)) { msg('Le JSON doit être une liste [ … ].', false); return; }
+        const clean = arr.filter(x => x && typeof x === 'object').map(x => ({ terme: String(x.terme || ''), texte: String(x.texte || ''), coché: !!x.coché, dossier: typeof x.dossier === 'string' ? x.dossier : '' })).filter(x => x.terme || x.texte);
+        if (!clean.length) { msg('Aucun snippet valide trouvé.', false); return; }
+        if (replace) snippets = clean;
+        else { const have = new Set(snippets.map(s => s.terme)); clean.forEach(c => { if (!have.has(c.terme)) snippets.push(c); }); }
+        persist(); render(); ov.remove();
+      };
+      ov.querySelector('#lib-merge').addEventListener('click', () => doImport(false));
+      ov.querySelector('#lib-replace').addEventListener('click', () => doImport(true));
+      ov.querySelector('#lib-close').addEventListener('click', () => ov.remove());
+    }
+
     function init() {
       loadState(); render();
+      document.getElementById('lib-btn').addEventListener('click', openLibrary);
       document.getElementById('search-input').addEventListener('input', render);
       document.getElementById('add-snippet').addEventListener('click', () => openEdit(-1));
       document.getElementById('close-btn').addEventListener('click', () => { if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel'); });
@@ -290,10 +322,10 @@
 
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
-          const fill = document.getElementById('fill-overlay'); const ed = document.getElementById('edit-overlay');
-          if (fill) fill.remove(); else if (ed) ed.remove();
+          const fill = document.getElementById('fill-overlay'); const ed = document.getElementById('edit-overlay'); const lib = document.getElementById('lib-overlay');
+          if (fill) fill.remove(); else if (ed) ed.remove(); else if (lib) lib.remove();
           else if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel');
-        } else if (e.key === 'Enter' && !e.target.matches('input, textarea, select') && !document.getElementById('edit-overlay') && !document.getElementById('fill-overlay')) {
+        } else if (e.key === 'Enter' && !e.target.matches('input, textarea, select') && !document.getElementById('edit-overlay') && !document.getElementById('fill-overlay') && !document.getElementById('lib-overlay')) {
           doInsert();
         }
       });
