@@ -58,6 +58,9 @@
     .help code{background:var(--surface);padding:1px 5px;border-radius:5px;border:1px solid var(--border);}
     .help ul{padding-left:18px;margin-top:6px;}
     .help li{margin-top:4px;}
+    .var-toolbar{display:flex;flex-wrap:wrap;gap:6px;}
+    .var-toolbar button{padding:4px 10px;border:1px solid var(--border);border-radius:999px;background:var(--surface2);color:var(--text);font-size:12px;cursor:pointer;}
+    .var-toolbar button:hover{background:var(--accent-weak);color:var(--accent);border-color:var(--accent);}
     .var-group{display:flex;flex-direction:column;gap:6px;}
     .var-group label{font-weight:500;font-size:13px;}
     .preview{background:var(--surface2);padding:12px;border-radius:var(--radius);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;white-space:pre-wrap;word-break:break-word;color:var(--text);min-height:48px;}
@@ -90,6 +93,8 @@
 
     const normalize = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
     const formatDate = () => new Intl.DateTimeFormat('fr-CA', { month: 'long', year: 'numeric' }).format(new Date());
+    const moment = () => { const h = new Date().getHours(); return h < 12 ? 'Matin' : (h < 18 ? 'Après-midi' : 'Soir'); };
+    function insertToken(tok) { const ta = document.getElementById('edit-texte'); if (!ta) return; const s = ta.selectionStart, e = ta.selectionEnd; ta.value = ta.value.slice(0, s) + tok + ta.value.slice(e); const p = s + tok.length; ta.focus(); ta.setSelectionRange(p, p); }
     const escapeHtml = (str) => String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[s]));
     const rnd = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -105,7 +110,7 @@
       return [...map.values()];
     }
     function resolve(text, values) {
-      let r = text.replace(/{{date}}/g, formatDate()).replace(/{{alea:([^}]+)}}/g, (m, o) => rnd(o.split('|')));
+      let r = text.replace(/{{date}}/g, formatDate()).replace(/{{moment}}/g, moment()).replace(/{{alea:([^}]+)}}/g, (m, o) => rnd(o.split('|')));
       for (const label in values) {
         const re = new RegExp('{{(?:champ|choix):' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^}]*}}', 'g');
         r = r.replace(re, values[label]);
@@ -194,7 +199,15 @@
         "<div class='modal'>" +
           "<h2>" + (isNew ? 'Ajouter un snippet' : 'Modifier le snippet') + "</h2>" +
           "<div class='form-group'><label for='edit-terme'>Terme</label><input type='text' id='edit-terme' value=\"" + escapeHtml(s.terme) + "\"></div>" +
-          "<div class='form-group'><label for='edit-texte'>Texte</label><textarea id='edit-texte' placeholder='Texte du snippet…'>" + escapeHtml(s.texte) + "</textarea></div>" +
+          "<div class='form-group'><label for='edit-texte'>Texte</label><textarea id='edit-texte' placeholder='Texte du snippet…'>" + escapeHtml(s.texte) + "</textarea>" +
+            "<div class='var-toolbar' style='margin-top:6px;'>" +
+              "<button type='button' data-token='{{champ:Étiquette}}'>+ Champ</button>" +
+              "<button type='button' data-token='{{choix:Étiquette=Option 1|Option 2}}'>+ Choix</button>" +
+              "<button type='button' data-token='{{choix:Civilité=Madame|Monsieur}}'>+ Civilité</button>" +
+              "<button type='button' data-token='{{date}}'>+ Date</button>" +
+              "<button type='button' data-token='{{moment}}'>+ Moment</button>" +
+              "<button type='button' data-token='{{alea:Option 1|Option 2}}'>+ Aléatoire</button>" +
+            "</div></div>" +
           "<div class='form-group'><label for='edit-dossier'>Dossier (optionnel)</label><input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'><datalist id='folder-list'>" + getFolders().map(f => "<option value=\"" + escapeHtml(f) + "\"></option>").join('') + "</datalist></div>" +
           "<div class='checkbox-group'><input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "><label for='edit-coche'>Coché par défaut</label></div>" +
           "<div class='help'><strong>Variables :</strong><ul>" +
@@ -202,11 +215,13 @@
             "<li><code>{{champ:Étiquette}}</code> → champ texte demandé à l'insertion</li>" +
             "<li><code>{{choix:Étiquette=A|B|C}}</code> → menu déroulant</li>" +
             "<li><code>{{alea:A|B|C}}</code> → valeur au hasard</li>" +
-          "</ul></div>" +
+            "<li><code>{{moment}}</code> → Matin / Après-midi / Soir (selon l'heure)</li>" +
+          "</ul><em>Astuce : utilisez les boutons ci-dessus pour insérer une variable au curseur.</em></div>" +
           "<div class='btns'><button class='btn btn-secondary' id='edit-cancel' type='button'>Annuler</button>" +
           "<button class='btn btn-primary' id='edit-save' type='button'>" + (isNew ? 'Ajouter' : 'Enregistrer') + "</button></div>" +
         "</div>";
       document.body.appendChild(ov);
+      ov.querySelectorAll('.var-toolbar button').forEach(b => b.addEventListener('click', () => insertToken(b.dataset.token)));
       document.getElementById('edit-terme').focus();
     }
     function closeEdit() { const o = document.getElementById('edit-overlay'); if (o) o.remove(); }

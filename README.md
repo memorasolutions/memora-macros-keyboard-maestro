@@ -15,7 +15,9 @@ Une fenêtre simple et rapide pour **insérer vos textes réutilisables** (snipp
   - `{{champ:Étiquette}}` → champ texte libre.
   - `{{choix:Étiquette=A|B|C}}` → menu déroulant.
   - `{{date}}` → mois + année courants (ex. « juin 2026 »).
+  - `{{moment}}` → Matin / Après-midi / Soir selon l'heure.
   - `{{alea:A|B|C}}` → une valeur au hasard.
+- **Insertion visuelle** : à l'édition d'un snippet, des boutons (**+ Champ**, **+ Choix**, **+ Civilité**, **+ Date**, **+ Moment**, **+ Aléatoire**) insèrent le bon jeton au curseur — pas besoin de retenir la syntaxe.
 - **Recherche** instantanée ; badge `{ }` sur les snippets qui contiennent des variables.
 - **Gérez tout dans la fenêtre** : ➕ ajouter · ✎ modifier · 🗑 supprimer · glisser ou ▲▼ pour réordonner.
 - **Look 2026** : minimaliste, **dark mode automatique**, accessible (WCAG 2.2).

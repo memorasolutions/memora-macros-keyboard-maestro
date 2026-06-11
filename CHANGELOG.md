@@ -4,6 +4,12 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [5.0.0] - 2026-06-11
+
+### Ajouté
+- **Insertion visuelle des variables** : lors de l'édition d'un snippet, une **barre de boutons** sous le champ Texte insère le bon jeton au curseur, sans rien mémoriser — **+ Champ**, **+ Choix**, **+ Civilité** (Madame / Monsieur), **+ Date**, **+ Moment**, **+ Aléatoire**. Plus besoin de connaître la syntaxe par cœur.
+- **Jeton `{{moment}}`** → insère automatiquement **Matin / Après-midi / Soir** selon l'heure courante.
+
 ## [4.0.0] - 2026-06-11
 
 ### Ajouté
