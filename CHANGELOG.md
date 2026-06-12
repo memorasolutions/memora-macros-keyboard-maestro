@@ -4,6 +4,15 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [6.0.0] - 2026-06-12
+
+### Ajouté
+- **Aperçu du contenu sur chaque carte** (2 lignes) : reconnaître un snippet sans l'ouvrir.
+- **Favoris ⭐** + filtres **« ⭐ Favoris »** et **« 🕘 Fréquents »** (les plus utilisés) — sans déstabiliser l'ordre manuel de la liste.
+- **Glisser-déposer d'une carte sur un dossier** pour la reclasser (drag-and-drop entre dossiers).
+- **Recherche floue** (tolérante : « slt » trouve « Salutation »).
+- **Annulation de suppression** : barre **« Annuler »** non bloquante (suppression réversible, plus de perte accidentelle).
+
 ## [5.1.0] - 2026-06-11
 
 ### Ajouté
