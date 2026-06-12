@@ -55,6 +55,21 @@
     .var-toolbar button{padding:4px 11px;border:1px solid var(--border);border-radius:999px;background:var(--surface2);color:var(--text);font-size:12px;cursor:pointer;transition:background .13s,color .13s,border-color .13s;}
     .var-toolbar button:hover{background:var(--accent-weak);color:var(--accent);border-color:var(--accent);}
     :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+    /* ── Section Mes macros créées ── */
+    .macro-section{max-width:640px;margin:20px auto 0;}
+    .macro-section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:12px;letter-spacing:-.2px;}
+    .macro-empty{font-size:13px;color:var(--text2);padding:10px 0;}
+    .macro-list{list-style:none;display:flex;flex-direction:column;gap:8px;padding:0;}
+    .macro-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);transition:opacity .35s;}
+    .macro-item-name{flex:1;font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .macro-item-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+    .btn-sm{padding:6px 13px;font-size:12px;border-radius:8px;}
+    .btn-danger{background:var(--danger);color:#fff;}
+    .btn-danger-outline{background:transparent;border:1px solid color-mix(in srgb,var(--danger) 40%,transparent);color:var(--danger);}
+    .btn-danger-outline:hover{background:color-mix(in srgb,var(--danger) 10%,transparent);}
+    .macro-confirm-label{font-size:13px;color:var(--text2);white-space:nowrap;}
+    .macro-deleted{font-size:12px;font-weight:600;color:var(--text2);padding:4px 8px;}
   </style>
 </head>
 <body data-kmwindow='SCREEN(Main,Left)+SCREEN(Main,Width)*0.12,SCREEN(Main,Top)+SCREEN(Main,Height)*0.12,SCREEN(Main,Width)*0.62,SCREEN(Main,Height)*0.62'>
@@ -118,6 +133,13 @@
 
       </form>
     </div>
+
+    <!-- ── Section Mes macros créées ── -->
+    <section class='macro-section' id='macro-section' aria-labelledby='macro-section-title'>
+      <h2 class='macro-section-title' id='macro-section-title'>Mes macros créées</h2>
+      <div id='macro-list-container'></div>
+    </section>
+
   </div>
 
   <script>
@@ -255,6 +277,140 @@
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') fermer();
       });
+
+      /* ── Section « Mes macros créées » ── */
+
+      function parseMacroList(raw) {
+        if (!raw) return [];
+        return raw.split('\n').reduce(function (acc, line) {
+          var parts = line.split('\t');
+          if (parts.length >= 2 && parts[0].trim() && parts[1].trim()) {
+            acc.push({ uid: parts[0].trim(), nom: parts[1].trim() });
+          }
+          return acc;
+        }, []);
+      }
+
+      function buildMacroItem(entry) {
+        var li = document.createElement('li');
+        li.className = 'macro-item';
+
+        var nameSpan = document.createElement('span');
+        nameSpan.className = 'macro-item-name';
+        nameSpan.textContent = entry.nom;        /* textContent — jamais innerHTML */
+
+        var actionsDiv = document.createElement('div');
+        actionsDiv.className = 'macro-item-actions';
+
+        /* makeButtons est réinvocable (bouton Non → restaure) */
+        function makeButtons() {
+          var btnEdit = document.createElement('button');
+          btnEdit.type = 'button';
+          btnEdit.className = 'btn btn-secondary btn-sm';
+          btnEdit.setAttribute('aria-label', 'Ouvrir dans Keyboard Maestro');
+          btnEdit.textContent = '✎ Ouvrir dans Keyboard Maestro';
+
+          var btnDel = document.createElement('button');
+          btnDel.type = 'button';
+          btnDel.className = 'btn btn-danger-outline btn-sm';
+          btnDel.setAttribute('aria-label', 'Supprimer cette macro');
+          btnDel.textContent = '🗑 Supprimer';
+
+          btnEdit.addEventListener('click', function () {
+            if (window.KeyboardMaestro) {
+              window.KeyboardMaestro.SetVariable('memora_at_action', 'edit');
+              window.KeyboardMaestro.SetVariable('memora_at_target', entry.uid);
+              window.KeyboardMaestro.Trigger('MEMORA — Gérer macro');
+            }
+          });
+
+          btnDel.addEventListener('click', function () {
+            /* Confirmation inline — remplace les boutons par « Supprimer ? [Oui] [Non] » */
+            actionsDiv.innerHTML = '';
+
+            var confirmLabel = document.createElement('span');
+            confirmLabel.className = 'macro-confirm-label';
+            confirmLabel.textContent = 'Supprimer ?';
+
+            var btnOui = document.createElement('button');
+            btnOui.type = 'button';
+            btnOui.className = 'btn btn-danger btn-sm';
+            btnOui.setAttribute('aria-label', 'Confirmer la suppression');
+            btnOui.textContent = 'Oui';
+
+            var btnNon = document.createElement('button');
+            btnNon.type = 'button';
+            btnNon.className = 'btn btn-secondary btn-sm';
+            btnNon.setAttribute('aria-label', 'Annuler la suppression');
+            btnNon.textContent = 'Non';
+
+            btnOui.addEventListener('click', function () {
+              if (window.KeyboardMaestro) {
+                window.KeyboardMaestro.SetVariable('memora_at_action', 'delete');
+                window.KeyboardMaestro.SetVariable('memora_at_target', entry.uid);
+                window.KeyboardMaestro.Trigger('MEMORA — Gérer macro');
+              }
+              actionsDiv.innerHTML = '';
+              var deletedMsg = document.createElement('span');
+              deletedMsg.className = 'macro-deleted';
+              deletedMsg.textContent = 'Supprimé';
+              actionsDiv.appendChild(deletedMsg);
+              li.style.opacity = '0.4';
+              setTimeout(function () { li.remove(); }, 1200);
+            });
+
+            btnNon.addEventListener('click', function () {
+              actionsDiv.innerHTML = '';
+              makeButtons();   /* restaure les boutons d'origine */
+            });
+
+            actionsDiv.appendChild(confirmLabel);
+            actionsDiv.appendChild(btnOui);
+            actionsDiv.appendChild(btnNon);
+          });
+
+          actionsDiv.appendChild(btnEdit);
+          actionsDiv.appendChild(btnDel);
+        }
+
+        makeButtons();
+        li.appendChild(nameSpan);
+        li.appendChild(actionsDiv);
+        return li;
+      }
+
+      function renderMacroList() {
+        var container = document.getElementById('macro-list-container');
+        if (!container) return;
+
+        var raw = '';
+        if (window.KeyboardMaestro) {
+          try { raw = window.KeyboardMaestro.GetVariable('memora_at_list') || ''; } catch (e) { raw = ''; }
+        }
+
+        var entries = parseMacroList(raw);
+        while (container.firstChild) { container.removeChild(container.firstChild); }
+
+        if (!entries.length) {
+          var empty = document.createElement('p');
+          empty.className = 'macro-empty';
+          empty.textContent = 'Aucune macro créée pour l\'instant.';
+          container.appendChild(empty);
+          return;
+        }
+
+        var ul = document.createElement('ul');
+        ul.className = 'macro-list';
+        ul.setAttribute('aria-label', 'Liste des macros créées');
+
+        entries.forEach(function (entry) {
+          ul.appendChild(buildMacroItem(entry));
+        });
+
+        container.appendChild(ul);
+      }
+
+      renderMacroList();
 
     })();
   </script>

@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.5.0] - 2026-06-12
+
+### Ajouté (Atelier)
+- **Gestion des macros créées** : la fenêtre **`;atelier`** liste désormais vos macros (groupe « Mes textes MEMORA ») avec **✎ Ouvrir dans Keyboard Maestro** (pour les éditer avec toute la puissance de KM) et **🗑 Supprimer** (confirmation intégrée, sans popup).
+
 ## [8.4.0] - 2026-06-12
 
 ### Ajouté
