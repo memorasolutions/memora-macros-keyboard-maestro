@@ -1,0 +1,34 @@
+# Auteur: MEMORA solutions, https://memora.solutions ; info@memora.ca.
+# Licence: Apache-2.0 (SPDX-License-Identifier: Apache-2.0). Copyright 2026 MEMORA solutions.
+# CI — syntaxe JS + tests unitaires + garde-fous d'intégrité. Zéro dépendance npm.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Tests Node 20 (ubuntu)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du dépôt
+        uses: actions/checkout@v4
+
+      - name: Configuration Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Vérification syntaxe JS du template
+        run: node tests/check-syntax.mjs
+
+      - name: Tests unitaires (node:test)
+        run: node --test tests/logic.test.mjs
+
+      - name: Garde-fous intégrité du dépôt
+        run: node tests/guard.mjs

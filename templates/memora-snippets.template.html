@@ -229,7 +229,7 @@
       const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'edit-overlay';
       ov.innerHTML =
         "<div class='modal'>" +
-          "<h2>" + (isNew ? 'Ajouter un snippet' : 'Modifier le snippet') + "</h2>" +
+          "<h2 id='edit-title'>" + (isNew ? 'Ajouter un snippet' : 'Modifier le snippet') + "</h2>" +
           "<div class='form-group'><label for='edit-terme'>Terme</label><input type='text' id='edit-terme' value=\"" + escapeHtml(s.terme) + "\"></div>" +
           "<div class='form-group'><label for='edit-texte'>Texte</label><textarea id='edit-texte' placeholder='Texte du snippet…'>" + escapeHtml(s.texte) + "</textarea>" +
             "<div class='var-toolbar' style='margin-top:6px;'>" +
@@ -253,6 +253,7 @@
           "<button class='btn btn-primary' id='edit-save' type='button'>" + (isNew ? 'Ajouter' : 'Enregistrer') + "</button></div>" +
         "</div>";
       document.body.appendChild(ov);
+      memora_a11yModal(ov, 'edit-title');
       ov.querySelectorAll('.var-toolbar button').forEach(b => b.addEventListener('click', () => insertToken(b.dataset.token)));
       document.getElementById('edit-terme').focus();
     }
@@ -296,11 +297,12 @@
         if (v.type === 'champ') inputs += "<div class='var-group'><label for='vf-" + i + "'>" + escapeHtml(v.label) + "</label><input type='text' id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\" placeholder='Saisir…'></div>";
         else inputs += "<div class='var-group'><label for='vf-" + i + "'>" + escapeHtml(v.label) + "</label><select id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\">" + v.choices.map(o => "<option value=\"" + escapeHtml(o) + "\">" + escapeHtml(o) + "</option>").join('') + "</select></div>";
       });
-      ov.innerHTML = "<div class='modal'><h2>Compléter les variables</h2>" + inputs +
+      ov.innerHTML = "<div class='modal'><h2 id='fill-title'>Compléter les variables</h2>" + inputs +
         "<label style='font-size:13px;color:var(--text2);font-weight:500;'>Aperçu</label><div class='preview' id='fill-preview'></div>" +
         "<div class='btns'><button class='btn btn-secondary' id='fill-cancel' type='button'>Annuler</button>" +
         "<button class='btn btn-primary' id='fill-insert' type='button'>Insérer</button></div></div>";
       document.body.appendChild(ov);
+      memora_a11yModal(ov, 'fill-title');
       const readValues = () => { const vals = {}; ov.querySelectorAll('[data-label]').forEach(el => vals[el.dataset.label] = el.value); return vals; };
       const upd = () => { document.getElementById('fill-preview').textContent = assemble(checked, readValues()); };
       ov.querySelectorAll('[data-label]').forEach(el => { el.addEventListener('input', upd); el.addEventListener('change', upd); });
@@ -313,7 +315,7 @@
     function openLibrary() {
       const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'lib-overlay';
       ov.innerHTML =
-        "<div class='modal'><h2>Bibliothèque</h2>" +
+        "<div class='modal'><h2 id='lib-title'>Bibliothèque</h2>" +
         "<div class='form-group'><label>Exporter — copiez ce JSON pour sauvegarder ou partager</label>" +
         "<textarea id='lib-export' readonly>" + escapeHtml(JSON.stringify(snippets, null, 2)) + "</textarea></div>" +
         "<div class='btns'><button class='btn btn-secondary' id='lib-copy' type='button'>Copier</button></div>" +
@@ -324,6 +326,7 @@
         "<button class='btn btn-primary' id='lib-replace' type='button'>Remplacer tout</button></div>" +
         "<div class='btns'><button class='btn btn-secondary' id='lib-close' type='button'>Fermer</button></div></div>";
       document.body.appendChild(ov);
+      memora_a11yModal(ov, 'lib-title');
       const msg = (t, ok) => { const e = ov.querySelector('#lib-msg'); e.textContent = t; e.style.color = ok ? 'var(--accent)' : 'var(--danger)'; };
       ov.querySelector('#lib-copy').addEventListener('click', () => { const ta = ov.querySelector('#lib-export'); try { navigator.clipboard.writeText(ta.value); msg('Copié ✓', true); } catch (e) { ta.select(); msg('Sélectionné — ⌘C pour copier.', true); } });
       const doImport = (replace) => {
@@ -338,6 +341,25 @@
       ov.querySelector('#lib-merge').addEventListener('click', () => doImport(false));
       ov.querySelector('#lib-replace').addEventListener('click', () => doImport(true));
       ov.querySelector('#lib-close').addEventListener('click', () => ov.remove());
+    }
+
+    function memora_a11yModal(ov, labelId) {
+      const modal = ov.querySelector('.modal');
+      if (modal) { modal.setAttribute('role','dialog'); modal.setAttribute('aria-modal','true'); if (labelId) modal.setAttribute('aria-labelledby', labelId); }
+      const opener = document.activeElement;
+      const sel = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+      ov.addEventListener('keydown', (e) => {
+        if (e.key !== 'Tab') return;
+        const f = [...ov.querySelectorAll(sel)].filter(el => el.offsetParent !== null);
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+      const obs = new MutationObserver(() => {
+        if (!document.body.contains(ov)) { obs.disconnect(); if (opener && opener.focus) opener.focus(); }
+      });
+      obs.observe(document.body, { childList: true });
     }
 
     function init() {

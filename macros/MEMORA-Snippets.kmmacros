@@ -261,7 +261,7 @@
       const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'edit-overlay';
       ov.innerHTML =
         "&lt;div class='modal'&gt;" +
-          "&lt;h2&gt;" + (isNew ? 'Ajouter un snippet' : 'Modifier le snippet') + "&lt;/h2&gt;" +
+          "&lt;h2 id='edit-title'&gt;" + (isNew ? 'Ajouter un snippet' : 'Modifier le snippet') + "&lt;/h2&gt;" +
           "&lt;div class='form-group'&gt;&lt;label for='edit-terme'&gt;Terme&lt;/label&gt;&lt;input type='text' id='edit-terme' value=\"" + escapeHtml(s.terme) + "\"&gt;&lt;/div&gt;" +
           "&lt;div class='form-group'&gt;&lt;label for='edit-texte'&gt;Texte&lt;/label&gt;&lt;textarea id='edit-texte' placeholder='Texte du snippet…'&gt;" + escapeHtml(s.texte) + "&lt;/textarea&gt;" +
             "&lt;div class='var-toolbar' style='margin-top:6px;'&gt;" +
@@ -285,6 +285,7 @@
           "&lt;button class='btn btn-primary' id='edit-save' type='button'&gt;" + (isNew ? 'Ajouter' : 'Enregistrer') + "&lt;/button&gt;&lt;/div&gt;" +
         "&lt;/div&gt;";
       document.body.appendChild(ov);
+      memora_a11yModal(ov, 'edit-title');
       ov.querySelectorAll('.var-toolbar button').forEach(b =&gt; b.addEventListener('click', () =&gt; insertToken(b.dataset.token)));
       document.getElementById('edit-terme').focus();
     }
@@ -328,11 +329,12 @@
         if (v.type === 'champ') inputs += "&lt;div class='var-group'&gt;&lt;label for='vf-" + i + "'&gt;" + escapeHtml(v.label) + "&lt;/label&gt;&lt;input type='text' id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\" placeholder='Saisir…'&gt;&lt;/div&gt;";
         else inputs += "&lt;div class='var-group'&gt;&lt;label for='vf-" + i + "'&gt;" + escapeHtml(v.label) + "&lt;/label&gt;&lt;select id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\"&gt;" + v.choices.map(o =&gt; "&lt;option value=\"" + escapeHtml(o) + "\"&gt;" + escapeHtml(o) + "&lt;/option&gt;").join('') + "&lt;/select&gt;&lt;/div&gt;";
       });
-      ov.innerHTML = "&lt;div class='modal'&gt;&lt;h2&gt;Compléter les variables&lt;/h2&gt;" + inputs +
+      ov.innerHTML = "&lt;div class='modal'&gt;&lt;h2 id='fill-title'&gt;Compléter les variables&lt;/h2&gt;" + inputs +
         "&lt;label style='font-size:13px;color:var(--text2);font-weight:500;'&gt;Aperçu&lt;/label&gt;&lt;div class='preview' id='fill-preview'&gt;&lt;/div&gt;" +
         "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='fill-cancel' type='button'&gt;Annuler&lt;/button&gt;" +
         "&lt;button class='btn btn-primary' id='fill-insert' type='button'&gt;Insérer&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;";
       document.body.appendChild(ov);
+      memora_a11yModal(ov, 'fill-title');
       const readValues = () =&gt; { const vals = {}; ov.querySelectorAll('[data-label]').forEach(el =&gt; vals[el.dataset.label] = el.value); return vals; };
       const upd = () =&gt; { document.getElementById('fill-preview').textContent = assemble(checked, readValues()); };
       ov.querySelectorAll('[data-label]').forEach(el =&gt; { el.addEventListener('input', upd); el.addEventListener('change', upd); });
@@ -345,7 +347,7 @@
     function openLibrary() {
       const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'lib-overlay';
       ov.innerHTML =
-        "&lt;div class='modal'&gt;&lt;h2&gt;Bibliothèque&lt;/h2&gt;" +
+        "&lt;div class='modal'&gt;&lt;h2 id='lib-title'&gt;Bibliothèque&lt;/h2&gt;" +
         "&lt;div class='form-group'&gt;&lt;label&gt;Exporter — copiez ce JSON pour sauvegarder ou partager&lt;/label&gt;" +
         "&lt;textarea id='lib-export' readonly&gt;" + escapeHtml(JSON.stringify(snippets, null, 2)) + "&lt;/textarea&gt;&lt;/div&gt;" +
         "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='lib-copy' type='button'&gt;Copier&lt;/button&gt;&lt;/div&gt;" +
@@ -356,6 +358,7 @@
         "&lt;button class='btn btn-primary' id='lib-replace' type='button'&gt;Remplacer tout&lt;/button&gt;&lt;/div&gt;" +
         "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='lib-close' type='button'&gt;Fermer&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;";
       document.body.appendChild(ov);
+      memora_a11yModal(ov, 'lib-title');
       const msg = (t, ok) =&gt; { const e = ov.querySelector('#lib-msg'); e.textContent = t; e.style.color = ok ? 'var(--accent)' : 'var(--danger)'; };
       ov.querySelector('#lib-copy').addEventListener('click', () =&gt; { const ta = ov.querySelector('#lib-export'); try { navigator.clipboard.writeText(ta.value); msg('Copié ✓', true); } catch (e) { ta.select(); msg('Sélectionné — ⌘C pour copier.', true); } });
       const doImport = (replace) =&gt; {
@@ -370,6 +373,25 @@
       ov.querySelector('#lib-merge').addEventListener('click', () =&gt; doImport(false));
       ov.querySelector('#lib-replace').addEventListener('click', () =&gt; doImport(true));
       ov.querySelector('#lib-close').addEventListener('click', () =&gt; ov.remove());
+    }
+
+    function memora_a11yModal(ov, labelId) {
+      const modal = ov.querySelector('.modal');
+      if (modal) { modal.setAttribute('role','dialog'); modal.setAttribute('aria-modal','true'); if (labelId) modal.setAttribute('aria-labelledby', labelId); }
+      const opener = document.activeElement;
+      const sel = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+      ov.addEventListener('keydown', (e) =&gt; {
+        if (e.key !== 'Tab') return;
+        const f = [...ov.querySelectorAll(sel)].filter(el =&gt; el.offsetParent !== null);
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey &amp;&amp; document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey &amp;&amp; document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+      const obs = new MutationObserver(() =&gt; {
+        if (!document.body.contains(ov)) { obs.disconnect(); if (opener &amp;&amp; opener.focus) opener.focus(); }
+      });
+      obs.observe(document.body, { childList: true });
     }
 
     function init() {
@@ -452,7 +474,7 @@
 			<key>CreationDate</key>
 			<real>802885377.75442004</real>
 			<key>ModificationDate</key>
-			<real>802956321.76265001</real>
+			<real>802957884.50775003</real>
 			<key>Name</key>
 			<string>MEMORA — Snippets</string>
 			<key>Triggers</key>

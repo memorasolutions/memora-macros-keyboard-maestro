@@ -4,6 +4,14 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [6.1.0] - 2026-06-12
+
+### Modifié
+- **Modales accessibles (WCAG 2.2)** : `role="dialog"` + `aria-modal` + titre lié (`aria-labelledby`), **piège de focus** clavier (Tab / Maj+Tab) et **retour du focus** au bouton d'origine à la fermeture.
+
+### Interne
+- **Intégration continue (GitHub Actions)** : tests des fonctions (variables, recherche floue…) et garde-fous (aucune référence externe, en-tête MEMORA, CSP présente) exécutés à chaque modification.
+
 ## [6.0.0] - 2026-06-12
 
 ### Ajouté
