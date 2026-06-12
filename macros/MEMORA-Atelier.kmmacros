@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+<dict>
+	<key>Activate</key>
+	<string>Normal</string>
+	<key>CreationDate</key>
+	<real>802964806.26510704</real>
+	<key>Macros</key>
+	<array>
+		<dict>
+			<key>Actions</key>
+			<array>
+				<dict>
+					<key>ActionUID</key>
+					<integer>156171</integer>
+					<key>DisplayKind</key>
+					<string>None</string>
+					<key>HonourFailureSettings</key>
+					<true/>
+					<key>IncludeStdErr</key>
+					<false/>
+					<key>IncludedVariables</key>
+					<array>
+						<string>9999</string>
+					</array>
+					<key>MacroActionType</key>
+					<string>ExecuteAppleScript</string>
+					<key>NotifyOnFailure</key>
+					<false/>
+					<key>Path</key>
+					<string></string>
+					<key>StopOnFailure</key>
+					<false/>
+					<key>Text</key>
+					<string>tell application "Keyboard Maestro Engine"
+	set nm to getvariable "memora_at_nom"
+	set tg to getvariable "memora_at_trigger_xml"
+	set tx to getvariable "memora_at_texte_xml"
+end tell
+if nm = "" or tg = "" then return "ERREUR: nom ou declencheur manquant"
+tell application "Keyboard Maestro"
+	if (count of (macro groups whose name is "Mes textes MEMORA")) = 0 then make new macro group with properties {name:"Mes textes MEMORA"}
+	set gid to id of (first macro group whose name is "Mes textes MEMORA")
+	tell macro group id gid
+		set newMacro to make new macro with properties {name:nm}
+	end tell
+	set mid to id of newMacro
+	tell macro id mid
+		make new trigger with properties {xml:("&lt;dict&gt;&lt;key&gt;MacroTriggerType&lt;/key&gt;&lt;string&gt;TypedString&lt;/string&gt;&lt;key&gt;SimulateDeletes&lt;/key&gt;&lt;true/&gt;&lt;key&gt;TypedString&lt;/key&gt;&lt;string&gt;" &amp; tg &amp; "&lt;/string&gt;&lt;/dict&gt;")}
+		make new action with properties {xml:("&lt;dict&gt;&lt;key&gt;Action&lt;/key&gt;&lt;string&gt;ByPasting&lt;/string&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;InsertText&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;" &amp; tx &amp; "&lt;/string&gt;&lt;/dict&gt;")}
+	end tell
+	return ("OK " &amp; mid)
+end tell</string>
+					<key>TimeOutAbortsMacro</key>
+					<true/>
+					<key>TrimResults</key>
+					<true/>
+					<key>TrimResultsNew</key>
+					<true/>
+					<key>UseText</key>
+					<true/>
+				</dict>
+			</array>
+			<key>CreationDate</key>
+			<real>802964806.45176303</real>
+			<key>ModificationDate</key>
+			<real>802964806.63508499</real>
+			<key>Name</key>
+			<string>MEMORA — Créer macro</string>
+			<key>Triggers</key>
+			<array/>
+			<key>UID</key>
+			<string>69123E68-AC12-4151-8195-E3409E9F5878</string>
+		</dict>
+		<dict>
+			<key>Actions</key>
+			<array>
+				<dict>
+					<key>ActionUID</key>
+					<integer>156173</integer>
+					<key>Floating</key>
+					<false/>
+					<key>MacroActionType</key>
+					<string>CustomPrompt</string>
+					<key>Text</key>
+					<string>&lt;!-- MEMORA — Atelier (créateur de macros) pour Keyboard Maestro. Auteur: MEMORA solutions, https://memora.solutions ; info@memora.ca. Licence: Apache-2.0 (SPDX-License-Identifier: Apache-2.0). Copyright 2026 MEMORA solutions. --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang='fr'&gt;
+&lt;head&gt;
+  &lt;meta charset='UTF-8'&gt;
+  &lt;meta name='viewport' content='width=device-width, initial-scale=1'&gt;
+  &lt;meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'"&gt;
+  &lt;title&gt;MEMORA — Atelier&lt;/title&gt;
+  &lt;style&gt;
+    :root{--bg:#f5f5f7;--surface:#fff;--surface2:#f0f0f3;--border:#d8d8de;--text:#1d1d1f;--text2:#585860;--accent:#4f46e5;--badge-text:#4338ca;--accent-weak:#eef2ff;--danger:#ff3b30;--radius:12px;--shadow:0 1px 2px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.06);}
+    @media (prefers-color-scheme:dark){:root{--bg:#1c1c1e;--surface:#2c2c2e;--surface2:#3a3a3c;--border:#48484a;--text:#f5f5f7;--text2:#b3b3b9;--accent:#818cf8;--badge-text:#a5b4fc;--accent-weak:rgba(129,140,248,.18);--danger:#ff453a;--shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.55);}
+    body .btn-primary{background:#4f46e5;}}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+    html,body{height:100%;overflow:hidden;}
+    body{background:var(--bg);color:var(--text);font-size:14px;display:flex;flex-direction:column;}
+
+    /* ── En-tête ── */
+    .header{flex-shrink:0;display:flex;align-items:center;gap:10px;padding:14px 20px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(180%) blur(16px);border-bottom:1px solid var(--border);}
+    .header-titles{flex:1;}
+    .header h1{font-size:19px;font-weight:700;letter-spacing:-.3px;color:var(--text);}
+    .header-sub{font-size:12px;font-weight:500;color:var(--text2);margin-top:3px;line-height:1.4;}
+    .close-btn{background:none;border:none;color:var(--text2);font-size:17px;cursor:pointer;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:9px;flex-shrink:0;transition:background .14s,color .14s;}
+    .close-btn:hover{background:var(--surface2);color:var(--text);}
+
+    /* ── Zone centrale ── */
+    .content{flex:1;overflow-y:auto;padding:22px 24px 28px;}
+    .form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 22px 20px;max-width:640px;margin:0 auto;}
+
+    /* ── Form groups ── */
+    #atelier-form{display:flex;flex-direction:column;gap:18px;}
+    .form-group{display:flex;flex-direction:column;gap:6px;}
+    .form-group label{font-weight:500;color:var(--text2);font-size:13px;}
+    .form-group input,.form-group textarea{padding:9px 13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:14px;width:100%;transition:border-color .15s,box-shadow .15s;}
+    .form-group input:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent);outline:none;}
+    .form-group textarea{min-height:110px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+    .input-error{border-color:var(--danger)!important;}
+    .field-hint{font-size:12px;color:var(--text2);line-height:1.45;}
+    .trigger-notice{display:none;font-size:12px;padding:4px 10px;border-radius:7px;background:var(--accent-weak);color:var(--accent);font-weight:600;}
+    .trigger-notice.visible{display:inline-block;}
+
+    /* ── Message inline ── */
+    #msg{font-size:13.5px;padding:10px 14px;border-radius:var(--radius);line-height:1.5;margin-bottom:4px;display:none;}
+    #msg.success{display:block;background:color-mix(in srgb,#34c759 12%,transparent);color:#1a7a31;border:1px solid color-mix(in srgb,#34c759 36%,transparent);}
+    @media (prefers-color-scheme:dark){#msg.success{color:#4ade80;background:rgba(52,199,89,.14);border-color:rgba(52,199,89,.28);}}
+    #msg.error{display:block;background:color-mix(in srgb,var(--danger) 10%,transparent);color:var(--danger);border:1px solid color-mix(in srgb,var(--danger) 28%,transparent);}
+
+    /* ── Boutons ── */
+    .btn{padding:9px 20px;border-radius:var(--radius);font-weight:600;cursor:pointer;border:none;font-size:14px;transition:opacity .14s;}
+    .btn-primary{background:var(--accent);color:#fff;}
+    .btn-secondary{background:var(--surface2);color:var(--text);}
+    .btn[disabled]{opacity:.5;cursor:not-allowed;}
+    .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:2px;}
+
+    :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body data-kmwindow='SCREEN(Main,Left)+SCREEN(Main,Width)*0.12,SCREEN(Main,Top)+SCREEN(Main,Height)*0.12,SCREEN(Main,Width)*0.62,SCREEN(Main,Height)*0.62'&gt;
+
+  &lt;!-- En-tête --&gt;
+  &lt;div class='header'&gt;
+    &lt;div class='header-titles'&gt;
+      &lt;h1&gt;Atelier — créer une macro&lt;/h1&gt;
+      &lt;div class='header-sub'&gt;Chaque macro est autonome avec son propre déclencheur.&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;button class='close-btn' id='close-btn' aria-label='Fermer'&gt;✕&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Zone centrale --&gt;
+  &lt;div class='content'&gt;
+    &lt;div class='form-card'&gt;
+
+      &lt;div id='msg' role='status' aria-live='polite'&gt;&lt;/div&gt;
+
+      &lt;form id='atelier-form' novalidate&gt;
+
+        &lt;!-- Nom de la macro --&gt;
+        &lt;div class='form-group'&gt;
+          &lt;label for='at-nom'&gt;Nom de la macro&lt;/label&gt;
+          &lt;input type='text' id='at-nom' placeholder='Ex. Insérer ma signature courriel' required autocomplete='off'&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Déclencheur --&gt;
+        &lt;div class='form-group'&gt;
+          &lt;label for='at-trigger'&gt;Déclencheur (chaîne tapée)&lt;/label&gt;
+          &lt;input type='text' id='at-trigger' placeholder=';courriel' required autocomplete='off'&gt;
+          &lt;span class='field-hint'&gt;Tapez cette chaîne n'importe où pour insérer le texte. Si le préfixe &lt;strong&gt;;&lt;/strong&gt; est absent, il sera ajouté automatiquement.&lt;/span&gt;
+          &lt;span class='trigger-notice' id='trigger-notice' aria-live='polite'&gt;&lt;/span&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Texte à insérer --&gt;
+        &lt;div class='form-group'&gt;
+          &lt;label for='at-texte'&gt;Texte à insérer&lt;/label&gt;
+          &lt;textarea id='at-texte' placeholder='Saisissez ici le texte à insérer…' required&gt;&lt;/textarea&gt;
+        &lt;/div&gt;
+
+        &lt;div class='btns'&gt;
+          &lt;button class='btn btn-secondary' type='button' id='cancel-btn'&gt;Fermer&lt;/button&gt;
+          &lt;button class='btn btn-primary' type='submit' id='create-btn'&gt;Créer la macro&lt;/button&gt;
+        &lt;/div&gt;
+
+      &lt;/form&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    (function () {
+      'use strict';
+
+      var nomEl    = document.getElementById('at-nom');
+      var trigEl   = document.getElementById('at-trigger');
+      var texteEl  = document.getElementById('at-texte');
+      var msgEl    = document.getElementById('msg');
+      var notice   = document.getElementById('trigger-notice');
+      var form     = document.getElementById('atelier-form');
+
+      /* ── Échappement XML minimal (&amp; &lt; &gt;) ── */
+      var esc = function (s) {
+        return s.replace(/&amp;/g, '&amp;amp;').replace(/&lt;/g, '&amp;lt;').replace(/&gt;/g, '&amp;gt;');
+      };
+
+      /* ── Aperçu préfixe auto sur le déclencheur ── */
+      function updateNotice() {
+        var val = trigEl.value.trim();
+        if (val &amp;&amp; !val.startsWith(';')) {
+          notice.textContent = '→ sera enregistré comme : ;' + val;
+          notice.classList.add('visible');
+        } else {
+          notice.textContent = '';
+          notice.classList.remove('visible');
+        }
+      }
+      trigEl.addEventListener('input', updateNotice);
+
+      /* ── Gestion des erreurs de champ ── */
+      function setError(el) { el.classList.add('input-error'); }
+      function clearError(el) { el.classList.remove('input-error'); }
+
+      [nomEl, trigEl, texteEl].forEach(function (el) {
+        el.addEventListener('input', function () {
+          clearError(el);
+          if (msgEl.classList.contains('error')) {
+            msgEl.className = '';
+            msgEl.textContent = '';
+          }
+        });
+      });
+
+      /* ── Validation ── */
+      function validate() {
+        var ok = true;
+        [nomEl, trigEl, texteEl].forEach(clearError);
+
+        if (!nomEl.value.trim())   { setError(nomEl);   ok = false; }
+        if (!trigEl.value.trim())  { setError(trigEl);  ok = false; }
+        if (!texteEl.value.trim()) { setError(texteEl); ok = false; }
+
+        if (!ok) {
+          msgEl.className = 'error';
+          msgEl.textContent = 'Veuillez remplir tous les champs obligatoires.';
+          var first = [nomEl, trigEl, texteEl].find(function (el) {
+            return el.classList.contains('input-error');
+          });
+          if (first) first.focus();
+        }
+        return ok;
+      }
+
+      /* ── Création de la macro ── */
+      function creerMacro(e) {
+        if (e) e.preventDefault();
+        if (!validate()) return;
+
+        var nom      = nomEl.value.trim();
+        var declench = trigEl.value.trim();
+        var texte    = texteEl.value;   /* préserver sauts de ligne et espaces */
+
+        /* Préfixe ';' automatique */
+        if (!declench.startsWith(';')) {
+          declench = ';' + declench;
+        }
+
+        /* Transmettre les variables à Keyboard Maestro */
+        if (window.KeyboardMaestro) {
+          window.KeyboardMaestro.SetVariable('memora_at_nom',         nom);
+          window.KeyboardMaestro.SetVariable('memora_at_trigger_xml', esc(declench));
+          window.KeyboardMaestro.SetVariable('memora_at_texte_xml',   esc(texte));
+          window.KeyboardMaestro.Trigger('MEMORA — Créer macro');
+        }
+
+        /* Message de confirmation inline — nom via textContent (XSS-safe) */
+        msgEl.className = 'success';
+        msgEl.textContent = '';
+
+        var prefix = document.createTextNode('✅ Macro « ');
+        var nomSpan = document.createElement('strong');
+        nomSpan.textContent = nom;
+        var suffix = document.createTextNode(' » créée – tapez ' + declench + ' pour l’insérer.');
+
+        msgEl.appendChild(prefix);
+        msgEl.appendChild(nomSpan);
+        msgEl.appendChild(suffix);
+        msgEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+
+        /* Réinitialiser pour enchaîner une autre création */
+        nomEl.value   = '';
+        trigEl.value  = '';
+        texteEl.value = '';
+        notice.textContent = '';
+        notice.classList.remove('visible');
+        nomEl.focus();
+      }
+
+      form.addEventListener('submit', creerMacro);
+
+      /* ── Fermer / Échap ── */
+      function fermer() {
+        if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel');
+      }
+
+      document.getElementById('cancel-btn').addEventListener('click', fermer);
+      document.getElementById('close-btn').addEventListener('click',  fermer);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') fermer();
+      });
+
+    })();
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</string>
+					<key>TimeOutAbortsMacro</key>
+					<true/>
+					<key>UseText</key>
+					<true/>
+				</dict>
+			</array>
+			<key>CreationDate</key>
+			<real>802964806.77613902</real>
+			<key>ModificationDate</key>
+			<real>802964807.05881095</real>
+			<key>Name</key>
+			<string>Atelier MEMORA</string>
+			<key>Triggers</key>
+			<array>
+				<dict>
+					<key>MacroTriggerType</key>
+					<string>TypedString</string>
+					<key>SimulateDeletes</key>
+					<true/>
+					<key>TypedString</key>
+					<string>;atelier</string>
+				</dict>
+			</array>
+			<key>UID</key>
+			<string>E0CA4EC2-3FAD-441C-8A57-A894B0B52BC0</string>
+		</dict>
+	</array>
+	<key>Name</key>
+	<string>MEMORA Atelier</string>
+	<key>ToggleMacroUID</key>
+	<string>A9F87E34-AC53-412D-A9E6-E309E1FA7116</string>
+	<key>UID</key>
+	<string>E6FDAE86-F38B-49CB-83AF-402B88A8AA60</string>
+</dict>
+</array>
+</plist>

@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.1.0] - 2026-06-12
+
+### Ajouté
+- **Atelier MEMORA** *(nouveau)* : une fenêtre **`;atelier`** pour créer de **vraies macros Keyboard Maestro indépendantes** — saisissez un **nom**, un **déclencheur** (chaîne tapée, ex. `;courriel`) et un **texte** ; la macro autonome est créée dans le groupe « Mes textes MEMORA ». La facilité de TypeDesk, la puissance de Keyboard Maestro. Fichiers : `macros/MEMORA-Atelier.kmmacros` + `templates/memora-atelier.template.html`. *(Phase 1 : texte simple + déclencheur ; champs/variables à venir.)*
+
 ## [8.0.0] - 2026-06-12
 
 ### Modifié
