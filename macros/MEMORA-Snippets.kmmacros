@@ -24,7 +24,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156142</integer>
+					<integer>156196</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -204,9 +204,9 @@
     const memora_debounce = (fn, d) =&gt; { let t; return (...a) =&gt; { clearTimeout(t); t = setTimeout(() =&gt; fn(...a), d); }; };
 
     function fuzzy(q, text) { q = normalize(q); text = normalize(text); let i = 0; for (const c of text) { if (c === q[i]) i++; if (i &gt;= q.length) return true; } return q.length === 0; }
-    function hasVars(t) { return /{{(champ|choix):[^}]+}}/.test(t); }
+    function hasVars(t) { return /{{(champ|choix|datechoix):[^}]+}}/.test(t); }
     function extractVars(t) {
-      const vars = []; const re = /{{(champ|choix):([^}=]+)(?:=([^}]+))?}}/g; let m;
+      const vars = []; const re = /{{(champ|choix|datechoix):([^}=]+)(?:=([^}]+))?}}/g; let m;
       while ((m = re.exec(t)) !== null) vars.push({ type: m[1], label: m[2], choices: m[1] === 'choix' &amp;&amp; m[3] ? m[3].split('|') : [] });
       return vars;
     }
@@ -216,11 +216,26 @@
       return [...map.values()];
     }
     function resolve(text, values) {
-      let r = text.replace(/{{date}}/g, formatDate()).replace(/{{moment}}/g, moment()).replace(/{{alea:([^}]+)}}/g, (m, o) =&gt; rnd(o.split('|')));
+      let r = text;
+      r = r.replace(/{{date:(complet|jour|iso|court)}}/g, (m, f) =&gt; {
+        const d = new Date();
+        if (f === 'complet') return new Intl.DateTimeFormat('fr-CA', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).format(d);
+        if (f === 'jour')    return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(d);
+        if (f === 'iso')     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        if (f === 'court')   return new Intl.DateTimeFormat('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'}).format(d);
+        return m;
+      });
+      r = r.replace(/{{date}}/g, formatDate()).replace(/{{moment}}/g, moment()).replace(/{{alea:([^}]+)}}/g, (m, o) =&gt; rnd(o.split('|')));
       for (const label in values) {
         const re = new RegExp('{{(?:champ|choix):' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&amp;') + '[^}]*}}', 'g');
         r = r.replace(re, () =&gt; values[label]);
       }
+      r = r.replace(/{{datechoix:([^}=]+)}}/g, (m, label) =&gt; {
+        const v = values[label];
+        if (!v) return m;
+        const p = v.split('-').map(Number); const dd = new Date(p[0], p[1]-1, p[2]);
+        return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(dd);
+      });
       return r;
     }
     function assemble(checked, values) { return checked.map(s =&gt; resolve(s.texte, values)).join('\n\n'); }
@@ -328,6 +343,9 @@
               "&lt;button type='button' data-token='{{choix:Étiquette=Option 1|Option 2}}'&gt;+ Choix&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{choix:Civilité=Madame|Monsieur}}'&gt;+ Civilité&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{date}}'&gt;+ Date&lt;/button&gt;" +
+              "&lt;button type='button' data-token='{{date:complet}}'&gt;+ Date complète&lt;/button&gt;" +
+              "&lt;button type='button' data-token='{{date:court}}'&gt;+ Date jj/mm&lt;/button&gt;" +
+              "&lt;button type='button' data-token='{{datechoix:Date}}'&gt;+ Date à choisir&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{moment}}'&gt;+ Moment&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{alea:Option 1|Option 2}}'&gt;+ Aléatoire&lt;/button&gt;" +
             "&lt;/div&gt;&lt;/div&gt;" +
@@ -335,6 +353,9 @@
           "&lt;div class='checkbox-group'&gt;&lt;input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "&gt;&lt;label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'&gt;Pré-coché à l’ouverture&lt;/label&gt;&lt;/div&gt;" +
           "&lt;div class='help'&gt;&lt;strong&gt;Variables :&lt;/strong&gt;&lt;ul&gt;" +
             "&lt;li&gt;&lt;code&gt;{{date}}&lt;/code&gt; → mois et année (ex. juin 2026)&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{date:complet}}&lt;/code&gt; → date longue (ex. vendredi 12 juin 2026)&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{date:court}}&lt;/code&gt; → date courte (ex. 12/06/2026)&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{datechoix:Étiquette}}&lt;/code&gt; → sélecteur de date demandé à l'insertion&lt;/li&gt;" +
             "&lt;li&gt;&lt;code&gt;{{champ:Étiquette}}&lt;/code&gt; → champ texte demandé à l'insertion&lt;/li&gt;" +
             "&lt;li&gt;&lt;code&gt;{{choix:Étiquette=A|B|C}}&lt;/code&gt; → menu déroulant&lt;/li&gt;" +
             "&lt;li&gt;&lt;code&gt;{{alea:A|B|C}}&lt;/code&gt; → valeur au hasard&lt;/li&gt;" +
@@ -386,6 +407,7 @@
       let inputs = '';
       vars.forEach((v, i) =&gt; {
         if (v.type === 'champ') inputs += "&lt;div class='var-group'&gt;&lt;label for='vf-" + i + "'&gt;" + escapeHtml(v.label) + "&lt;/label&gt;&lt;input type='text' id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\" placeholder='Saisir…'&gt;&lt;/div&gt;";
+        else if (v.type === 'datechoix') inputs += "&lt;div class='var-group'&gt;&lt;label for='vf-" + i + "'&gt;" + escapeHtml(v.label) + "&lt;/label&gt;&lt;input type='date' id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\"&gt;&lt;/div&gt;";
         else inputs += "&lt;div class='var-group'&gt;&lt;label for='vf-" + i + "'&gt;" + escapeHtml(v.label) + "&lt;/label&gt;&lt;select id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\"&gt;" + v.choices.map(o =&gt; "&lt;option value=\"" + escapeHtml(o) + "\"&gt;" + escapeHtml(o) + "&lt;/option&gt;").join('') + "&lt;/select&gt;&lt;/div&gt;";
       });
       ov.innerHTML = "&lt;div class='modal'&gt;&lt;h2 id='fill-title'&gt;Compléter les variables&lt;/h2&gt;" + inputs +
@@ -523,7 +545,7 @@
 					<key>Action</key>
 					<string>ByPasting</string>
 					<key>ActionUID</key>
-					<integer>156144</integer>
+					<integer>156198</integer>
 					<key>MacroActionType</key>
 					<string>InsertText</string>
 					<key>Text</key>
@@ -533,7 +555,7 @@
 			<key>CreationDate</key>
 			<real>802885377.75442004</real>
 			<key>ModificationDate</key>
-			<real>802963784.90258896</real>
+			<real>802971251.93477404</real>
 			<key>Name</key>
 			<string>MEMORA — Snippets</string>
 			<key>Triggers</key>

@@ -14,7 +14,7 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156183</integer>
+					<integer>156200</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -91,7 +91,7 @@
     const moment     = () =&amp;gt; { const h = new Date().getHours(); return h &amp;lt; 12 ? 'Matin' : (h &amp;lt; 18 ? 'Après-midi' : 'Soir'); };
 
     function extractVars(t) {
-      const vars = []; const re = /{{(champ|choix):([^}=]+)(?:=([^}]+))?}}/g; let m;
+      const vars = []; const re = /{{(champ|choix|datechoix):([^}=]+)(?:=([^}]+))?}}/g; let m;
       while ((m = re.exec(t)) !== null) vars.push({ type: m[1], label: m[2], choices: m[1] === 'choix' &amp;amp;&amp;amp; m[3] ? m[3].split('|') : [] });
       return vars;
     }
@@ -102,9 +102,22 @@
     }
     function resolve(text, values) {
       let r = text
+        .replace(/{{date:(complet|jour|iso|court)}}/g, (m, f) =&amp;gt; {
+          const d = new Date();
+          if (f === 'complet') return new Intl.DateTimeFormat('fr-CA', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).format(d);
+          if (f === 'jour')    return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(d);
+          if (f === 'iso')     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+          if (f === 'court')   return new Intl.DateTimeFormat('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'}).format(d);
+          return m;
+        })
         .replace(/{{date}}/g, formatDate())
         .replace(/{{moment}}/g, moment())
         .replace(/{{alea:([^}]+)}}/g, (m, o) =&amp;gt; rnd(o.split('|')));
+      r = r.replace(/{{datechoix:([^}=]+)}}/g, (m, label) =&amp;gt; {
+        const v = values[label]; if (!v) return m;
+        const p = v.split('-').map(Number); const dd = new Date(p[0], p[1]-1, p[2]);
+        return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(dd);
+      });
       for (const label in values) {
         const re = new RegExp('{{(?:champ|choix):' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&amp;amp;') + '[^}]*}}', 'g');
         r = r.replace(re, () =&amp;gt; values[label]);
@@ -166,6 +179,9 @@
           field = document.createElement('input');
           field.type = 'text';
           field.placeholder = 'Saisir…';
+        } else if (v.type === 'datechoix') {
+          field = document.createElement('input');
+          field.type = 'date';
         } else {
           field = document.createElement('select');
           v.choices.forEach(o =&amp;gt; {
@@ -246,7 +262,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156185</integer>
+					<integer>156202</integer>
 					<key>DisplayKind</key>
 					<string>None</string>
 					<key>HonourFailureSettings</key>
@@ -310,7 +326,7 @@ end tell</string>
 			<key>CreationDate</key>
 			<real>802964806.45176303</real>
 			<key>ModificationDate</key>
-			<real>802969231.13881004</real>
+			<real>802971252.28501701</real>
 			<key>Name</key>
 			<string>MEMORA — Créer macro</string>
 			<key>Triggers</key>
@@ -323,7 +339,7 @@ end tell</string>
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156193</integer>
+					<integer>156204</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -430,6 +446,9 @@ end tell</string>
             &lt;button type='button' data-token='{{choix:Étiquette=Option 1|Option 2}}'&gt;+ Choix&lt;/button&gt;
             &lt;button type='button' data-token='{{choix:Civilité=Madame|Monsieur}}'&gt;+ Civilité&lt;/button&gt;
             &lt;button type='button' data-token='{{date}}'&gt;+ Date&lt;/button&gt;
+            &lt;button type='button' data-token='{{date:complet}}'&gt;+ Date complète&lt;/button&gt;
+            &lt;button type='button' data-token='{{date:court}}'&gt;+ Date jj/mm&lt;/button&gt;
+            &lt;button type='button' data-token='{{datechoix:Date}}'&gt;+ Date à choisir&lt;/button&gt;
             &lt;button type='button' data-token='{{moment}}'&gt;+ Moment&lt;/button&gt;
             &lt;button type='button' data-token='{{alea:Option 1|Option 2}}'&gt;+ Aléatoire&lt;/button&gt;
           &lt;/div&gt;
@@ -595,7 +614,7 @@ end tell</string>
 			<key>CreationDate</key>
 			<real>802964806.77613902</real>
 			<key>ModificationDate</key>
-			<real>802969321.78718901</real>
+			<real>802971252.63528204</real>
 			<key>Name</key>
 			<string>Atelier MEMORA</string>
 			<key>Triggers</key>

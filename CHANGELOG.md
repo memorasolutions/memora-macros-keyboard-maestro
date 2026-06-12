@@ -4,6 +4,13 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.3.0] - 2026-06-12
+
+### Ajouté
+- **Champ « Date » avec format au choix** : `{{date}}` (mois année), **`{{date:complet}}`** (« vendredi 12 juin 2026 »), **`{{date:court}}`** (« 12/06/2026 »), `{{date:jour}}`, `{{date:iso}}`.
+- **Sélecteur de date** **`{{datechoix:Étiquette}}`** : un vrai calendrier (date picker) demandé au moment de l'insertion, puis formaté en français.
+- Boutons dédiés dans le panneau de variables (outil Snippets **et** Atelier).
+
 ## [8.2.0] - 2026-06-12
 
 ### Ajouté (Atelier)

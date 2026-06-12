@@ -172,9 +172,9 @@
     const memora_debounce = (fn, d) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; };
 
     function fuzzy(q, text) { q = normalize(q); text = normalize(text); let i = 0; for (const c of text) { if (c === q[i]) i++; if (i >= q.length) return true; } return q.length === 0; }
-    function hasVars(t) { return /{{(champ|choix):[^}]+}}/.test(t); }
+    function hasVars(t) { return /{{(champ|choix|datechoix):[^}]+}}/.test(t); }
     function extractVars(t) {
-      const vars = []; const re = /{{(champ|choix):([^}=]+)(?:=([^}]+))?}}/g; let m;
+      const vars = []; const re = /{{(champ|choix|datechoix):([^}=]+)(?:=([^}]+))?}}/g; let m;
       while ((m = re.exec(t)) !== null) vars.push({ type: m[1], label: m[2], choices: m[1] === 'choix' && m[3] ? m[3].split('|') : [] });
       return vars;
     }
@@ -184,11 +184,26 @@
       return [...map.values()];
     }
     function resolve(text, values) {
-      let r = text.replace(/{{date}}/g, formatDate()).replace(/{{moment}}/g, moment()).replace(/{{alea:([^}]+)}}/g, (m, o) => rnd(o.split('|')));
+      let r = text;
+      r = r.replace(/{{date:(complet|jour|iso|court)}}/g, (m, f) => {
+        const d = new Date();
+        if (f === 'complet') return new Intl.DateTimeFormat('fr-CA', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).format(d);
+        if (f === 'jour')    return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(d);
+        if (f === 'iso')     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        if (f === 'court')   return new Intl.DateTimeFormat('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'}).format(d);
+        return m;
+      });
+      r = r.replace(/{{date}}/g, formatDate()).replace(/{{moment}}/g, moment()).replace(/{{alea:([^}]+)}}/g, (m, o) => rnd(o.split('|')));
       for (const label in values) {
         const re = new RegExp('{{(?:champ|choix):' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^}]*}}', 'g');
         r = r.replace(re, () => values[label]);
       }
+      r = r.replace(/{{datechoix:([^}=]+)}}/g, (m, label) => {
+        const v = values[label];
+        if (!v) return m;
+        const p = v.split('-').map(Number); const dd = new Date(p[0], p[1]-1, p[2]);
+        return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(dd);
+      });
       return r;
     }
     function assemble(checked, values) { return checked.map(s => resolve(s.texte, values)).join('\n\n'); }
@@ -296,6 +311,9 @@
               "<button type='button' data-token='{{choix:Étiquette=Option 1|Option 2}}'>+ Choix</button>" +
               "<button type='button' data-token='{{choix:Civilité=Madame|Monsieur}}'>+ Civilité</button>" +
               "<button type='button' data-token='{{date}}'>+ Date</button>" +
+              "<button type='button' data-token='{{date:complet}}'>+ Date complète</button>" +
+              "<button type='button' data-token='{{date:court}}'>+ Date jj/mm</button>" +
+              "<button type='button' data-token='{{datechoix:Date}}'>+ Date à choisir</button>" +
               "<button type='button' data-token='{{moment}}'>+ Moment</button>" +
               "<button type='button' data-token='{{alea:Option 1|Option 2}}'>+ Aléatoire</button>" +
             "</div></div>" +
@@ -303,6 +321,9 @@
           "<div class='checkbox-group'><input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "><label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'>Pré-coché à l’ouverture</label></div>" +
           "<div class='help'><strong>Variables :</strong><ul>" +
             "<li><code>{{date}}</code> → mois et année (ex. juin 2026)</li>" +
+            "<li><code>{{date:complet}}</code> → date longue (ex. vendredi 12 juin 2026)</li>" +
+            "<li><code>{{date:court}}</code> → date courte (ex. 12/06/2026)</li>" +
+            "<li><code>{{datechoix:Étiquette}}</code> → sélecteur de date demandé à l'insertion</li>" +
             "<li><code>{{champ:Étiquette}}</code> → champ texte demandé à l'insertion</li>" +
             "<li><code>{{choix:Étiquette=A|B|C}}</code> → menu déroulant</li>" +
             "<li><code>{{alea:A|B|C}}</code> → valeur au hasard</li>" +
@@ -354,6 +375,7 @@
       let inputs = '';
       vars.forEach((v, i) => {
         if (v.type === 'champ') inputs += "<div class='var-group'><label for='vf-" + i + "'>" + escapeHtml(v.label) + "</label><input type='text' id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\" placeholder='Saisir…'></div>";
+        else if (v.type === 'datechoix') inputs += "<div class='var-group'><label for='vf-" + i + "'>" + escapeHtml(v.label) + "</label><input type='date' id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\"></div>";
         else inputs += "<div class='var-group'><label for='vf-" + i + "'>" + escapeHtml(v.label) + "</label><select id='vf-" + i + "' data-label=\"" + escapeHtml(v.label) + "\">" + v.choices.map(o => "<option value=\"" + escapeHtml(o) + "\">" + escapeHtml(o) + "</option>").join('') + "</select></div>";
       });
       ov.innerHTML = "<div class='modal'><h2 id='fill-title'>Compléter les variables</h2>" + inputs +

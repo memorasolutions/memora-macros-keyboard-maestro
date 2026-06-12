@@ -71,7 +71,7 @@
     const moment     = () => { const h = new Date().getHours(); return h < 12 ? 'Matin' : (h < 18 ? 'Après-midi' : 'Soir'); };
 
     function extractVars(t) {
-      const vars = []; const re = /{{(champ|choix):([^}=]+)(?:=([^}]+))?}}/g; let m;
+      const vars = []; const re = /{{(champ|choix|datechoix):([^}=]+)(?:=([^}]+))?}}/g; let m;
       while ((m = re.exec(t)) !== null) vars.push({ type: m[1], label: m[2], choices: m[1] === 'choix' && m[3] ? m[3].split('|') : [] });
       return vars;
     }
@@ -82,9 +82,22 @@
     }
     function resolve(text, values) {
       let r = text
+        .replace(/{{date:(complet|jour|iso|court)}}/g, (m, f) => {
+          const d = new Date();
+          if (f === 'complet') return new Intl.DateTimeFormat('fr-CA', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).format(d);
+          if (f === 'jour')    return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(d);
+          if (f === 'iso')     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+          if (f === 'court')   return new Intl.DateTimeFormat('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'}).format(d);
+          return m;
+        })
         .replace(/{{date}}/g, formatDate())
         .replace(/{{moment}}/g, moment())
         .replace(/{{alea:([^}]+)}}/g, (m, o) => rnd(o.split('|')));
+      r = r.replace(/{{datechoix:([^}=]+)}}/g, (m, label) => {
+        const v = values[label]; if (!v) return m;
+        const p = v.split('-').map(Number); const dd = new Date(p[0], p[1]-1, p[2]);
+        return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(dd);
+      });
       for (const label in values) {
         const re = new RegExp('{{(?:champ|choix):' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^}]*}}', 'g');
         r = r.replace(re, () => values[label]);
@@ -146,6 +159,9 @@
           field = document.createElement('input');
           field.type = 'text';
           field.placeholder = 'Saisir…';
+        } else if (v.type === 'datechoix') {
+          field = document.createElement('input');
+          field.type = 'date';
         } else {
           field = document.createElement('select');
           v.choices.forEach(o => {
