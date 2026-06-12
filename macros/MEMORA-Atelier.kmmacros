@@ -14,7 +14,239 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156171</integer>
+					<integer>156183</integer>
+					<key>MacroActionType</key>
+					<string>SetVariableToText</string>
+					<key>Text</key>
+					<string>&amp;lt;!-- MEMORA — Remplissage de variables pour Keyboard Maestro. Auteur: MEMORA solutions, https://memora.solutions ; info@memora.ca. Licence: Apache-2.0 (SPDX-License-Identifier: Apache-2.0). Copyright 2026 MEMORA solutions. --&amp;gt;
+&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html lang='fr'&amp;gt;
+&amp;lt;head&amp;gt;
+  &amp;lt;meta charset='UTF-8'&amp;gt;
+  &amp;lt;meta name='viewport' content='width=device-width, initial-scale=1'&amp;gt;
+  &amp;lt;meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'"&amp;gt;
+  &amp;lt;title&amp;gt;MEMORA — Remplissage&amp;lt;/title&amp;gt;
+  &amp;lt;style&amp;gt;
+    :root{--bg:#f5f5f7;--surface:#fff;--surface2:#f0f0f3;--border:#d8d8de;--text:#1d1d1f;--text2:#585860;--accent:#4f46e5;--badge-text:#4338ca;--accent-weak:#eef2ff;--danger:#ff3b30;--radius:12px;--shadow:0 1px 2px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.06);}
+    @media (prefers-color-scheme:dark){:root{--bg:#1c1c1e;--surface:#2c2c2e;--surface2:#3a3a3c;--border:#48484a;--text:#f5f5f7;--text2:#b3b3b9;--accent:#818cf8;--badge-text:#a5b4fc;--accent-weak:rgba(129,140,248,.18);--danger:#ff453a;--shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.55);}
+    body .btn-primary{background:#4f46e5;}}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+    html,body{height:100%;overflow:hidden;}
+    body{background:var(--bg);color:var(--text);font-size:14px;display:flex;flex-direction:column;}
+
+    /* ── Carte principale ── */
+    .fill-card{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--surface);}
+    .fill-header{flex-shrink:0;padding:16px 20px 12px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(180%) blur(16px);}
+    .fill-header h1{font-size:17px;font-weight:700;letter-spacing:-.3px;}
+    .fill-header .tagline{font-size:10.5px;font-weight:600;color:var(--text2);letter-spacing:.6px;text-transform:uppercase;margin-top:2px;}
+    .fill-body{flex:1;overflow-y:auto;padding:18px 20px 16px;display:flex;flex-direction:column;gap:14px;}
+    .fill-footer{flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:10px 20px;border-top:1px solid var(--border);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:saturate(180%) blur(14px);}
+
+    /* ── Champs de variables ── */
+    .var-group{display:flex;flex-direction:column;gap:6px;}
+    .var-group label{font-weight:500;font-size:13px;color:var(--text2);}
+    .var-group input,.var-group select{padding:9px 13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:14px;transition:border-color .15s,box-shadow .15s;width:100%;}
+    .var-group input:focus,.var-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent);outline:none;}
+
+    /* ── Aperçu ── */
+    .preview-label{font-weight:500;font-size:13px;color:var(--text2);}
+    .preview{background:var(--surface2);padding:12px 13px;border-radius:var(--radius);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;white-space:pre-wrap;word-break:break-word;color:var(--text);min-height:48px;max-height:160px;overflow-y:auto;}
+
+    /* ── Boutons ── */
+    .btn{padding:9px 20px;border-radius:var(--radius);font-weight:600;cursor:pointer;border:none;font-size:14px;transition:opacity .14s;}
+    .btn-primary{background:var(--accent);color:#fff;}
+    .btn-secondary{background:var(--surface2);color:var(--text);}
+    .btn:hover{opacity:.88;}
+    .btn[disabled]{opacity:.5;cursor:not-allowed;}
+
+    /* ── Spinner auto-submit ── */
+    .auto-submit{display:flex;align-items:center;justify-content:center;flex:1;gap:12px;color:var(--text2);font-size:14px;}
+    .spinner{width:22px;height:22px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  &amp;lt;/style&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body data-kmwindow='SCREEN(Main,Left)+SCREEN(Main,Width)*0.2,SCREEN(Main,Top)+SCREEN(Main,Height)*0.2,SCREEN(Main,Width)*0.42,SCREEN(Main,Height)*0.5'&amp;gt;
+  &amp;lt;div class='fill-card' id='fill-card'&amp;gt;
+    &amp;lt;div class='fill-header'&amp;gt;
+      &amp;lt;h1 id='fill-title'&amp;gt;Compléter&amp;lt;/h1&amp;gt;
+      &amp;lt;div class='tagline'&amp;gt;MEMORA&amp;lt;/div&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class='fill-body' id='fill-body'&amp;gt;
+      &amp;lt;!-- Contenu injecté par JS --&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class='fill-footer' id='fill-footer' style='display:none;'&amp;gt;
+      &amp;lt;button class='btn btn-secondary' id='cancel-btn' type='button'&amp;gt;Annuler&amp;lt;/button&amp;gt;
+      &amp;lt;button class='btn btn-primary' id='insert-btn' type='button'&amp;gt;Insérer&amp;lt;/button&amp;gt;
+    &amp;lt;/div&amp;gt;
+  &amp;lt;/div&amp;gt;
+
+  &amp;lt;script&amp;gt;
+    // ── Utilitaires — moteur identique à memora-snippets ─────────────────────
+    const normalize  = (s) =&amp;gt; String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    const escapeHtml = (str) =&amp;gt; String(str).replace(/[&amp;amp;&amp;lt;&amp;gt;"']/g, s =&amp;gt; ({ '&amp;amp;': '&amp;amp;amp;', '&amp;lt;': '&amp;amp;lt;', '&amp;gt;': '&amp;amp;gt;', '"': '&amp;amp;quot;', "'": '&amp;amp;#039;' }[s]));
+    const rnd        = (arr) =&amp;gt; arr[Math.floor(Math.random() * arr.length)];
+    const formatDate = () =&amp;gt; new Intl.DateTimeFormat('fr-CA', { month: 'long', year: 'numeric' }).format(new Date());
+    const moment     = () =&amp;gt; { const h = new Date().getHours(); return h &amp;lt; 12 ? 'Matin' : (h &amp;lt; 18 ? 'Après-midi' : 'Soir'); };
+
+    function extractVars(t) {
+      const vars = []; const re = /{{(champ|choix):([^}=]+)(?:=([^}]+))?}}/g; let m;
+      while ((m = re.exec(t)) !== null) vars.push({ type: m[1], label: m[2], choices: m[1] === 'choix' &amp;amp;&amp;amp; m[3] ? m[3].split('|') : [] });
+      return vars;
+    }
+    function collectVars(texts) {
+      const map = new Map();
+      for (const t of texts) for (const v of extractVars(t)) if (!map.has(v.label)) map.set(v.label, v);
+      return [...map.values()];
+    }
+    function resolve(text, values) {
+      let r = text
+        .replace(/{{date}}/g, formatDate())
+        .replace(/{{moment}}/g, moment())
+        .replace(/{{alea:([^}]+)}}/g, (m, o) =&amp;gt; rnd(o.split('|')));
+      for (const label in values) {
+        const re = new RegExp('{{(?:champ|choix):' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&amp;amp;') + '[^}]*}}', 'g');
+        r = r.replace(re, () =&amp;gt; values[label]);
+      }
+      return r;
+    }
+
+    // ── Focus trap accessibilité ──────────────────────────────────────────────
+    function trapFocus(container) {
+      const sel = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+      container.addEventListener('keydown', (e) =&amp;gt; {
+        if (e.key !== 'Tab') return;
+        const focusable = [...container.querySelectorAll(sel)].filter(el =&amp;gt; el.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0]; const last = focusable[focusable.length - 1];
+        if (e.shiftKey &amp;amp;&amp;amp; document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey &amp;amp;&amp;amp; document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+    }
+
+    // ── Logique principale ────────────────────────────────────────────────────
+    function init() {
+      const km  = window.KeyboardMaestro;
+      const tpl = km ? (km.GetVariable('memora_mtext') || '') : '';
+
+      const vars = collectVars([tpl]);
+
+      // ── Cas 1 : aucune variable → résolution automatique + Submit immédiat ──
+      if (!vars.length) {
+        const body = document.getElementById('fill-body');
+        body.innerHTML = "&amp;lt;div class='auto-submit'&amp;gt;&amp;lt;div class='spinner' aria-hidden='true'&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;span&amp;gt;Résolution automatique…&amp;lt;/span&amp;gt;&amp;lt;/div&amp;gt;";
+        const resolved = resolve(tpl, {});
+        if (km) { km.SetVariable('memora_texte', resolved); km.Submit('OK'); }
+        return;
+      }
+
+      // ── Cas 2 : variables présentes → formulaire + aperçu + Insérer ─────────
+      const card = document.getElementById('fill-card');
+      card.setAttribute('role', 'dialog');
+      card.setAttribute('aria-modal', 'true');
+      card.setAttribute('aria-labelledby', 'fill-title');
+
+      const body   = document.getElementById('fill-body');
+      const footer = document.getElementById('fill-footer');
+      body.innerHTML = '';
+
+      // Construire les champs de saisie
+      vars.forEach((v, i) =&amp;gt; {
+        const group = document.createElement('div');
+        group.className = 'var-group';
+
+        const lbl = document.createElement('label');
+        lbl.setAttribute('for', 'vf-' + i);
+        lbl.textContent = v.label;
+        group.appendChild(lbl);
+
+        let field;
+        if (v.type === 'champ') {
+          field = document.createElement('input');
+          field.type = 'text';
+          field.placeholder = 'Saisir…';
+        } else {
+          field = document.createElement('select');
+          v.choices.forEach(o =&amp;gt; {
+            const opt = document.createElement('option');
+            opt.value = o;
+            opt.textContent = o;
+            field.appendChild(opt);
+          });
+        }
+        field.id            = 'vf-' + i;
+        field.dataset.label = v.label;
+        group.appendChild(field);
+        body.appendChild(group);
+      });
+
+      // Étiquette aperçu
+      const previewLbl = document.createElement('div');
+      previewLbl.className  = 'preview-label';
+      previewLbl.textContent = 'Aperçu';
+      body.appendChild(previewLbl);
+
+      // Zone aperçu live
+      const preview = document.createElement('div');
+      preview.id        = 'fill-preview';
+      preview.className = 'preview';
+      preview.setAttribute('aria-live', 'polite');
+      body.appendChild(preview);
+
+      // Afficher le pied de page
+      footer.style.display = '';
+
+      // Lire les valeurs saisies
+      const readValues = () =&amp;gt; {
+        const vals = {};
+        body.querySelectorAll('[data-label]').forEach(el =&amp;gt; { vals[el.dataset.label] = el.value; });
+        return vals;
+      };
+
+      // Mettre à jour l'aperçu à chaque frappe / changement
+      const upd = () =&amp;gt; { preview.textContent = resolve(tpl, readValues()); };
+      body.querySelectorAll('[data-label]').forEach(el =&amp;gt; {
+        el.addEventListener('input',  upd);
+        el.addEventListener('change', upd);
+      });
+      upd();
+
+      // Focus sur le 1er champ
+      const firstField = body.querySelector('[data-label]');
+      if (firstField) firstField.focus();
+
+      // Piège de focus sur la carte entière
+      trapFocus(card);
+
+      // Bouton Insérer
+      document.getElementById('insert-btn').addEventListener('click', () =&amp;gt; {
+        const resolved = resolve(tpl, readValues());
+        if (km) { km.SetVariable('memora_texte', resolved); km.Submit('OK'); }
+      });
+
+      // Bouton Annuler
+      document.getElementById('cancel-btn').addEventListener('click', () =&amp;gt; {
+        if (km) km.Cancel('Cancel');
+      });
+
+      // Échap = Annuler
+      document.addEventListener('keydown', (e) =&amp;gt; {
+        if (e.key === 'Escape') { if (km) km.Cancel('Cancel'); }
+      });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  &amp;lt;/script&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+</string>
+					<key>Variable</key>
+					<string>memora_fill_html</string>
+				</dict>
+				<dict>
+					<key>ActionUID</key>
+					<integer>156185</integer>
 					<key>DisplayKind</key>
 					<string>None</string>
 					<key>HonourFailureSettings</key>
@@ -38,10 +270,16 @@
 	set nm to getvariable "memora_at_nom"
 	set tg to getvariable "memora_at_trigger_xml"
 	set tx to getvariable "memora_at_texte_xml"
+	set fh to getvariable "memora_fill_html"
 end tell
-if nm = "" or tg = "" then return "ERREUR: nom ou declencheur manquant"
+if nm = "" or tg = "" then
+	return "ERREUR: nom ou declencheur manquant"
+end if
+set hasVars to (tx contains "{{")
 tell application "Keyboard Maestro"
-	if (count of (macro groups whose name is "Mes textes MEMORA")) = 0 then make new macro group with properties {name:"Mes textes MEMORA"}
+	if (count of (macro groups whose name is "Mes textes MEMORA")) = 0 then
+		make new macro group with properties {name:"Mes textes MEMORA"}
+	end if
 	set gid to id of (first macro group whose name is "Mes textes MEMORA")
 	tell macro group id gid
 		set newMacro to make new macro with properties {name:nm}
@@ -49,7 +287,13 @@ tell application "Keyboard Maestro"
 	set mid to id of newMacro
 	tell macro id mid
 		make new trigger with properties {xml:("&lt;dict&gt;&lt;key&gt;MacroTriggerType&lt;/key&gt;&lt;string&gt;TypedString&lt;/string&gt;&lt;key&gt;SimulateDeletes&lt;/key&gt;&lt;true/&gt;&lt;key&gt;TypedString&lt;/key&gt;&lt;string&gt;" &amp; tg &amp; "&lt;/string&gt;&lt;/dict&gt;")}
-		make new action with properties {xml:("&lt;dict&gt;&lt;key&gt;Action&lt;/key&gt;&lt;string&gt;ByPasting&lt;/string&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;InsertText&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;" &amp; tx &amp; "&lt;/string&gt;&lt;/dict&gt;")}
+		if hasVars then
+			make new action with properties {xml:("&lt;dict&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;SetVariableToText&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;" &amp; tx &amp; "&lt;/string&gt;&lt;key&gt;Variable&lt;/key&gt;&lt;string&gt;memora_mtext&lt;/string&gt;&lt;/dict&gt;")}
+			make new action with properties {xml:("&lt;dict&gt;&lt;key&gt;Floating&lt;/key&gt;&lt;false/&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;CustomPrompt&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;" &amp; fh &amp; "&lt;/string&gt;&lt;key&gt;TimeOutAbortsMacro&lt;/key&gt;&lt;true/&gt;&lt;key&gt;UseText&lt;/key&gt;&lt;true/&gt;&lt;/dict&gt;")}
+			make new action with properties {xml:("&lt;dict&gt;&lt;key&gt;Action&lt;/key&gt;&lt;string&gt;ByPasting&lt;/string&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;InsertText&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;%Variable%memora_texte%&lt;/string&gt;&lt;/dict&gt;")}
+		else
+			make new action with properties {xml:("&lt;dict&gt;&lt;key&gt;Action&lt;/key&gt;&lt;string&gt;ByPasting&lt;/string&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;InsertText&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;" &amp; tx &amp; "&lt;/string&gt;&lt;/dict&gt;")}
+		end if
 	end tell
 	return ("OK " &amp; mid)
 end tell</string>
@@ -66,7 +310,7 @@ end tell</string>
 			<key>CreationDate</key>
 			<real>802964806.45176303</real>
 			<key>ModificationDate</key>
-			<real>802964806.63508499</real>
+			<real>802969231.13881004</real>
 			<key>Name</key>
 			<string>MEMORA — Créer macro</string>
 			<key>Triggers</key>
@@ -79,7 +323,7 @@ end tell</string>
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156173</integer>
+					<integer>156193</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -138,6 +382,9 @@ end tell</string>
     .btn[disabled]{opacity:.5;cursor:not-allowed;}
     .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:2px;}
 
+    .var-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+    .var-toolbar button{padding:4px 11px;border:1px solid var(--border);border-radius:999px;background:var(--surface2);color:var(--text);font-size:12px;cursor:pointer;transition:background .13s,color .13s,border-color .13s;}
+    .var-toolbar button:hover{background:var(--accent-weak);color:var(--accent);border-color:var(--accent);}
     :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
   &lt;/style&gt;
 &lt;/head&gt;
@@ -178,6 +425,15 @@ end tell</string>
         &lt;div class='form-group'&gt;
           &lt;label for='at-texte'&gt;Texte à insérer&lt;/label&gt;
           &lt;textarea id='at-texte' placeholder='Saisissez ici le texte à insérer…' required&gt;&lt;/textarea&gt;
+          &lt;div class='var-toolbar' id='at-var-toolbar'&gt;
+            &lt;button type='button' data-token='{{champ:Étiquette}}'&gt;+ Champ&lt;/button&gt;
+            &lt;button type='button' data-token='{{choix:Étiquette=Option 1|Option 2}}'&gt;+ Choix&lt;/button&gt;
+            &lt;button type='button' data-token='{{choix:Civilité=Madame|Monsieur}}'&gt;+ Civilité&lt;/button&gt;
+            &lt;button type='button' data-token='{{date}}'&gt;+ Date&lt;/button&gt;
+            &lt;button type='button' data-token='{{moment}}'&gt;+ Moment&lt;/button&gt;
+            &lt;button type='button' data-token='{{alea:Option 1|Option 2}}'&gt;+ Aléatoire&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;span class='field-hint'&gt;Cliquez pour insérer un champ ; il sera demandé au moment de l'insertion.&lt;/span&gt;
         &lt;/div&gt;
 
         &lt;div class='btns'&gt;
@@ -199,6 +455,15 @@ end tell</string>
       var msgEl    = document.getElementById('msg');
       var notice   = document.getElementById('trigger-notice');
       var form     = document.getElementById('atelier-form');
+
+      /* ── Insertion de jeton au curseur (barre var-toolbar) ── */
+      function insertToken(tok) {
+        var s = texteEl.selectionStart, e = texteEl.selectionEnd;
+        texteEl.value = texteEl.value.slice(0, s) + tok + texteEl.value.slice(e);
+        var p = s + tok.length;
+        texteEl.focus();
+        texteEl.setSelectionRange(p, p);
+      }
 
       /* ── Échappement XML minimal (&amp; &lt; &gt;) ── */
       var esc = function (s) {
@@ -299,6 +564,11 @@ end tell</string>
 
       form.addEventListener('submit', creerMacro);
 
+      /* ── Câblage barre de variables ── */
+      document.getElementById('at-var-toolbar').querySelectorAll('[data-token]').forEach(function (b) {
+        b.addEventListener('click', function () { insertToken(b.dataset.token); });
+      });
+
       /* ── Fermer / Échap ── */
       function fermer() {
         if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel');
@@ -325,7 +595,7 @@ end tell</string>
 			<key>CreationDate</key>
 			<real>802964806.77613902</real>
 			<key>ModificationDate</key>
-			<real>802964807.05881095</real>
+			<real>802969321.78718901</real>
 			<key>Name</key>
 			<string>Atelier MEMORA</string>
 			<key>Triggers</key>

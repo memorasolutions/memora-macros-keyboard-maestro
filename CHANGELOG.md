@@ -4,6 +4,12 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.2.0] - 2026-06-12
+
+### Ajouté (Atelier)
+- **Panneau de champs façon TypeDesk** : dans l'Atelier, **cliquez pour insérer une variable** dans le texte de la macro — `+ Champ`, `+ Choix`, `+ Civilité`, `+ Date`, `+ Moment`, `+ Aléatoire` (insérée au curseur).
+- Les **macros créées avec des variables** ouvrent automatiquement une **petite fenêtre de remplissage** (demande les valeurs, aperçu live, puis insère le texte complété) — moteur réutilisé de l'outil Snippets. Les macros sans variable insèrent directement le texte.
+
 ## [8.1.0] - 2026-06-12
 
 ### Ajouté
