@@ -38,6 +38,11 @@
     .trigger-notice{display:none;font-size:12px;padding:4px 10px;border-radius:7px;background:var(--accent-weak);color:var(--accent);font-weight:600;}
     .trigger-notice.visible{display:inline-block;}
 
+    /* ── Hotkey input row ── */
+    .hotkey-input-row{display:flex;gap:8px;align-items:center;}
+    .hotkey-input-row input{flex:1;font-size:15px;letter-spacing:.3px;cursor:pointer;}
+    #at-hotkey-display.input-error{border-color:var(--danger)!important;}
+
     /* ── Message inline ── */
     #msg{font-size:13.5px;padding:10px 14px;border-radius:var(--radius);line-height:1.5;margin-bottom:4px;display:none;}
     #msg.success{display:block;background:color-mix(in srgb,#34c759 12%,transparent);color:#1a7a31;border:1px solid color-mix(in srgb,#34c759 36%,transparent);}
@@ -100,9 +105,19 @@
         <!-- Déclencheur -->
         <div class='form-group'>
           <label for='at-trigger'>Déclencheur (chaîne tapée)</label>
-          <input type='text' id='at-trigger' placeholder=';courriel' required autocomplete='off'>
-          <span class='field-hint'>Tapez cette chaîne n'importe où pour insérer le texte. Si le préfixe <strong>;</strong> est absent, il sera ajouté automatiquement.</span>
+          <input type='text' id='at-trigger' placeholder=';courriel' autocomplete='off'>
+          <span class='field-hint'>Tapez cette chaîne n'importe où pour insérer le texte. Si le préfixe <strong>;</strong> est absent, il sera ajouté automatiquement. Laissez vide si vous utilisez seulement un raccourci.</span>
           <span class='trigger-notice' id='trigger-notice' aria-live='polite'></span>
+        </div>
+
+        <!-- Raccourci clavier -->
+        <div class='form-group'>
+          <label for='at-hotkey-display'>Raccourci clavier <em style='font-weight:400;color:var(--text2);'>(optionnel)</em></label>
+          <div class='hotkey-input-row'>
+            <input type='text' id='at-hotkey-display' readonly placeholder='Cliquez puis tapez la combinaison…' autocomplete='off'>
+            <button type='button' id='at-hotkey-clear' class='btn btn-secondary btn-sm'>Effacer</button>
+          </div>
+          <span class='field-hint'>Ex. ⌘⇧E. Laissez vide si vous utilisez seulement la chaîne tapée.</span>
         </div>
 
         <!-- Texte à insérer -->
@@ -152,6 +167,9 @@
       var msgEl    = document.getElementById('msg');
       var notice   = document.getElementById('trigger-notice');
       var form     = document.getElementById('atelier-form');
+      var hotkeyDisplayEl = document.getElementById('at-hotkey-display');
+      var hotkeyClearEl   = document.getElementById('at-hotkey-clear');
+      var hotkey = null;
 
       /* ── Insertion de jeton au curseur (barre var-toolbar) ── */
       function insertToken(tok) {
@@ -161,6 +179,59 @@
         texteEl.focus();
         texteEl.setSelectionRange(p, p);
       }
+
+      /* ── KEYMAP macOS Carbon keyCodes (e.code → keyCode) ── */
+      var KEYMAP = {
+        KeyA:0,KeyS:1,KeyD:2,KeyF:3,KeyH:4,KeyG:5,KeyZ:6,KeyX:7,KeyC:8,KeyV:9,
+        KeyB:11,KeyQ:12,KeyW:13,KeyE:14,KeyR:15,KeyY:16,KeyT:17,
+        Digit1:18,Digit2:19,Digit3:20,Digit4:21,Digit6:22,Digit5:23,
+        Equal:24,Digit9:25,Digit7:26,Minus:27,Digit8:28,Digit0:29,
+        BracketRight:30,KeyO:31,KeyU:32,BracketLeft:33,KeyI:34,KeyP:35,
+        Enter:36,KeyL:37,KeyJ:38,Quote:39,KeyK:40,Semicolon:41,Backslash:42,
+        Comma:43,Slash:44,KeyN:45,KeyM:46,Period:47,Tab:48,Space:49,Backquote:50,
+        F1:122,F2:120,F3:99,F4:118,F5:96,F6:97,F7:98,F8:100,F9:101,
+        F10:109,F11:103,F12:111
+      };
+
+      var MODIFIER_KEYS = {Meta:1,Control:1,Shift:1,Alt:1,CapsLock:1,Fn:1,FnLock:1,Hyper:1,Super:1,OS:1};
+
+      var HOTKEY_KEY_NAMES = {
+        Enter:'↩',Space:'Espace',Tab:'⇥',Backquote:'`',Equal:'=',Minus:'-',
+        BracketLeft:'[',BracketRight:']',Backslash:'\\',Semicolon:';',Quote:"'",
+        Comma:',',Slash:'/',Period:'.'
+      };
+
+      function hotkeyLabel(eCode, mods) {
+        var label = '';
+        if (mods & 4096) { label += '⌃'; } /* ⌃ ctrl   */
+        if (mods & 2048) { label += '⌥'; } /* ⌥ option */
+        if (mods & 512)  { label += '⇧'; } /* ⇧ shift  */
+        if (mods & 256)  { label += '⌘'; } /* ⌘ cmd    */
+        var key = eCode;
+        if (key.indexOf('Key') === 0)   { key = key.slice(3); }
+        else if (key.indexOf('Digit') === 0) { key = key.slice(5); }
+        else { key = HOTKEY_KEY_NAMES[key] || key; }
+        return label + key;
+      }
+
+      hotkeyDisplayEl.addEventListener('keydown', function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (MODIFIER_KEYS[ev.key]) { return; }
+        if (!(ev.code in KEYMAP)) { return; }
+        var mods = (ev.metaKey ? 256 : 0) + (ev.shiftKey ? 512 : 0) + (ev.altKey ? 2048 : 0) + (ev.ctrlKey ? 4096 : 0);
+        hotkey = { keyCode: KEYMAP[ev.code], modifiers: mods };
+        hotkeyDisplayEl.value = hotkeyLabel(ev.code, mods);
+        clearError(trigEl);
+        clearError(hotkeyDisplayEl);
+        if (msgEl.classList.contains('error')) { msgEl.className = ''; msgEl.textContent = ''; }
+      });
+
+      hotkeyClearEl.addEventListener('click', function () {
+        hotkey = null;
+        hotkeyDisplayEl.value = '';
+        hotkeyDisplayEl.focus();
+      });
 
       /* ── Échappement XML minimal (& < >) ── */
       var esc = function (s) {
@@ -187,6 +258,8 @@
       [nomEl, trigEl, texteEl].forEach(function (el) {
         el.addEventListener('input', function () {
           clearError(el);
+          /* si on re-tape dans le déclencheur, effacer aussi l'erreur hotkey */
+          if (el === trigEl) { clearError(hotkeyDisplayEl); }
           if (msgEl.classList.contains('error')) {
             msgEl.className = '';
             msgEl.textContent = '';
@@ -198,18 +271,31 @@
       function validate() {
         var ok = true;
         [nomEl, trigEl, texteEl].forEach(clearError);
+        clearError(hotkeyDisplayEl);
 
-        if (!nomEl.value.trim())   { setError(nomEl);   ok = false; }
-        if (!trigEl.value.trim())  { setError(trigEl);  ok = false; }
+        if (!nomEl.value.trim()) { setError(nomEl); ok = false; }
+
+        /* Exiger chaîne tapée OU raccourci (au moins l'un des deux) */
+        var hasTrigger = trigEl.value.trim().length > 0;
+        var hasHotkey  = hotkey !== null;
+        if (!hasTrigger && !hasHotkey) {
+          setError(trigEl);
+          setError(hotkeyDisplayEl);
+          ok = false;
+        }
+
         if (!texteEl.value.trim()) { setError(texteEl); ok = false; }
 
         if (!ok) {
+          var onlyTriggerMissing = (nomEl.value.trim() && texteEl.value.trim() && !hasTrigger && !hasHotkey);
           msgEl.className = 'error';
-          msgEl.textContent = 'Veuillez remplir tous les champs obligatoires.';
-          var first = [nomEl, trigEl, texteEl].find(function (el) {
+          msgEl.textContent = onlyTriggerMissing
+            ? 'Indiquez une chaîne tapée OU un raccourci.'
+            : 'Veuillez remplir tous les champs obligatoires.';
+          var first = [nomEl, trigEl, hotkeyDisplayEl, texteEl].find(function (el) {
             return el.classList.contains('input-error');
           });
-          if (first) first.focus();
+          if (first) { first.focus(); }
         }
         return ok;
       }
@@ -223,16 +309,17 @@
         var declench = trigEl.value.trim();
         var texte    = texteEl.value;   /* préserver sauts de ligne et espaces */
 
-        /* Préfixe ';' automatique */
-        if (!declench.startsWith(';')) {
+        /* Préfixe ';' automatique - seulement si la chaîne est non vide */
+        if (declench && !declench.startsWith(';')) {
           declench = ';' + declench;
         }
 
         /* Transmettre les variables à Keyboard Maestro */
         if (window.KeyboardMaestro) {
           window.KeyboardMaestro.SetVariable('memora_at_nom',         nom);
-          window.KeyboardMaestro.SetVariable('memora_at_trigger_xml', esc(declench));
+          window.KeyboardMaestro.SetVariable('memora_at_trigger_xml', declench ? esc(declench) : '');
           window.KeyboardMaestro.SetVariable('memora_at_texte_xml',   esc(texte));
+          window.KeyboardMaestro.SetVariable('memora_at_hotkey',      hotkey ? (hotkey.keyCode + ',' + hotkey.modifiers) : '');
           window.KeyboardMaestro.Trigger('MEMORA — Créer macro');
         }
 
@@ -240,14 +327,19 @@
         msgEl.className = 'success';
         msgEl.textContent = '';
 
-        var prefix = document.createTextNode('✅ Macro « ');
+        var prefix  = document.createTextNode('✅ Macro « ');
         var nomSpan = document.createElement('strong');
         nomSpan.textContent = nom;
-        var suffix = document.createTextNode(' » créée – tapez ' + declench + ' pour l’insérer.');
-
         msgEl.appendChild(prefix);
         msgEl.appendChild(nomSpan);
-        msgEl.appendChild(suffix);
+
+        var triggerParts = [];
+        if (declench) { triggerParts.push('tapez ' + declench); }
+        if (hotkey)   { triggerParts.push('raccourci ' + hotkeyDisplayEl.value); }
+        var suffixText = triggerParts.length
+          ? ' » créée – ' + triggerParts.join(' ou ') + ' pour l’insérer.'
+          : ' » créée.';
+        msgEl.appendChild(document.createTextNode(suffixText));
         msgEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 
         /* Réinitialiser pour enchaîner une autre création */
@@ -256,6 +348,8 @@
         texteEl.value = '';
         notice.textContent = '';
         notice.classList.remove('visible');
+        hotkey = null;
+        hotkeyDisplayEl.value = '';
         nomEl.focus();
       }
 

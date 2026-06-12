@@ -14,7 +14,7 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156211</integer>
+					<integer>156231</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -267,7 +267,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156213</integer>
+					<integer>156233</integer>
 					<key>DisplayKind</key>
 					<string>None</string>
 					<key>HonourFailureSettings</key>
@@ -292,22 +292,29 @@
 	set tg to getvariable "memora_at_trigger_xml"
 	set tx to getvariable "memora_at_texte_xml"
 	set fh to getvariable "memora_fill_html"
+	set hk to getvariable "memora_at_hotkey"
 end tell
-if nm = "" or tg = "" then
-	return "ERREUR: nom ou declencheur manquant"
-end if
+if nm = "" then return "ERREUR: nom manquant"
+if tg = "" and hk = "" then return "ERREUR: aucun declencheur"
 set hasVars to (tx contains "{{")
 tell application "Keyboard Maestro"
-	if (count of (macro groups whose name is "Mes textes MEMORA")) = 0 then
-		make new macro group with properties {name:"Mes textes MEMORA"}
-	end if
+	if (count of (macro groups whose name is "Mes textes MEMORA")) = 0 then make new macro group with properties {name:"Mes textes MEMORA"}
 	set gid to id of (first macro group whose name is "Mes textes MEMORA")
 	tell macro group id gid
 		set newMacro to make new macro with properties {name:nm}
 	end tell
 	set mid to id of newMacro
 	tell macro id mid
-		make new trigger with properties {xml:("&lt;dict&gt;&lt;key&gt;MacroTriggerType&lt;/key&gt;&lt;string&gt;TypedString&lt;/string&gt;&lt;key&gt;SimulateDeletes&lt;/key&gt;&lt;true/&gt;&lt;key&gt;TypedString&lt;/key&gt;&lt;string&gt;" &amp; tg &amp; "&lt;/string&gt;&lt;/dict&gt;")}
+		if tg is not "" then
+			make new trigger with properties {xml:("&lt;dict&gt;&lt;key&gt;MacroTriggerType&lt;/key&gt;&lt;string&gt;TypedString&lt;/string&gt;&lt;key&gt;SimulateDeletes&lt;/key&gt;&lt;true/&gt;&lt;key&gt;TypedString&lt;/key&gt;&lt;string&gt;" &amp; tg &amp; "&lt;/string&gt;&lt;/dict&gt;")}
+		end if
+		if hk is not "" then
+			set AppleScript's text item delimiters to ","
+			set kc to text item 1 of hk
+			set md to text item 2 of hk
+			set AppleScript's text item delimiters to ""
+			make new trigger with properties {xml:("&lt;dict&gt;&lt;key&gt;FireType&lt;/key&gt;&lt;string&gt;Pressed&lt;/string&gt;&lt;key&gt;KeyCode&lt;/key&gt;&lt;integer&gt;" &amp; kc &amp; "&lt;/integer&gt;&lt;key&gt;MacroTriggerType&lt;/key&gt;&lt;string&gt;HotKey&lt;/string&gt;&lt;key&gt;Modifiers&lt;/key&gt;&lt;integer&gt;" &amp; md &amp; "&lt;/integer&gt;&lt;/dict&gt;")}
+		end if
 		if hasVars then
 			make new action with properties {xml:("&lt;dict&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;SetVariableToText&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;" &amp; tx &amp; "&lt;/string&gt;&lt;key&gt;Variable&lt;/key&gt;&lt;string&gt;memora_mtext&lt;/string&gt;&lt;/dict&gt;")}
 			make new action with properties {xml:("&lt;dict&gt;&lt;key&gt;Floating&lt;/key&gt;&lt;false/&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;CustomPrompt&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;" &amp; fh &amp; "&lt;/string&gt;&lt;key&gt;TimeOutAbortsMacro&lt;/key&gt;&lt;true/&gt;&lt;key&gt;UseText&lt;/key&gt;&lt;true/&gt;&lt;/dict&gt;")}
@@ -331,7 +338,7 @@ end tell</string>
 			<key>CreationDate</key>
 			<real>802964806.45176303</real>
 			<key>ModificationDate</key>
-			<real>802972033.35350394</real>
+			<real>802978886.94416296</real>
 			<key>Name</key>
 			<string>MEMORA — Créer macro</string>
 			<key>Triggers</key>
@@ -344,7 +351,7 @@ end tell</string>
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156217</integer>
+					<integer>156235</integer>
 					<key>DisplayKind</key>
 					<string>None</string>
 					<key>HonourFailureSettings</key>
@@ -386,7 +393,7 @@ return out</string>
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156219</integer>
+					<integer>156237</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -431,6 +438,11 @@ return out</string>
     .field-hint{font-size:12px;color:var(--text2);line-height:1.45;}
     .trigger-notice{display:none;font-size:12px;padding:4px 10px;border-radius:7px;background:var(--accent-weak);color:var(--accent);font-weight:600;}
     .trigger-notice.visible{display:inline-block;}
+
+    /* ── Hotkey input row ── */
+    .hotkey-input-row{display:flex;gap:8px;align-items:center;}
+    .hotkey-input-row input{flex:1;font-size:15px;letter-spacing:.3px;cursor:pointer;}
+    #at-hotkey-display.input-error{border-color:var(--danger)!important;}
 
     /* ── Message inline ── */
     #msg{font-size:13.5px;padding:10px 14px;border-radius:var(--radius);line-height:1.5;margin-bottom:4px;display:none;}
@@ -494,9 +506,19 @@ return out</string>
         &lt;!-- Déclencheur --&gt;
         &lt;div class='form-group'&gt;
           &lt;label for='at-trigger'&gt;Déclencheur (chaîne tapée)&lt;/label&gt;
-          &lt;input type='text' id='at-trigger' placeholder=';courriel' required autocomplete='off'&gt;
-          &lt;span class='field-hint'&gt;Tapez cette chaîne n'importe où pour insérer le texte. Si le préfixe &lt;strong&gt;;&lt;/strong&gt; est absent, il sera ajouté automatiquement.&lt;/span&gt;
+          &lt;input type='text' id='at-trigger' placeholder=';courriel' autocomplete='off'&gt;
+          &lt;span class='field-hint'&gt;Tapez cette chaîne n'importe où pour insérer le texte. Si le préfixe &lt;strong&gt;;&lt;/strong&gt; est absent, il sera ajouté automatiquement. Laissez vide si vous utilisez seulement un raccourci.&lt;/span&gt;
           &lt;span class='trigger-notice' id='trigger-notice' aria-live='polite'&gt;&lt;/span&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Raccourci clavier --&gt;
+        &lt;div class='form-group'&gt;
+          &lt;label for='at-hotkey-display'&gt;Raccourci clavier &lt;em style='font-weight:400;color:var(--text2);'&gt;(optionnel)&lt;/em&gt;&lt;/label&gt;
+          &lt;div class='hotkey-input-row'&gt;
+            &lt;input type='text' id='at-hotkey-display' readonly placeholder='Cliquez puis tapez la combinaison…' autocomplete='off'&gt;
+            &lt;button type='button' id='at-hotkey-clear' class='btn btn-secondary btn-sm'&gt;Effacer&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;span class='field-hint'&gt;Ex. ⌘⇧E. Laissez vide si vous utilisez seulement la chaîne tapée.&lt;/span&gt;
         &lt;/div&gt;
 
         &lt;!-- Texte à insérer --&gt;
@@ -546,6 +568,9 @@ return out</string>
       var msgEl    = document.getElementById('msg');
       var notice   = document.getElementById('trigger-notice');
       var form     = document.getElementById('atelier-form');
+      var hotkeyDisplayEl = document.getElementById('at-hotkey-display');
+      var hotkeyClearEl   = document.getElementById('at-hotkey-clear');
+      var hotkey = null;
 
       /* ── Insertion de jeton au curseur (barre var-toolbar) ── */
       function insertToken(tok) {
@@ -555,6 +580,59 @@ return out</string>
         texteEl.focus();
         texteEl.setSelectionRange(p, p);
       }
+
+      /* ── KEYMAP macOS Carbon keyCodes (e.code → keyCode) ── */
+      var KEYMAP = {
+        KeyA:0,KeyS:1,KeyD:2,KeyF:3,KeyH:4,KeyG:5,KeyZ:6,KeyX:7,KeyC:8,KeyV:9,
+        KeyB:11,KeyQ:12,KeyW:13,KeyE:14,KeyR:15,KeyY:16,KeyT:17,
+        Digit1:18,Digit2:19,Digit3:20,Digit4:21,Digit6:22,Digit5:23,
+        Equal:24,Digit9:25,Digit7:26,Minus:27,Digit8:28,Digit0:29,
+        BracketRight:30,KeyO:31,KeyU:32,BracketLeft:33,KeyI:34,KeyP:35,
+        Enter:36,KeyL:37,KeyJ:38,Quote:39,KeyK:40,Semicolon:41,Backslash:42,
+        Comma:43,Slash:44,KeyN:45,KeyM:46,Period:47,Tab:48,Space:49,Backquote:50,
+        F1:122,F2:120,F3:99,F4:118,F5:96,F6:97,F7:98,F8:100,F9:101,
+        F10:109,F11:103,F12:111
+      };
+
+      var MODIFIER_KEYS = {Meta:1,Control:1,Shift:1,Alt:1,CapsLock:1,Fn:1,FnLock:1,Hyper:1,Super:1,OS:1};
+
+      var HOTKEY_KEY_NAMES = {
+        Enter:'↩',Space:'Espace',Tab:'⇥',Backquote:'`',Equal:'=',Minus:'-',
+        BracketLeft:'[',BracketRight:']',Backslash:'\\',Semicolon:';',Quote:"'",
+        Comma:',',Slash:'/',Period:'.'
+      };
+
+      function hotkeyLabel(eCode, mods) {
+        var label = '';
+        if (mods &amp; 4096) { label += '⌃'; } /* ⌃ ctrl   */
+        if (mods &amp; 2048) { label += '⌥'; } /* ⌥ option */
+        if (mods &amp; 512)  { label += '⇧'; } /* ⇧ shift  */
+        if (mods &amp; 256)  { label += '⌘'; } /* ⌘ cmd    */
+        var key = eCode;
+        if (key.indexOf('Key') === 0)   { key = key.slice(3); }
+        else if (key.indexOf('Digit') === 0) { key = key.slice(5); }
+        else { key = HOTKEY_KEY_NAMES[key] || key; }
+        return label + key;
+      }
+
+      hotkeyDisplayEl.addEventListener('keydown', function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (MODIFIER_KEYS[ev.key]) { return; }
+        if (!(ev.code in KEYMAP)) { return; }
+        var mods = (ev.metaKey ? 256 : 0) + (ev.shiftKey ? 512 : 0) + (ev.altKey ? 2048 : 0) + (ev.ctrlKey ? 4096 : 0);
+        hotkey = { keyCode: KEYMAP[ev.code], modifiers: mods };
+        hotkeyDisplayEl.value = hotkeyLabel(ev.code, mods);
+        clearError(trigEl);
+        clearError(hotkeyDisplayEl);
+        if (msgEl.classList.contains('error')) { msgEl.className = ''; msgEl.textContent = ''; }
+      });
+
+      hotkeyClearEl.addEventListener('click', function () {
+        hotkey = null;
+        hotkeyDisplayEl.value = '';
+        hotkeyDisplayEl.focus();
+      });
 
       /* ── Échappement XML minimal (&amp; &lt; &gt;) ── */
       var esc = function (s) {
@@ -581,6 +659,8 @@ return out</string>
       [nomEl, trigEl, texteEl].forEach(function (el) {
         el.addEventListener('input', function () {
           clearError(el);
+          /* si on re-tape dans le déclencheur, effacer aussi l'erreur hotkey */
+          if (el === trigEl) { clearError(hotkeyDisplayEl); }
           if (msgEl.classList.contains('error')) {
             msgEl.className = '';
             msgEl.textContent = '';
@@ -592,18 +672,31 @@ return out</string>
       function validate() {
         var ok = true;
         [nomEl, trigEl, texteEl].forEach(clearError);
+        clearError(hotkeyDisplayEl);
 
-        if (!nomEl.value.trim())   { setError(nomEl);   ok = false; }
-        if (!trigEl.value.trim())  { setError(trigEl);  ok = false; }
+        if (!nomEl.value.trim()) { setError(nomEl); ok = false; }
+
+        /* Exiger chaîne tapée OU raccourci (au moins l'un des deux) */
+        var hasTrigger = trigEl.value.trim().length &gt; 0;
+        var hasHotkey  = hotkey !== null;
+        if (!hasTrigger &amp;&amp; !hasHotkey) {
+          setError(trigEl);
+          setError(hotkeyDisplayEl);
+          ok = false;
+        }
+
         if (!texteEl.value.trim()) { setError(texteEl); ok = false; }
 
         if (!ok) {
+          var onlyTriggerMissing = (nomEl.value.trim() &amp;&amp; texteEl.value.trim() &amp;&amp; !hasTrigger &amp;&amp; !hasHotkey);
           msgEl.className = 'error';
-          msgEl.textContent = 'Veuillez remplir tous les champs obligatoires.';
-          var first = [nomEl, trigEl, texteEl].find(function (el) {
+          msgEl.textContent = onlyTriggerMissing
+            ? 'Indiquez une chaîne tapée OU un raccourci.'
+            : 'Veuillez remplir tous les champs obligatoires.';
+          var first = [nomEl, trigEl, hotkeyDisplayEl, texteEl].find(function (el) {
             return el.classList.contains('input-error');
           });
-          if (first) first.focus();
+          if (first) { first.focus(); }
         }
         return ok;
       }
@@ -617,16 +710,17 @@ return out</string>
         var declench = trigEl.value.trim();
         var texte    = texteEl.value;   /* préserver sauts de ligne et espaces */
 
-        /* Préfixe ';' automatique */
-        if (!declench.startsWith(';')) {
+        /* Préfixe ';' automatique - seulement si la chaîne est non vide */
+        if (declench &amp;&amp; !declench.startsWith(';')) {
           declench = ';' + declench;
         }
 
         /* Transmettre les variables à Keyboard Maestro */
         if (window.KeyboardMaestro) {
           window.KeyboardMaestro.SetVariable('memora_at_nom',         nom);
-          window.KeyboardMaestro.SetVariable('memora_at_trigger_xml', esc(declench));
+          window.KeyboardMaestro.SetVariable('memora_at_trigger_xml', declench ? esc(declench) : '');
           window.KeyboardMaestro.SetVariable('memora_at_texte_xml',   esc(texte));
+          window.KeyboardMaestro.SetVariable('memora_at_hotkey',      hotkey ? (hotkey.keyCode + ',' + hotkey.modifiers) : '');
           window.KeyboardMaestro.Trigger('MEMORA — Créer macro');
         }
 
@@ -634,14 +728,19 @@ return out</string>
         msgEl.className = 'success';
         msgEl.textContent = '';
 
-        var prefix = document.createTextNode('✅ Macro « ');
+        var prefix  = document.createTextNode('✅ Macro « ');
         var nomSpan = document.createElement('strong');
         nomSpan.textContent = nom;
-        var suffix = document.createTextNode(' » créée – tapez ' + declench + ' pour l’insérer.');
-
         msgEl.appendChild(prefix);
         msgEl.appendChild(nomSpan);
-        msgEl.appendChild(suffix);
+
+        var triggerParts = [];
+        if (declench) { triggerParts.push('tapez ' + declench); }
+        if (hotkey)   { triggerParts.push('raccourci ' + hotkeyDisplayEl.value); }
+        var suffixText = triggerParts.length
+          ? ' » créée – ' + triggerParts.join(' ou ') + ' pour l’insérer.'
+          : ' » créée.';
+        msgEl.appendChild(document.createTextNode(suffixText));
         msgEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 
         /* Réinitialiser pour enchaîner une autre création */
@@ -650,6 +749,8 @@ return out</string>
         texteEl.value = '';
         notice.textContent = '';
         notice.classList.remove('visible');
+        hotkey = null;
+        hotkeyDisplayEl.value = '';
         nomEl.focus();
       }
 
@@ -820,7 +921,7 @@ return out</string>
 			<key>CreationDate</key>
 			<real>802964806.77613902</real>
 			<key>ModificationDate</key>
-			<real>802977641.21893406</real>
+			<real>802978887.43846703</real>
 			<key>Name</key>
 			<string>Atelier MEMORA</string>
 			<key>Triggers</key>

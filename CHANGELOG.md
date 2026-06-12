@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.6.0] - 2026-06-12
+
+### Ajouté (Atelier)
+- **Déclencheur par raccourci clavier** : en plus (ou à la place) de la chaîne tapée, assignez un **raccourci** (ex. ⇧⌘E) à votre macro — capturé directement dans la fenêtre, comme dans Keyboard Maestro. Au moins un déclencheur (chaîne ou raccourci) est requis.
+
 ## [8.5.0] - 2026-06-12
 
 ### Ajouté (Atelier)
