@@ -22,49 +22,58 @@ function check(label, condition, detail = '') {
   condition ? pass(label) : fail(label, detail);
 }
 
-// --- Lecture des fichiers ---
-const templatePath = join(root, 'templates', 'memora-snippets.template.html');
-const kmmacrosPath = join(root, 'macros', 'MEMORA-Snippets.kmmacros');
+// --- Lecture de tous les fichiers du produit ---
+const templatesDir = join(root, 'templates');
+const macrosDir    = join(root, 'macros');
 
-if (!existsSync(templatePath)) { fail('Template introuvable', templatePath); process.exit(1); }
-if (!existsSync(kmmacrosPath)) { fail('Fichier kmmacros introuvable', kmmacrosPath); process.exit(1); }
+if (!existsSync(templatesDir)) { fail('Dossier templates/ introuvable', templatesDir); process.exit(1); }
+if (!existsSync(macrosDir))    { fail('Dossier macros/ introuvable',    macrosDir);    process.exit(1); }
 
-const template  = readFileSync(templatePath,  'utf8');
-const kmmacros  = readFileSync(kmmacrosPath,  'utf8');
+// Charge tous les templates HTML : [{ name, content }]
+const templates = readdirSync(templatesDir)
+  .filter(f => f.endsWith('.html'))
+  .map(f => ({ name: f, content: readFileSync(join(templatesDir, f), 'utf8') }));
 
-// Fichiers Markdown (.md) à la racine du dépôt
-const mdContents = readdirSync(root)
+// Charge tous les fichiers kmmacros : [{ name, content }]
+const kmmacros = readdirSync(macrosDir)
+  .filter(f => f.endsWith('.kmmacros'))
+  .map(f => ({ name: f, content: readFileSync(join(macrosDir, f), 'utf8') }));
+
+// Charge tous les fichiers Markdown à la racine : [{ name, content }]
+const mdFiles = readdirSync(root)
   .filter(f => f.endsWith('.md'))
-  .map(f => readFileSync(join(root, f), 'utf8'));
+  .map(f => ({ name: f, content: readFileSync(join(root, f), 'utf8') }));
+
+if (templates.length === 0) { fail('Aucun template HTML trouvé dans templates/'); process.exit(1); }
+if (kmmacros.length  === 0) { fail('Aucun fichier .kmmacros trouvé dans macros/'); process.exit(1); }
 
 console.log('\n── Garde-fous MEMORA — intégrité du dépôt ──\n');
 
 // ── 1. Aucune mention de marque d'outil IA tierce (insensible à la casse) ──
-// Périmètre : templates/*.html, *.md, macros/*.kmmacros
+// Périmètre : templates/*.html, macros/*.kmmacros, *.md
 // Termes décodés à l'exécution pour ne pas les faire figurer en clair dans le dépôt.
 const aiPattern = new RegExp([atob('YW50aHJvcGlj'), atob('Y2xhdWRl')].join('|'), 'i');
-const templateMentionsAI = aiPattern.test(template);
-const kmmacrosMentionsAI = aiPattern.test(kmmacros);
-const mdMentionsAI       = mdContents.some(c => aiPattern.test(c));
+
+const aiFailing = [
+  ...templates.filter(t => aiPattern.test(t.content)).map(t => `templates/${t.name}`),
+  ...kmmacros.filter(k => aiPattern.test(k.content)).map(k => `macros/${k.name}`),
+  ...mdFiles.filter(m => aiPattern.test(m.content)).map(m => m.name),
+];
 check(
   'Aucune mention de marque IA tierce (templates + macros + .md)',
-  !templateMentionsAI && !kmmacrosMentionsAI && !mdMentionsAI,
-  [
-    templateMentionsAI  ? 'trouvé dans template'  : '',
-    kmmacrosMentionsAI  ? 'trouvé dans kmmacros'  : '',
-    mdMentionsAI        ? 'trouvé dans un .md'     : '',
-  ].filter(Boolean).join(', '),
+  aiFailing.length === 0,
+  aiFailing.join(', '),
 );
 
-// ── 2. En-tête "MEMORA solutions" en ligne 1 du template ──
-const firstLine = template.split('\n')[0];
+// ── 2. En-tête "MEMORA solutions" en ligne 1 de chaque template ──
+const headerFailing = templates.filter(t => !t.content.split('\n')[0].includes('MEMORA solutions'));
 check(
-  'En-tête "MEMORA solutions" présent en ligne 1 du template',
-  firstLine.includes('MEMORA solutions'),
-  `ligne 1 : ${firstLine.slice(0, 80)}`,
+  'En-tête "MEMORA solutions" présent en ligne 1 de chaque template',
+  headerFailing.length === 0,
+  headerFailing.map(t => t.name).join(', '),
 );
 
-// ── 3. Aucune ressource externe chargée dans le template ──
+// ── 3. Aucune ressource externe chargée dans les templates ──
 // Cible : attributs src="http…", href="http…" (hors texte/commentaires),
 //         appels fetch(…), balises <script src, @import url(http…)
 // Exclut les URLs en texte libre (ex. dans les snippets de démo ou commentaires HTML).
@@ -75,25 +84,45 @@ const externalChecks = [
   { label: '<script src externe',              re: /<script\s+src/i  },
   { label: '@import url(http  en CSS',         re: /@import\s+url\s*\(\s*https?:/i },
 ];
-const extFailures = externalChecks.filter(({ re }) => re.test(template)).map(({ label }) => label);
+const extFailing = [];
+for (const tmpl of templates) {
+  const hits = externalChecks.filter(({ re }) => re.test(tmpl.content)).map(({ label }) => label);
+  if (hits.length > 0) extFailing.push(`${tmpl.name} (${hits.join(', ')})`);
+}
 check(
-  'Aucune ressource externe dans le template',
-  extFailures.length === 0,
-  extFailures.join(', '),
+  'Aucune ressource externe dans les templates',
+  extFailing.length === 0,
+  extFailing.join(' | '),
 );
 
-// ── 4. Balise Content-Security-Policy présente ──
+// ── 4. Balise Content-Security-Policy présente dans chaque template ──
+const cspFailing = templates.filter(t => !t.content.includes('Content-Security-Policy'));
 check(
-  'Balise Content-Security-Policy présente dans le template',
-  template.includes('Content-Security-Policy'),
+  'Balise Content-Security-Policy présente dans chaque template',
+  cspFailing.length === 0,
+  cspFailing.map(t => t.name).join(', '),
 );
 
-// ── 5. Intégrité du fichier kmmacros ──
-check('kmmacros commence par <?xml',          kmmacros.trimStart().startsWith('<?xml'));
-check('kmmacros contient <array>',            kmmacros.includes('<array>'));
+// ── 5. Intégrité structurelle de chaque fichier kmmacros ──
+const xmlFailing   = kmmacros.filter(k => !k.content.trimStart().startsWith('<?xml'));
+const arrayFailing = kmmacros.filter(k => !k.content.includes('<array>'));
 check(
-  'kmmacros contient l\'UID de groupe 34272D1B-7790-48E3-989E-7718566ECFA7',
-  kmmacros.includes('34272D1B-7790-48E3-989E-7718566ECFA7'),
+  'Chaque kmmacros commence par <?xml',
+  xmlFailing.length === 0,
+  xmlFailing.map(k => k.name).join(', '),
+);
+check(
+  'Chaque kmmacros contient <array>',
+  arrayFailing.length === 0,
+  arrayFailing.map(k => k.name).join(', '),
+);
+
+// ── 6. UID de groupe spécifique (MEMORA-Snippets.kmmacros) ──
+const snippetsKm = kmmacros.find(k => k.name === 'MEMORA-Snippets.kmmacros');
+check(
+  'MEMORA-Snippets.kmmacros — UID de groupe 34272D1B-7790-48E3-989E-7718566ECFA7',
+  !!snippetsKm && snippetsKm.content.includes('34272D1B-7790-48E3-989E-7718566ECFA7'),
+  snippetsKm ? 'UID absent' : 'fichier introuvable',
 );
 
 // ── Résumé ──
