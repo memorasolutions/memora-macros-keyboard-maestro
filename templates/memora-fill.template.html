@@ -72,6 +72,7 @@
 
     // ── Profil global {{moi:champ}} — résolu automatiquement ─────────────────
     let profil = {};
+    let clip = '';
 
     function extractVars(t) {
       const vars = []; const re = /{{(champ|choix|datechoix):([^}=]+)(?:=([^}]+))?}}/g; let m;
@@ -106,6 +107,7 @@
         r = r.replace(re, () => values[label]);
       }
       r = r.replace(/{{moi:([^}]+)}}/g, (m, k) => (profil[k.trim()] || ''));
+      r = r.replace(/{{presse-papier}}/g, () => clip);
       return r;
     }
 
@@ -127,6 +129,7 @@
       const km  = window.KeyboardMaestro;
       const tpl = km ? (km.GetVariable('memora_mtext') || '') : '';
       try { profil = JSON.parse(km ? (km.GetVariable('memora_profil') || '{}') : '{}') || {}; } catch(e){ profil = {}; }
+      if (km) { clip = km.GetVariable('memora_clip') || ''; }
 
       const vars = collectVars([tpl]);
 

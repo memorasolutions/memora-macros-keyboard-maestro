@@ -4,6 +4,14 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.7.0] - 2026-06-12
+
+### Ajouté
+- **Variable presse-papier `{{presse-papier}}`** : insère le contenu actuel du presse-papier (dans les Snippets et l'Atelier).
+
+### Modifié
+- **Fenêtre de l'Atelier plus compacte** (~40 % de l'écran au lieu de 62 %), mieux adaptée à un formulaire. *(Astuce : pour la rendre librement redimensionnable, cochez « Resizable » dans le menu engrenage ⚙ de l'action Custom HTML Prompt dans Keyboard Maestro.)*
+
 ## [8.6.0] - 2026-06-12
 
 ### Ajouté (Atelier)

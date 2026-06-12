@@ -14,7 +14,7 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156140</integer>
+					<integer>156241</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -24,7 +24,17 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156207</integer>
+					<integer>156243</integer>
+					<key>MacroActionType</key>
+					<string>SetVariableToText</string>
+					<key>Text</key>
+					<string>%CurrentClipboard%</string>
+					<key>Variable</key>
+					<string>memora_clip</string>
+				</dict>
+				<dict>
+					<key>ActionUID</key>
+					<integer>156245</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -192,6 +202,7 @@
   &lt;script&gt;
     let snippets = [];
     let profil = {};
+    let clip = '';
     let loadError = false;
     let editingIndex = -1;
     let activeFolder = '';
@@ -239,6 +250,7 @@
         return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(dd);
       });
       r = r.replace(/{{moi:([^}]+)}}/g, (m, k) =&gt; (profil[k.trim()] || ''));
+      r = r.replace(/{{presse-papier}}/g, () =&gt; clip);
       return r;
     }
     function assemble(checked, values) { return checked.map(s =&gt; resolve(s.texte, values)).join('\n\n'); }
@@ -354,6 +366,7 @@
               "&lt;button type='button' data-token='{{moi:prenom}}'&gt;+ Mon prénom&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{moi:courriel}}'&gt;+ Mon courriel&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{moi:entreprise}}'&gt;+ Mon entreprise&lt;/button&gt;" +
+              "&lt;button type='button' data-token='{{presse-papier}}'&gt;+ Presse-papier&lt;/button&gt;" +
             "&lt;/div&gt;&lt;/div&gt;" +
           "&lt;div class='form-group'&gt;&lt;label for='edit-dossier'&gt;Dossier (optionnel)&lt;/label&gt;&lt;input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'&gt;&lt;datalist id='folder-list'&gt;" + getFolders().map(f =&gt; "&lt;option value=\"" + escapeHtml(f) + "\"&gt;&lt;/option&gt;").join('') + "&lt;/datalist&gt;&lt;/div&gt;" +
           "&lt;div class='checkbox-group'&gt;&lt;input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "&gt;&lt;label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'&gt;Pré-coché à l’ouverture&lt;/label&gt;&lt;/div&gt;" +
@@ -367,6 +380,7 @@
             "&lt;li&gt;&lt;code&gt;{{alea:A|B|C}}&lt;/code&gt; → valeur au hasard&lt;/li&gt;" +
             "&lt;li&gt;&lt;code&gt;{{moment}}&lt;/code&gt; → Matin / Après-midi / Soir (selon l'heure)&lt;/li&gt;" +
             "&lt;li&gt;&lt;code&gt;{{moi:champ}}&lt;/code&gt; → votre profil (prenom, courriel, entreprise…) ; éditez via 👤&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{presse-papier}}&lt;/code&gt; → le contenu de votre presse-papier&lt;/li&gt;" +
           "&lt;/ul&gt;&lt;em&gt;Astuce : utilisez les boutons ci-dessus pour insérer une variable au curseur.&lt;/em&gt;&lt;/div&gt;" +
           "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='edit-cancel' type='button'&gt;Annuler&lt;/button&gt;" +
           "&lt;button class='btn btn-primary' id='edit-save' type='button'&gt;" + (isNew ? 'Ajouter' : 'Enregistrer') + "&lt;/button&gt;&lt;/div&gt;" +
@@ -516,6 +530,7 @@
     function init() {
       loadState();
       if (window.KeyboardMaestro) { try { profil = JSON.parse(window.KeyboardMaestro.GetVariable('memora_profil') || '{}') || {}; } catch(e) { profil = {}; } }
+      if (window.KeyboardMaestro) { clip = window.KeyboardMaestro.GetVariable('memora_clip') || ''; }
       render();
       document.getElementById('profil-btn').addEventListener('click', openProfil);
       document.getElementById('lib-btn').addEventListener('click', openLibrary);
@@ -586,7 +601,7 @@
 					<key>Action</key>
 					<string>ByPasting</string>
 					<key>ActionUID</key>
-					<integer>156209</integer>
+					<integer>156247</integer>
 					<key>MacroActionType</key>
 					<string>InsertText</string>
 					<key>Text</key>
@@ -596,7 +611,7 @@
 			<key>CreationDate</key>
 			<real>802885377.75442004</real>
 			<key>ModificationDate</key>
-			<real>802972032.89191794</real>
+			<real>802980390.76618695</real>
 			<key>Name</key>
 			<string>MEMORA — Snippets</string>
 			<key>Triggers</key>

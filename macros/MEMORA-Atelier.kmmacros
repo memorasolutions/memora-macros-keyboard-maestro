@@ -14,7 +14,7 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156231</integer>
+					<integer>156249</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -92,6 +92,7 @@
 
     // ── Profil global {{moi:champ}} — résolu automatiquement ─────────────────
     let profil = {};
+    let clip = '';
 
     function extractVars(t) {
       const vars = []; const re = /{{(champ|choix|datechoix):([^}=]+)(?:=([^}]+))?}}/g; let m;
@@ -126,6 +127,7 @@
         r = r.replace(re, () =&amp;gt; values[label]);
       }
       r = r.replace(/{{moi:([^}]+)}}/g, (m, k) =&amp;gt; (profil[k.trim()] || ''));
+      r = r.replace(/{{presse-papier}}/g, () =&amp;gt; clip);
       return r;
     }
 
@@ -147,6 +149,7 @@
       const km  = window.KeyboardMaestro;
       const tpl = km ? (km.GetVariable('memora_mtext') || '') : '';
       try { profil = JSON.parse(km ? (km.GetVariable('memora_profil') || '{}') : '{}') || {}; } catch(e){ profil = {}; }
+      if (km) { clip = km.GetVariable('memora_clip') || ''; }
 
       const vars = collectVars([tpl]);
 
@@ -267,7 +270,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156233</integer>
+					<integer>156251</integer>
 					<key>DisplayKind</key>
 					<string>None</string>
 					<key>HonourFailureSettings</key>
@@ -316,6 +319,7 @@ tell application "Keyboard Maestro"
 			make new trigger with properties {xml:("&lt;dict&gt;&lt;key&gt;FireType&lt;/key&gt;&lt;string&gt;Pressed&lt;/string&gt;&lt;key&gt;KeyCode&lt;/key&gt;&lt;integer&gt;" &amp; kc &amp; "&lt;/integer&gt;&lt;key&gt;MacroTriggerType&lt;/key&gt;&lt;string&gt;HotKey&lt;/string&gt;&lt;key&gt;Modifiers&lt;/key&gt;&lt;integer&gt;" &amp; md &amp; "&lt;/integer&gt;&lt;/dict&gt;")}
 		end if
 		if hasVars then
+			make new action with properties {xml:"&lt;dict&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;SetVariableToText&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;%CurrentClipboard%&lt;/string&gt;&lt;key&gt;Variable&lt;/key&gt;&lt;string&gt;memora_clip&lt;/string&gt;&lt;/dict&gt;"}
 			make new action with properties {xml:("&lt;dict&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;SetVariableToText&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;" &amp; tx &amp; "&lt;/string&gt;&lt;key&gt;Variable&lt;/key&gt;&lt;string&gt;memora_mtext&lt;/string&gt;&lt;/dict&gt;")}
 			make new action with properties {xml:("&lt;dict&gt;&lt;key&gt;Floating&lt;/key&gt;&lt;false/&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;CustomPrompt&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;" &amp; fh &amp; "&lt;/string&gt;&lt;key&gt;TimeOutAbortsMacro&lt;/key&gt;&lt;true/&gt;&lt;key&gt;UseText&lt;/key&gt;&lt;true/&gt;&lt;/dict&gt;")}
 			make new action with properties {xml:("&lt;dict&gt;&lt;key&gt;Action&lt;/key&gt;&lt;string&gt;ByPasting&lt;/string&gt;&lt;key&gt;MacroActionType&lt;/key&gt;&lt;string&gt;InsertText&lt;/string&gt;&lt;key&gt;Text&lt;/key&gt;&lt;string&gt;%Variable%memora_texte%&lt;/string&gt;&lt;/dict&gt;")}
@@ -338,7 +342,7 @@ end tell</string>
 			<key>CreationDate</key>
 			<real>802964806.45176303</real>
 			<key>ModificationDate</key>
-			<real>802978886.94416296</real>
+			<real>802980391.11478305</real>
 			<key>Name</key>
 			<string>MEMORA — Créer macro</string>
 			<key>Triggers</key>
@@ -351,7 +355,7 @@ end tell</string>
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156235</integer>
+					<integer>156253</integer>
 					<key>DisplayKind</key>
 					<string>None</string>
 					<key>HonourFailureSettings</key>
@@ -393,7 +397,7 @@ return out</string>
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156237</integer>
+					<integer>156255</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -478,7 +482,7 @@ return out</string>
     .macro-deleted{font-size:12px;font-weight:600;color:var(--text2);padding:4px 8px;}
   &lt;/style&gt;
 &lt;/head&gt;
-&lt;body data-kmwindow='SCREEN(Main,Left)+SCREEN(Main,Width)*0.12,SCREEN(Main,Top)+SCREEN(Main,Height)*0.12,SCREEN(Main,Width)*0.62,SCREEN(Main,Height)*0.62'&gt;
+&lt;body data-kmwindow='SCREEN(Main,Left)+SCREEN(Main,Width)*0.30,SCREEN(Main,Top)+SCREEN(Main,Height)*0.10,SCREEN(Main,Width)*0.40,SCREEN(Main,Height)*0.78'&gt;
 
   &lt;!-- En-tête --&gt;
   &lt;div class='header'&gt;
@@ -537,9 +541,10 @@ return out</string>
             &lt;button type='button' data-token='{{moi:prenom}}'&gt;+ Mon prénom&lt;/button&gt;
             &lt;button type='button' data-token='{{moi:courriel}}'&gt;+ Mon courriel&lt;/button&gt;
             &lt;button type='button' data-token='{{moi:entreprise}}'&gt;+ Mon entreprise&lt;/button&gt;
+            &lt;button type='button' data-token='{{presse-papier}}'&gt;+ Presse-papier&lt;/button&gt;
             &lt;button type='button' data-token='{{alea:Option 1|Option 2}}'&gt;+ Aléatoire&lt;/button&gt;
           &lt;/div&gt;
-          &lt;span class='field-hint'&gt;Cliquez pour insérer un champ ; il sera demandé au moment de l'insertion. Les jetons &lt;strong&gt;{{moi:champ}}&lt;/strong&gt; utilisent vos informations personnelles (prénom, courriel, entreprise).&lt;/span&gt;
+          &lt;span class='field-hint'&gt;Cliquez pour insérer un champ ; il sera demandé au moment de l'insertion. Les jetons &lt;strong&gt;{{moi:champ}}&lt;/strong&gt; utilisent vos informations personnelles. &lt;strong&gt;{{presse-papier}}&lt;/strong&gt; colle le contenu du presse-papier au moment de l'insertion.&lt;/span&gt;
         &lt;/div&gt;
 
         &lt;div class='btns'&gt;
@@ -921,7 +926,7 @@ return out</string>
 			<key>CreationDate</key>
 			<real>802964806.77613902</real>
 			<key>ModificationDate</key>
-			<real>802978887.43846703</real>
+			<real>802980391.64815903</real>
 			<key>Name</key>
 			<string>Atelier MEMORA</string>
 			<key>Triggers</key>

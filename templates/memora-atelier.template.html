@@ -77,7 +77,7 @@
     .macro-deleted{font-size:12px;font-weight:600;color:var(--text2);padding:4px 8px;}
   </style>
 </head>
-<body data-kmwindow='SCREEN(Main,Left)+SCREEN(Main,Width)*0.12,SCREEN(Main,Top)+SCREEN(Main,Height)*0.12,SCREEN(Main,Width)*0.62,SCREEN(Main,Height)*0.62'>
+<body data-kmwindow='SCREEN(Main,Left)+SCREEN(Main,Width)*0.30,SCREEN(Main,Top)+SCREEN(Main,Height)*0.10,SCREEN(Main,Width)*0.40,SCREEN(Main,Height)*0.78'>
 
   <!-- En-tête -->
   <div class='header'>
@@ -136,9 +136,10 @@
             <button type='button' data-token='{{moi:prenom}}'>+ Mon prénom</button>
             <button type='button' data-token='{{moi:courriel}}'>+ Mon courriel</button>
             <button type='button' data-token='{{moi:entreprise}}'>+ Mon entreprise</button>
+            <button type='button' data-token='{{presse-papier}}'>+ Presse-papier</button>
             <button type='button' data-token='{{alea:Option 1|Option 2}}'>+ Aléatoire</button>
           </div>
-          <span class='field-hint'>Cliquez pour insérer un champ ; il sera demandé au moment de l'insertion. Les jetons <strong>{{moi:champ}}</strong> utilisent vos informations personnelles (prénom, courriel, entreprise).</span>
+          <span class='field-hint'>Cliquez pour insérer un champ ; il sera demandé au moment de l'insertion. Les jetons <strong>{{moi:champ}}</strong> utilisent vos informations personnelles. <strong>{{presse-papier}}</strong> colle le contenu du presse-papier au moment de l'insertion.</span>
         </div>
 
         <div class='btns'>

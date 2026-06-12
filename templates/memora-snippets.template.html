@@ -160,6 +160,7 @@
   <script>
     let snippets = [];
     let profil = {};
+    let clip = '';
     let loadError = false;
     let editingIndex = -1;
     let activeFolder = '';
@@ -207,6 +208,7 @@
         return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(dd);
       });
       r = r.replace(/{{moi:([^}]+)}}/g, (m, k) => (profil[k.trim()] || ''));
+      r = r.replace(/{{presse-papier}}/g, () => clip);
       return r;
     }
     function assemble(checked, values) { return checked.map(s => resolve(s.texte, values)).join('\n\n'); }
@@ -322,6 +324,7 @@
               "<button type='button' data-token='{{moi:prenom}}'>+ Mon prénom</button>" +
               "<button type='button' data-token='{{moi:courriel}}'>+ Mon courriel</button>" +
               "<button type='button' data-token='{{moi:entreprise}}'>+ Mon entreprise</button>" +
+              "<button type='button' data-token='{{presse-papier}}'>+ Presse-papier</button>" +
             "</div></div>" +
           "<div class='form-group'><label for='edit-dossier'>Dossier (optionnel)</label><input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'><datalist id='folder-list'>" + getFolders().map(f => "<option value=\"" + escapeHtml(f) + "\"></option>").join('') + "</datalist></div>" +
           "<div class='checkbox-group'><input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "><label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'>Pré-coché à l’ouverture</label></div>" +
@@ -335,6 +338,7 @@
             "<li><code>{{alea:A|B|C}}</code> → valeur au hasard</li>" +
             "<li><code>{{moment}}</code> → Matin / Après-midi / Soir (selon l'heure)</li>" +
             "<li><code>{{moi:champ}}</code> → votre profil (prenom, courriel, entreprise…) ; éditez via 👤</li>" +
+            "<li><code>{{presse-papier}}</code> → le contenu de votre presse-papier</li>" +
           "</ul><em>Astuce : utilisez les boutons ci-dessus pour insérer une variable au curseur.</em></div>" +
           "<div class='btns'><button class='btn btn-secondary' id='edit-cancel' type='button'>Annuler</button>" +
           "<button class='btn btn-primary' id='edit-save' type='button'>" + (isNew ? 'Ajouter' : 'Enregistrer') + "</button></div>" +
@@ -484,6 +488,7 @@
     function init() {
       loadState();
       if (window.KeyboardMaestro) { try { profil = JSON.parse(window.KeyboardMaestro.GetVariable('memora_profil') || '{}') || {}; } catch(e) { profil = {}; } }
+      if (window.KeyboardMaestro) { clip = window.KeyboardMaestro.GetVariable('memora_clip') || ''; }
       render();
       document.getElementById('profil-btn').addEventListener('click', openProfil);
       document.getElementById('lib-btn').addEventListener('click', openLibrary);
