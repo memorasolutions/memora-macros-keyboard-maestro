@@ -24,7 +24,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156196</integer>
+					<integer>156207</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -174,6 +174,7 @@
     &lt;div class='main-zone'&gt;
       &lt;div class='header'&gt;
         &lt;div class='search'&gt;&lt;input type='text' id='search-input' placeholder='Rechercher un snippet…' aria-label='Rechercher un snippet'&gt;&lt;/div&gt;
+        &lt;button class='close-btn' id='profil-btn' aria-label='Mon profil' title='Mon profil'&gt;👤&lt;/button&gt;
         &lt;button class='close-btn' id='lib-btn' title='Importer / Exporter la bibliothèque' aria-label='Bibliothèque'&gt;📚&lt;/button&gt;
         &lt;button class='close-btn' id='close-btn' aria-label='Fermer'&gt;✕&lt;/button&gt;
       &lt;/div&gt;
@@ -190,6 +191,7 @@
 
   &lt;script&gt;
     let snippets = [];
+    let profil = {};
     let loadError = false;
     let editingIndex = -1;
     let activeFolder = '';
@@ -236,6 +238,7 @@
         const p = v.split('-').map(Number); const dd = new Date(p[0], p[1]-1, p[2]);
         return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(dd);
       });
+      r = r.replace(/{{moi:([^}]+)}}/g, (m, k) =&gt; (profil[k.trim()] || ''));
       return r;
     }
     function assemble(checked, values) { return checked.map(s =&gt; resolve(s.texte, values)).join('\n\n'); }
@@ -348,6 +351,9 @@
               "&lt;button type='button' data-token='{{datechoix:Date}}'&gt;+ Date à choisir&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{moment}}'&gt;+ Moment&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{alea:Option 1|Option 2}}'&gt;+ Aléatoire&lt;/button&gt;" +
+              "&lt;button type='button' data-token='{{moi:prenom}}'&gt;+ Mon prénom&lt;/button&gt;" +
+              "&lt;button type='button' data-token='{{moi:courriel}}'&gt;+ Mon courriel&lt;/button&gt;" +
+              "&lt;button type='button' data-token='{{moi:entreprise}}'&gt;+ Mon entreprise&lt;/button&gt;" +
             "&lt;/div&gt;&lt;/div&gt;" +
           "&lt;div class='form-group'&gt;&lt;label for='edit-dossier'&gt;Dossier (optionnel)&lt;/label&gt;&lt;input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'&gt;&lt;datalist id='folder-list'&gt;" + getFolders().map(f =&gt; "&lt;option value=\"" + escapeHtml(f) + "\"&gt;&lt;/option&gt;").join('') + "&lt;/datalist&gt;&lt;/div&gt;" +
           "&lt;div class='checkbox-group'&gt;&lt;input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "&gt;&lt;label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'&gt;Pré-coché à l’ouverture&lt;/label&gt;&lt;/div&gt;" +
@@ -360,6 +366,7 @@
             "&lt;li&gt;&lt;code&gt;{{choix:Étiquette=A|B|C}}&lt;/code&gt; → menu déroulant&lt;/li&gt;" +
             "&lt;li&gt;&lt;code&gt;{{alea:A|B|C}}&lt;/code&gt; → valeur au hasard&lt;/li&gt;" +
             "&lt;li&gt;&lt;code&gt;{{moment}}&lt;/code&gt; → Matin / Après-midi / Soir (selon l'heure)&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{moi:champ}}&lt;/code&gt; → votre profil (prenom, courriel, entreprise…) ; éditez via 👤&lt;/li&gt;" +
           "&lt;/ul&gt;&lt;em&gt;Astuce : utilisez les boutons ci-dessus pour insérer une variable au curseur.&lt;/em&gt;&lt;/div&gt;" +
           "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='edit-cancel' type='button'&gt;Annuler&lt;/button&gt;" +
           "&lt;button class='btn btn-primary' id='edit-save' type='button'&gt;" + (isNew ? 'Ajouter' : 'Enregistrer') + "&lt;/button&gt;&lt;/div&gt;" +
@@ -456,6 +463,37 @@
       ov.querySelector('#lib-close').addEventListener('click', () =&gt; ov.remove());
     }
 
+    function openProfil() {
+      const fields = [
+        { key: 'prenom',     label: 'Prénom' },
+        { key: 'nom',        label: 'Nom' },
+        { key: 'courriel',   label: 'Courriel' },
+        { key: 'telephone',  label: 'Téléphone' },
+        { key: 'entreprise', label: 'Entreprise' },
+        { key: 'role',       label: 'Rôle' },
+        { key: 'site',       label: 'Site web' }
+      ];
+      const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'profil-overlay';
+      const inputs = fields.map(f =&gt;
+        "&lt;div class='form-group'&gt;&lt;label for='pf-" + f.key + "'&gt;" + escapeHtml(f.label) + "&lt;/label&gt;" +
+        "&lt;input type='text' id='pf-" + f.key + "' data-key='" + f.key + "' value=\"" + escapeHtml(profil[f.key] || '') + "\" placeholder='" + escapeHtml(f.label) + "…'&gt;&lt;/div&gt;"
+      ).join('');
+      ov.innerHTML =
+        "&lt;div class='modal'&gt;&lt;h2 id='profil-title'&gt;Mon profil&lt;/h2&gt;" + inputs +
+        "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='profil-cancel' type='button'&gt;Annuler&lt;/button&gt;" +
+        "&lt;button class='btn btn-primary' id='profil-save' type='button'&gt;Enregistrer&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;";
+      document.body.appendChild(ov);
+      memora_a11yModal(ov, 'profil-title');
+      ov.querySelector('#profil-cancel').addEventListener('click', () =&gt; ov.remove());
+      ov.querySelector('#profil-save').addEventListener('click', () =&gt; {
+        ov.querySelectorAll('[data-key]').forEach(el =&gt; { profil[el.dataset.key] = el.value.trim(); });
+        if (window.KeyboardMaestro) { try { window.KeyboardMaestro.SetVariable('memora_profil', JSON.stringify(profil)); } catch(e) { console.error('profil persist échec', e); } }
+        ov.remove();
+        render();
+      });
+      const first = ov.querySelector('[data-key]'); if (first) first.focus();
+    }
+
     function memora_a11yModal(ov, labelId) {
       const modal = ov.querySelector('.modal');
       if (modal) { modal.setAttribute('role','dialog'); modal.setAttribute('aria-modal','true'); if (labelId) modal.setAttribute('aria-labelledby', labelId); }
@@ -476,7 +514,10 @@
     }
 
     function init() {
-      loadState(); render();
+      loadState();
+      if (window.KeyboardMaestro) { try { profil = JSON.parse(window.KeyboardMaestro.GetVariable('memora_profil') || '{}') || {}; } catch(e) { profil = {}; } }
+      render();
+      document.getElementById('profil-btn').addEventListener('click', openProfil);
       document.getElementById('lib-btn').addEventListener('click', openLibrary);
       document.getElementById('search-input').addEventListener('input', memora_debounce(render, 150));
       document.getElementById('add-snippet').addEventListener('click', () =&gt; openEdit(-1));
@@ -522,8 +563,8 @@
 
       document.addEventListener('keydown', e =&gt; {
         if (e.key === 'Escape') {
-          const fill = document.getElementById('fill-overlay'); const ed = document.getElementById('edit-overlay'); const lib = document.getElementById('lib-overlay');
-          if (fill) fill.remove(); else if (ed) ed.remove(); else if (lib) lib.remove();
+          const fill = document.getElementById('fill-overlay'); const ed = document.getElementById('edit-overlay'); const lib = document.getElementById('lib-overlay'); const pr = document.getElementById('profil-overlay');
+          if (fill) fill.remove(); else if (ed) ed.remove(); else if (lib) lib.remove(); else if (pr) pr.remove();
           else if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel');
         } else if (e.key === 'Enter' &amp;&amp; !e.target.matches('input, textarea, select') &amp;&amp; !document.getElementById('edit-overlay') &amp;&amp; !document.getElementById('fill-overlay') &amp;&amp; !document.getElementById('lib-overlay')) {
           doInsert();
@@ -545,7 +586,7 @@
 					<key>Action</key>
 					<string>ByPasting</string>
 					<key>ActionUID</key>
-					<integer>156198</integer>
+					<integer>156209</integer>
 					<key>MacroActionType</key>
 					<string>InsertText</string>
 					<key>Text</key>
@@ -555,7 +596,7 @@
 			<key>CreationDate</key>
 			<real>802885377.75442004</real>
 			<key>ModificationDate</key>
-			<real>802971251.93477404</real>
+			<real>802972032.89191794</real>
 			<key>Name</key>
 			<string>MEMORA — Snippets</string>
 			<key>Triggers</key>

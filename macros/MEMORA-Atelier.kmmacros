@@ -14,7 +14,7 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156200</integer>
+					<integer>156211</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -90,6 +90,9 @@
     const formatDate = () =&amp;gt; new Intl.DateTimeFormat('fr-CA', { month: 'long', year: 'numeric' }).format(new Date());
     const moment     = () =&amp;gt; { const h = new Date().getHours(); return h &amp;lt; 12 ? 'Matin' : (h &amp;lt; 18 ? 'Après-midi' : 'Soir'); };
 
+    // ── Profil global {{moi:champ}} — résolu automatiquement ─────────────────
+    let profil = {};
+
     function extractVars(t) {
       const vars = []; const re = /{{(champ|choix|datechoix):([^}=]+)(?:=([^}]+))?}}/g; let m;
       while ((m = re.exec(t)) !== null) vars.push({ type: m[1], label: m[2], choices: m[1] === 'choix' &amp;amp;&amp;amp; m[3] ? m[3].split('|') : [] });
@@ -122,6 +125,7 @@
         const re = new RegExp('{{(?:champ|choix):' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&amp;amp;') + '[^}]*}}', 'g');
         r = r.replace(re, () =&amp;gt; values[label]);
       }
+      r = r.replace(/{{moi:([^}]+)}}/g, (m, k) =&amp;gt; (profil[k.trim()] || ''));
       return r;
     }
 
@@ -142,6 +146,7 @@
     function init() {
       const km  = window.KeyboardMaestro;
       const tpl = km ? (km.GetVariable('memora_mtext') || '') : '';
+      try { profil = JSON.parse(km ? (km.GetVariable('memora_profil') || '{}') : '{}') || {}; } catch(e){ profil = {}; }
 
       const vars = collectVars([tpl]);
 
@@ -262,7 +267,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156202</integer>
+					<integer>156213</integer>
 					<key>DisplayKind</key>
 					<string>None</string>
 					<key>HonourFailureSettings</key>
@@ -326,7 +331,7 @@ end tell</string>
 			<key>CreationDate</key>
 			<real>802964806.45176303</real>
 			<key>ModificationDate</key>
-			<real>802971252.28501701</real>
+			<real>802972033.35350394</real>
 			<key>Name</key>
 			<string>MEMORA — Créer macro</string>
 			<key>Triggers</key>
@@ -339,7 +344,7 @@ end tell</string>
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156204</integer>
+					<integer>156215</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -450,9 +455,12 @@ end tell</string>
             &lt;button type='button' data-token='{{date:court}}'&gt;+ Date jj/mm&lt;/button&gt;
             &lt;button type='button' data-token='{{datechoix:Date}}'&gt;+ Date à choisir&lt;/button&gt;
             &lt;button type='button' data-token='{{moment}}'&gt;+ Moment&lt;/button&gt;
+            &lt;button type='button' data-token='{{moi:prenom}}'&gt;+ Mon prénom&lt;/button&gt;
+            &lt;button type='button' data-token='{{moi:courriel}}'&gt;+ Mon courriel&lt;/button&gt;
+            &lt;button type='button' data-token='{{moi:entreprise}}'&gt;+ Mon entreprise&lt;/button&gt;
             &lt;button type='button' data-token='{{alea:Option 1|Option 2}}'&gt;+ Aléatoire&lt;/button&gt;
           &lt;/div&gt;
-          &lt;span class='field-hint'&gt;Cliquez pour insérer un champ ; il sera demandé au moment de l'insertion.&lt;/span&gt;
+          &lt;span class='field-hint'&gt;Cliquez pour insérer un champ ; il sera demandé au moment de l'insertion. Les jetons &lt;strong&gt;{{moi:champ}}&lt;/strong&gt; utilisent vos informations personnelles (prénom, courriel, entreprise).&lt;/span&gt;
         &lt;/div&gt;
 
         &lt;div class='btns'&gt;
@@ -614,7 +622,7 @@ end tell</string>
 			<key>CreationDate</key>
 			<real>802964806.77613902</real>
 			<key>ModificationDate</key>
-			<real>802971252.63528204</real>
+			<real>802972033.76437199</real>
 			<key>Name</key>
 			<string>Atelier MEMORA</string>
 			<key>Triggers</key>

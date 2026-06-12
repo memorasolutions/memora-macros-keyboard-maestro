@@ -70,6 +70,9 @@
     const formatDate = () => new Intl.DateTimeFormat('fr-CA', { month: 'long', year: 'numeric' }).format(new Date());
     const moment     = () => { const h = new Date().getHours(); return h < 12 ? 'Matin' : (h < 18 ? 'Après-midi' : 'Soir'); };
 
+    // ── Profil global {{moi:champ}} — résolu automatiquement ─────────────────
+    let profil = {};
+
     function extractVars(t) {
       const vars = []; const re = /{{(champ|choix|datechoix):([^}=]+)(?:=([^}]+))?}}/g; let m;
       while ((m = re.exec(t)) !== null) vars.push({ type: m[1], label: m[2], choices: m[1] === 'choix' && m[3] ? m[3].split('|') : [] });
@@ -102,6 +105,7 @@
         const re = new RegExp('{{(?:champ|choix):' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^}]*}}', 'g');
         r = r.replace(re, () => values[label]);
       }
+      r = r.replace(/{{moi:([^}]+)}}/g, (m, k) => (profil[k.trim()] || ''));
       return r;
     }
 
@@ -122,6 +126,7 @@
     function init() {
       const km  = window.KeyboardMaestro;
       const tpl = km ? (km.GetVariable('memora_mtext') || '') : '';
+      try { profil = JSON.parse(km ? (km.GetVariable('memora_profil') || '{}') : '{}') || {}; } catch(e){ profil = {}; }
 
       const vars = collectVars([tpl]);
 

@@ -142,6 +142,7 @@
     <div class='main-zone'>
       <div class='header'>
         <div class='search'><input type='text' id='search-input' placeholder='Rechercher un snippet…' aria-label='Rechercher un snippet'></div>
+        <button class='close-btn' id='profil-btn' aria-label='Mon profil' title='Mon profil'>👤</button>
         <button class='close-btn' id='lib-btn' title='Importer / Exporter la bibliothèque' aria-label='Bibliothèque'>📚</button>
         <button class='close-btn' id='close-btn' aria-label='Fermer'>✕</button>
       </div>
@@ -158,6 +159,7 @@
 
   <script>
     let snippets = [];
+    let profil = {};
     let loadError = false;
     let editingIndex = -1;
     let activeFolder = '';
@@ -204,6 +206,7 @@
         const p = v.split('-').map(Number); const dd = new Date(p[0], p[1]-1, p[2]);
         return new Intl.DateTimeFormat('fr-CA', {day:'numeric', month:'long', year:'numeric'}).format(dd);
       });
+      r = r.replace(/{{moi:([^}]+)}}/g, (m, k) => (profil[k.trim()] || ''));
       return r;
     }
     function assemble(checked, values) { return checked.map(s => resolve(s.texte, values)).join('\n\n'); }
@@ -316,6 +319,9 @@
               "<button type='button' data-token='{{datechoix:Date}}'>+ Date à choisir</button>" +
               "<button type='button' data-token='{{moment}}'>+ Moment</button>" +
               "<button type='button' data-token='{{alea:Option 1|Option 2}}'>+ Aléatoire</button>" +
+              "<button type='button' data-token='{{moi:prenom}}'>+ Mon prénom</button>" +
+              "<button type='button' data-token='{{moi:courriel}}'>+ Mon courriel</button>" +
+              "<button type='button' data-token='{{moi:entreprise}}'>+ Mon entreprise</button>" +
             "</div></div>" +
           "<div class='form-group'><label for='edit-dossier'>Dossier (optionnel)</label><input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'><datalist id='folder-list'>" + getFolders().map(f => "<option value=\"" + escapeHtml(f) + "\"></option>").join('') + "</datalist></div>" +
           "<div class='checkbox-group'><input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "><label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'>Pré-coché à l’ouverture</label></div>" +
@@ -328,6 +334,7 @@
             "<li><code>{{choix:Étiquette=A|B|C}}</code> → menu déroulant</li>" +
             "<li><code>{{alea:A|B|C}}</code> → valeur au hasard</li>" +
             "<li><code>{{moment}}</code> → Matin / Après-midi / Soir (selon l'heure)</li>" +
+            "<li><code>{{moi:champ}}</code> → votre profil (prenom, courriel, entreprise…) ; éditez via 👤</li>" +
           "</ul><em>Astuce : utilisez les boutons ci-dessus pour insérer une variable au curseur.</em></div>" +
           "<div class='btns'><button class='btn btn-secondary' id='edit-cancel' type='button'>Annuler</button>" +
           "<button class='btn btn-primary' id='edit-save' type='button'>" + (isNew ? 'Ajouter' : 'Enregistrer') + "</button></div>" +
@@ -424,6 +431,37 @@
       ov.querySelector('#lib-close').addEventListener('click', () => ov.remove());
     }
 
+    function openProfil() {
+      const fields = [
+        { key: 'prenom',     label: 'Prénom' },
+        { key: 'nom',        label: 'Nom' },
+        { key: 'courriel',   label: 'Courriel' },
+        { key: 'telephone',  label: 'Téléphone' },
+        { key: 'entreprise', label: 'Entreprise' },
+        { key: 'role',       label: 'Rôle' },
+        { key: 'site',       label: 'Site web' }
+      ];
+      const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'profil-overlay';
+      const inputs = fields.map(f =>
+        "<div class='form-group'><label for='pf-" + f.key + "'>" + escapeHtml(f.label) + "</label>" +
+        "<input type='text' id='pf-" + f.key + "' data-key='" + f.key + "' value=\"" + escapeHtml(profil[f.key] || '') + "\" placeholder='" + escapeHtml(f.label) + "…'></div>"
+      ).join('');
+      ov.innerHTML =
+        "<div class='modal'><h2 id='profil-title'>Mon profil</h2>" + inputs +
+        "<div class='btns'><button class='btn btn-secondary' id='profil-cancel' type='button'>Annuler</button>" +
+        "<button class='btn btn-primary' id='profil-save' type='button'>Enregistrer</button></div></div>";
+      document.body.appendChild(ov);
+      memora_a11yModal(ov, 'profil-title');
+      ov.querySelector('#profil-cancel').addEventListener('click', () => ov.remove());
+      ov.querySelector('#profil-save').addEventListener('click', () => {
+        ov.querySelectorAll('[data-key]').forEach(el => { profil[el.dataset.key] = el.value.trim(); });
+        if (window.KeyboardMaestro) { try { window.KeyboardMaestro.SetVariable('memora_profil', JSON.stringify(profil)); } catch(e) { console.error('profil persist échec', e); } }
+        ov.remove();
+        render();
+      });
+      const first = ov.querySelector('[data-key]'); if (first) first.focus();
+    }
+
     function memora_a11yModal(ov, labelId) {
       const modal = ov.querySelector('.modal');
       if (modal) { modal.setAttribute('role','dialog'); modal.setAttribute('aria-modal','true'); if (labelId) modal.setAttribute('aria-labelledby', labelId); }
@@ -444,7 +482,10 @@
     }
 
     function init() {
-      loadState(); render();
+      loadState();
+      if (window.KeyboardMaestro) { try { profil = JSON.parse(window.KeyboardMaestro.GetVariable('memora_profil') || '{}') || {}; } catch(e) { profil = {}; } }
+      render();
+      document.getElementById('profil-btn').addEventListener('click', openProfil);
       document.getElementById('lib-btn').addEventListener('click', openLibrary);
       document.getElementById('search-input').addEventListener('input', memora_debounce(render, 150));
       document.getElementById('add-snippet').addEventListener('click', () => openEdit(-1));
@@ -490,8 +531,8 @@
 
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
-          const fill = document.getElementById('fill-overlay'); const ed = document.getElementById('edit-overlay'); const lib = document.getElementById('lib-overlay');
-          if (fill) fill.remove(); else if (ed) ed.remove(); else if (lib) lib.remove();
+          const fill = document.getElementById('fill-overlay'); const ed = document.getElementById('edit-overlay'); const lib = document.getElementById('lib-overlay'); const pr = document.getElementById('profil-overlay');
+          if (fill) fill.remove(); else if (ed) ed.remove(); else if (lib) lib.remove(); else if (pr) pr.remove();
           else if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel');
         } else if (e.key === 'Enter' && !e.target.matches('input, textarea, select') && !document.getElementById('edit-overlay') && !document.getElementById('fill-overlay') && !document.getElementById('lib-overlay')) {
           doInsert();

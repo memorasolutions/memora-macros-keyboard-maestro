@@ -4,6 +4,12 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.4.0] - 2026-06-12
+
+### Ajouté
+- **Variables de profil `{{moi:champ}}`** (prénom, nom, courriel, téléphone, entreprise, rôle, site) — remplies **automatiquement** depuis votre profil, dans les Snippets **et** dans les macros de l'Atelier.
+- **Éditeur de profil** (bouton **👤**) : saisissez vos infos une seule fois, réutilisez-les partout. Boutons dédiés dans le panneau de variables.
+
 ## [8.3.0] - 2026-06-12
 
 ### Ajouté
