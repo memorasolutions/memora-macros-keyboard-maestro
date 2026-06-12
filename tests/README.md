@@ -22,7 +22,7 @@ node tests/guard.mjs
 ```
 
 Vérifie :
-- Absence de mentions « anthropic » ou « claude » (insensible à la casse) dans le template, les macros et les fichiers `.md`
+- Absence de mentions de marques d'outils IA tiers (insensible à la casse) dans le template, les macros et les fichiers `.md`
 - Présence de l'en-tête MEMORA en ligne 1 du template
 - Absence de ressources externes (src/href/fetch/import url)
 - Présence de la balise Content-Security-Policy
