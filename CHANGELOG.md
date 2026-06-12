@@ -4,6 +4,16 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [5.1.0] - 2026-06-11
+
+### Ajouté
+- **Glisser-déposer amélioré** : **indicateur de dépôt** visuel (on voit où la carte va tomber) et **glisser par la poignée ⠿ uniquement** (fini les glissers accidentels en cliquant une case ou un bouton).
+
+### Modifié
+- **Accessibilité (WCAG 2.2 AA)** : contrastes ajustés (texte secondaire, badges `{ }`, bouton/chip primaire en **mode sombre**) pour atteindre le ratio AA.
+- **Sécurité** : ajout d'une **Content-Security-Policy** (blocage des connexions réseau sortantes) en défense en profondeur.
+- **Robustesse** : recherche **débouncée** (plus fluide), sauvegarde protégée (try/catch), message clair si les données sont illisibles, et insertion fidèle même si une valeur contient « $ ».
+
 ## [5.0.0] - 2026-06-11
 
 ### Ajouté
