@@ -4,6 +4,12 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [7.0.0] - 2026-06-12
+
+### Modifié
+- **Nouvelle interface** : fenêtre **beaucoup plus grande** (positionnée depuis l'écran), **barre latérale de catégories** (Tous · ⭐ Favoris · 🕘 Fréquents · dossiers) et **grille de cartes adaptative** — le **nombre de colonnes s'ajuste à la largeur**. Design rafraîchi 2026 (profondeur douce, translucence subtile, typographie soignée), **responsive** (la barre latérale passe en haut sur fenêtre étroite).
+- Toutes les fonctions conservées (favoris, aperçus, glisser-déposer, recherche floue, annulation, variables) ; **contrastes WCAG AA et modales accessibles maintenus**.
+
 ## [6.1.0] - 2026-06-12
 
 ### Modifié
