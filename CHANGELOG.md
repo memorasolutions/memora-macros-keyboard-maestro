@@ -4,6 +4,13 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.0.0] - 2026-06-12
+
+### Modifié
+- **Fenêtre adaptable à chaque écran** : s'ouvre à ~84 % de l'écran, quelle que soit la résolution (au lieu d'une taille fixe).
+- **Nouvelle palette indigo**, sobre et professionnelle (contrastes WCAG AA conservés).
+- Libellé clarifié : « Coché par défaut » → **« Pré-coché à l'ouverture »** (avec correctif d'affichage de l'apostrophe).
+
 ## [7.0.0] - 2026-06-12
 
 ### Modifié

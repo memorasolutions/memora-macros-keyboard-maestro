@@ -39,10 +39,10 @@
   &lt;meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'"&gt;
   &lt;title&gt;MEMORA — Snippets&lt;/title&gt;
   &lt;style&gt;
-    :root{--bg:#f5f5f7;--surface:#fff;--surface2:#f0f0f3;--border:#d8d8de;--text:#1d1d1f;--text2:#585860;--accent:#0071e3;--badge-text:#0a5cb8;--accent-weak:#e8f1fe;--danger:#ff3b30;--radius:12px;--shadow:0 1px 2px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.06);--sidebar-w:220px;}
-    @media (prefers-color-scheme:dark){:root{--bg:#1c1c1e;--surface:#2c2c2e;--surface2:#3a3a3c;--border:#48484a;--text:#f5f5f7;--text2:#b3b3b9;--accent:#0a84ff;--badge-text:#6cb2ff;--accent-weak:rgba(10,132,255,.18);--danger:#ff453a;--shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.55);}
-    body .btn-primary{background:#0a6cd4;}
-    body .chip.active{background:#0a6cd4;border-color:#0a6cd4;}}
+    :root{--bg:#f5f5f7;--surface:#fff;--surface2:#f0f0f3;--border:#d8d8de;--text:#1d1d1f;--text2:#585860;--accent:#4f46e5;--badge-text:#4338ca;--accent-weak:#eef2ff;--danger:#ff3b30;--radius:12px;--shadow:0 1px 2px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.06);--sidebar-w:220px;}
+    @media (prefers-color-scheme:dark){:root{--bg:#1c1c1e;--surface:#2c2c2e;--surface2:#3a3a3c;--border:#48484a;--text:#f5f5f7;--text2:#b3b3b9;--accent:#818cf8;--badge-text:#a5b4fc;--accent-weak:rgba(129,140,248,.18);--danger:#ff453a;--shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.55);}
+    body .btn-primary{background:#4f46e5;}
+    body .chip.active{background:#4f46e5;border-color:#4f46e5;}}
     *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
     html,body{height:100%;overflow:hidden;}
     body{background:var(--bg);color:var(--text);font-size:14px;}
@@ -159,7 +159,7 @@
     }
   &lt;/style&gt;
 &lt;/head&gt;
-&lt;body data-kmwindow='SCREEN(Main,Left,10%),SCREEN(Main,Top,8%),1180,820'&gt;
+&lt;body data-kmwindow='SCREEN(Main,Left)+SCREEN(Main,Width)*0.08,SCREEN(Main,Top)+SCREEN(Main,Height)*0.08,SCREEN(Main,Width)*0.84,SCREEN(Main,Height)*0.84'&gt;
   &lt;div class='app-layout'&gt;
     &lt;!-- Sidebar : titre + navigation catégories --&gt;
     &lt;aside class='sidebar'&gt;
@@ -332,7 +332,7 @@
               "&lt;button type='button' data-token='{{alea:Option 1|Option 2}}'&gt;+ Aléatoire&lt;/button&gt;" +
             "&lt;/div&gt;&lt;/div&gt;" +
           "&lt;div class='form-group'&gt;&lt;label for='edit-dossier'&gt;Dossier (optionnel)&lt;/label&gt;&lt;input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'&gt;&lt;datalist id='folder-list'&gt;" + getFolders().map(f =&gt; "&lt;option value=\"" + escapeHtml(f) + "\"&gt;&lt;/option&gt;").join('') + "&lt;/datalist&gt;&lt;/div&gt;" +
-          "&lt;div class='checkbox-group'&gt;&lt;input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "&gt;&lt;label for='edit-coche'&gt;Coché par défaut&lt;/label&gt;&lt;/div&gt;" +
+          "&lt;div class='checkbox-group'&gt;&lt;input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "&gt;&lt;label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'&gt;Pré-coché à l’ouverture&lt;/label&gt;&lt;/div&gt;" +
           "&lt;div class='help'&gt;&lt;strong&gt;Variables :&lt;/strong&gt;&lt;ul&gt;" +
             "&lt;li&gt;&lt;code&gt;{{date}}&lt;/code&gt; → mois et année (ex. juin 2026)&lt;/li&gt;" +
             "&lt;li&gt;&lt;code&gt;{{champ:Étiquette}}&lt;/code&gt; → champ texte demandé à l'insertion&lt;/li&gt;" +
@@ -533,7 +533,7 @@
 			<key>CreationDate</key>
 			<real>802885377.75442004</real>
 			<key>ModificationDate</key>
-			<real>802961485.53469002</real>
+			<real>802963784.90258896</real>
 			<key>Name</key>
 			<string>MEMORA — Snippets</string>
 			<key>Triggers</key>

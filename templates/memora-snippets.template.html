@@ -7,10 +7,10 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
   <title>MEMORA — Snippets</title>
   <style>
-    :root{--bg:#f5f5f7;--surface:#fff;--surface2:#f0f0f3;--border:#d8d8de;--text:#1d1d1f;--text2:#585860;--accent:#0071e3;--badge-text:#0a5cb8;--accent-weak:#e8f1fe;--danger:#ff3b30;--radius:12px;--shadow:0 1px 2px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.06);--sidebar-w:220px;}
-    @media (prefers-color-scheme:dark){:root{--bg:#1c1c1e;--surface:#2c2c2e;--surface2:#3a3a3c;--border:#48484a;--text:#f5f5f7;--text2:#b3b3b9;--accent:#0a84ff;--badge-text:#6cb2ff;--accent-weak:rgba(10,132,255,.18);--danger:#ff453a;--shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.55);}
-    body .btn-primary{background:#0a6cd4;}
-    body .chip.active{background:#0a6cd4;border-color:#0a6cd4;}}
+    :root{--bg:#f5f5f7;--surface:#fff;--surface2:#f0f0f3;--border:#d8d8de;--text:#1d1d1f;--text2:#585860;--accent:#4f46e5;--badge-text:#4338ca;--accent-weak:#eef2ff;--danger:#ff3b30;--radius:12px;--shadow:0 1px 2px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.06);--sidebar-w:220px;}
+    @media (prefers-color-scheme:dark){:root{--bg:#1c1c1e;--surface:#2c2c2e;--surface2:#3a3a3c;--border:#48484a;--text:#f5f5f7;--text2:#b3b3b9;--accent:#818cf8;--badge-text:#a5b4fc;--accent-weak:rgba(129,140,248,.18);--danger:#ff453a;--shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.55);}
+    body .btn-primary{background:#4f46e5;}
+    body .chip.active{background:#4f46e5;border-color:#4f46e5;}}
     *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
     html,body{height:100%;overflow:hidden;}
     body{background:var(--bg);color:var(--text);font-size:14px;}
@@ -127,7 +127,7 @@
     }
   </style>
 </head>
-<body data-kmwindow='SCREEN(Main,Left,10%),SCREEN(Main,Top,8%),1180,820'>
+<body data-kmwindow='SCREEN(Main,Left)+SCREEN(Main,Width)*0.08,SCREEN(Main,Top)+SCREEN(Main,Height)*0.08,SCREEN(Main,Width)*0.84,SCREEN(Main,Height)*0.84'>
   <div class='app-layout'>
     <!-- Sidebar : titre + navigation catégories -->
     <aside class='sidebar'>
@@ -300,7 +300,7 @@
               "<button type='button' data-token='{{alea:Option 1|Option 2}}'>+ Aléatoire</button>" +
             "</div></div>" +
           "<div class='form-group'><label for='edit-dossier'>Dossier (optionnel)</label><input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'><datalist id='folder-list'>" + getFolders().map(f => "<option value=\"" + escapeHtml(f) + "\"></option>").join('') + "</datalist></div>" +
-          "<div class='checkbox-group'><input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "><label for='edit-coche'>Coché par défaut</label></div>" +
+          "<div class='checkbox-group'><input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "><label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'>Pré-coché à l’ouverture</label></div>" +
           "<div class='help'><strong>Variables :</strong><ul>" +
             "<li><code>{{date}}</code> → mois et année (ex. juin 2026)</li>" +
             "<li><code>{{champ:Étiquette}}</code> → champ texte demandé à l'insertion</li>" +
