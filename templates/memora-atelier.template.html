@@ -57,8 +57,9 @@
     .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:2px;}
 
     .var-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
-    .var-toolbar button{padding:4px 11px;border:1px solid var(--border);border-radius:999px;background:var(--surface2);color:var(--text);font-size:12px;cursor:pointer;transition:background .13s,color .13s,border-color .13s;}
+    .var-toolbar button{padding:4px 11px;border:1px solid var(--border);border-radius:999px;background:var(--surface2);color:var(--text);font-size:12px;cursor:grab;transition:background .13s,color .13s,border-color .13s;}
     .var-toolbar button:hover{background:var(--accent-weak);color:var(--accent);border-color:var(--accent);}
+    .var-toolbar button:active{cursor:grabbing;}
     :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 
     /* ── Section Mes macros créées ── */
@@ -139,7 +140,7 @@
             <button type='button' data-token='{{presse-papier}}'>+ Presse-papier</button>
             <button type='button' data-token='{{alea:Option 1|Option 2}}'>+ Aléatoire</button>
           </div>
-          <span class='field-hint'>Cliquez pour insérer un champ ; il sera demandé au moment de l'insertion. Les jetons <strong>{{moi:champ}}</strong> utilisent vos informations personnelles. <strong>{{presse-papier}}</strong> colle le contenu du presse-papier au moment de l'insertion.</span>
+          <span class='field-hint'>Cliquez ou glissez pour insérer un champ ; il sera demandé au moment de l'insertion. Les jetons <strong>{{moi:champ}}</strong> utilisent vos informations personnelles. <strong>{{presse-papier}}</strong> colle le contenu du presse-papier au moment de l'insertion.</span>
         </div>
 
         <div class='btns'>
@@ -359,6 +360,8 @@
       /* ── Câblage barre de variables ── */
       document.getElementById('at-var-toolbar').querySelectorAll('[data-token]').forEach(function (b) {
         b.addEventListener('click', function () { insertToken(b.dataset.token); });
+        b.setAttribute('draggable', 'true');
+        b.addEventListener('dragstart', function (e) { e.dataTransfer.setData('text/plain', b.dataset.token); e.dataTransfer.effectAllowed = 'copy'; });
       });
 
       /* ── Fermer / Échap ── */

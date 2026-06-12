@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.8.0] - 2026-06-12
+
+### Ajouté
+- **Glisser-déposer dans le panneau de variables** : en plus du clic, **glissez** un champ (Champ, Choix, Date, Profil, Presse-papier…) et **déposez-le** à l'endroit voulu dans le texte (Snippets et Atelier).
+
 ## [8.7.0] - 2026-06-12
 
 ### Ajouté
