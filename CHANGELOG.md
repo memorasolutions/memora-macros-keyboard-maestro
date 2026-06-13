@@ -7,7 +7,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionna
 ## [8.16.0] - 2026-06-13
 
 ### Modifié
-- **Fenêtre plus grande + toujours redimensionnable** : `;mem` s'ouvre à une **largeur de base ~1500 px** (plafonnée à **92 % de l'écran** pour ne jamais déborder sur un portable), centrée, hauteur ~88 %, et **redimensionnable à la souris** en tout temps.
+- **Fenêtre plus grande et centrée** : `;mem` s'ouvre à une **largeur de base ~1500 px** (plafonnée à **92 % de l'écran** pour ne jamais déborder sur un portable), centrée, hauteur ~88 %. *(Pour un redimensionnement libre à la souris : activer l'option **Resizable** de l'action « Custom HTML Prompt » dans Keyboard Maestro — réglage manuel, non activable par script.)*
 
 ## [8.15.0] - 2026-06-13
 
