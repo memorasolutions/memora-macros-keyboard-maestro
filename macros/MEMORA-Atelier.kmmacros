@@ -404,8 +404,6 @@ return out</string>
 					<integer>156295</integer>
 					<key>Floating</key>
 					<false/>
-					<key>AllowResize</key>
-					<true/>
 					<key>MacroActionType</key>
 					<string>CustomPrompt</string>
 					<key>Text</key>
@@ -567,6 +565,60 @@ return out</string>
             &lt;button type='button' data-token='{{alea:Option 1|Option 2}}'&gt;+ Aléatoire&lt;/button&gt;
           &lt;/div&gt;
           &lt;span class='field-hint'&gt;Cliquez ou glissez pour insérer un champ ; il sera demandé au moment de l'insertion. Les jetons &lt;strong&gt;{{moi:champ}}&lt;/strong&gt; utilisent vos informations personnelles. &lt;strong&gt;{{presse-papier}}&lt;/strong&gt; colle le contenu du presse-papier au moment de l'insertion.&lt;/span&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Assistant IA (transforme le texte ci-dessus) --&gt;
+        &lt;div class='form-group'&gt;
+          &lt;label&gt;✨ Assistant IA &lt;em style='font-weight:400;color:var(--text2);'&gt;(transforme le texte ci-dessus)&lt;/em&gt;&lt;/label&gt;
+          &lt;select id='ai-instr'&gt;
+            &lt;option value='Reformuler'&gt;Reformuler&lt;/option&gt;
+            &lt;option value='Traduire'&gt;Traduire en anglais&lt;/option&gt;
+            &lt;option value='Corriger'&gt;Corriger l'orthographe&lt;/option&gt;
+            &lt;option value='Raccourcir'&gt;Raccourcir&lt;/option&gt;
+            &lt;option value='Allonger'&gt;Allonger&lt;/option&gt;
+            &lt;option value='libre'&gt;Instruction libre…&lt;/option&gt;
+          &lt;/select&gt;
+          &lt;input type='text' id='ai-instr-libre' style='display:none;margin-top:6px;' placeholder='Votre instruction…'&gt;
+          &lt;button type='button' id='ai-run' class='btn btn-secondary btn-sm' style='margin-top:6px;'&gt;✨ Transformer&lt;/button&gt;
+          &lt;div id='ai-result' style='display:none;margin-top:8px;padding:8px;border:1px solid var(--border);border-radius:8px;white-space:pre-wrap;font-size:13px;'&gt;&lt;/div&gt;
+          &lt;button type='button' id='ai-use' class='btn btn-primary btn-sm' style='display:none;margin-top:6px;'&gt;Utiliser ce texte&lt;/button&gt;
+          &lt;details style='margin-top:8px;'&gt;
+            &lt;summary style='cursor:pointer;font-size:12px;color:var(--text2);'&gt;⚙ Clé &amp;amp; modèle IA&lt;/summary&gt;
+            &lt;div style='margin-top:6px;'&gt;
+              &lt;input type='password' id='ai-key' placeholder='sk-or-…' autocomplete='off'&gt;
+              &lt;select id='ai-model' style='margin-top:6px;'&gt;
+                &lt;optgroup label='⭐ Populaires'&gt;
+                  &lt;option value='openai/gpt-5'&gt;GPT-5&lt;/option&gt;
+                  &lt;option value='openai/gpt-4o'&gt;GPT-4o&lt;/option&gt;
+                  &lt;option value='google/gemini-2.5-pro'&gt;Gemini 2.5 Pro&lt;/option&gt;
+                  &lt;option value='deepseek/deepseek-r1'&gt;DeepSeek R1&lt;/option&gt;
+                  &lt;option value='mistralai/mistral-large'&gt;Mistral Large&lt;/option&gt;
+                &lt;/optgroup&gt;
+                &lt;optgroup label='💲 Économiques (low-cost)'&gt;
+                  &lt;option value='openai/gpt-4o-mini'&gt;GPT-4o mini (recommandé)&lt;/option&gt;
+                  &lt;option value='openai/gpt-5-mini'&gt;GPT-5 mini&lt;/option&gt;
+                  &lt;option value='google/gemini-2.5-flash'&gt;Gemini 2.5 Flash&lt;/option&gt;
+                  &lt;option value='google/gemini-2.5-flash-lite'&gt;Gemini 2.5 Flash-Lite&lt;/option&gt;
+                  &lt;option value='deepseek/deepseek-chat'&gt;DeepSeek Chat&lt;/option&gt;
+                  &lt;option value='meta-llama/llama-3.3-70b-instruct'&gt;Llama 3.3 70B&lt;/option&gt;
+                  &lt;option value='qwen/qwen-2.5-72b-instruct'&gt;Qwen 2.5 72B&lt;/option&gt;
+                &lt;/optgroup&gt;
+                &lt;optgroup label='🆓 Gratuits (limités)'&gt;
+                  &lt;option value='openai/gpt-oss-120b:free'&gt;GPT-OSS 120B (gratuit)&lt;/option&gt;
+                  &lt;option value='openai/gpt-oss-20b:free'&gt;GPT-OSS 20B (gratuit)&lt;/option&gt;
+                  &lt;option value='meta-llama/llama-3.3-70b-instruct:free'&gt;Llama 3.3 70B (gratuit)&lt;/option&gt;
+                  &lt;option value='google/gemma-4-31b-it:free'&gt;Gemma 4 31B (gratuit)&lt;/option&gt;
+                  &lt;option value='qwen/qwen3-coder:free'&gt;Qwen3 Coder (gratuit)&lt;/option&gt;
+                  &lt;option value='qwen/qwen3-next-80b-a3b-instruct:free'&gt;Qwen3 Next 80B (gratuit)&lt;/option&gt;
+                &lt;/optgroup&gt;
+                &lt;option value='__custom__'&gt;Autre…&lt;/option&gt;
+              &lt;/select&gt;
+              &lt;input type='text' id='ai-model-custom' style='display:none;margin-top:6px;' placeholder='ex. mistralai/mistral-7b-instruct'&gt;
+              &lt;button type='button' id='ai-key-save' class='btn btn-secondary btn-sm' style='margin-top:6px;'&gt;Enregistrer la clé&lt;/button&gt;
+              &lt;span id='ai-key-msg' style='margin-left:8px;font-size:12px;color:var(--text2);'&gt;&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/details&gt;
+          &lt;span class='field-hint'&gt;Clé OpenRouter (openrouter.ai), conservée sur votre Mac. Si vous épuisez un modèle gratuit, l'assistant vous prévient.&lt;/span&gt;
         &lt;/div&gt;
 
         &lt;div class='btns'&gt;
@@ -818,6 +870,72 @@ return out</string>
       document.getElementById('cancel-btn').addEventListener('click', fermer);
       document.getElementById('close-btn').addEventListener('click',  fermer);
 
+      /* ── Assistant IA (OpenRouter) ── */
+      function initAtelierIA() {
+        var aiKey = document.getElementById('ai-key');
+        var aiModel = document.getElementById('ai-model');
+        var aiModelCustom = document.getElementById('ai-model-custom');
+        var aiInstr = document.getElementById('ai-instr');
+        var aiInstrLibre = document.getElementById('ai-instr-libre');
+        var aiRun = document.getElementById('ai-run');
+        var aiResult = document.getElementById('ai-result');
+        var aiUse = document.getElementById('ai-use');
+        var aiKeySave = document.getElementById('ai-key-save');
+        var aiKeyMsg = document.getElementById('ai-key-msg');
+        if (!aiKey || !aiModel || !aiModelCustom || !aiInstr || !aiInstrLibre || !aiRun || !aiResult || !aiUse || !aiKeySave || !aiKeyMsg) return;
+        var knownModels = ['openai/gpt-5','openai/gpt-4o','google/gemini-2.5-pro','deepseek/deepseek-r1','mistralai/mistral-large','openai/gpt-4o-mini','openai/gpt-5-mini','google/gemini-2.5-flash','google/gemini-2.5-flash-lite','deepseek/deepseek-chat','meta-llama/llama-3.3-70b-instruct','qwen/qwen-2.5-72b-instruct','openai/gpt-oss-120b:free','openai/gpt-oss-20b:free','meta-llama/llama-3.3-70b-instruct:free','google/gemma-4-31b-it:free','qwen/qwen3-coder:free','qwen/qwen3-next-80b-a3b-instruct:free'];
+        var km = window.KeyboardMaestro;
+        aiKey.value = (km ? km.GetVariable('memora_or_key') : '') || '';
+        var savedModel = (km ? km.GetVariable('memora_or_model') : '') || '';
+        if (knownModels.indexOf(savedModel) !== -1) { aiModel.value = savedModel; }
+        else if (savedModel) { aiModel.value = '__custom__'; aiModelCustom.style.display = 'block'; aiModelCustom.value = savedModel; }
+        else { aiModel.value = 'openai/gpt-4o-mini'; }
+        aiModel.addEventListener('change', function () { aiModelCustom.style.display = (aiModel.value === '__custom__') ? 'block' : 'none'; });
+        aiInstr.addEventListener('change', function () { aiInstrLibre.style.display = (aiInstr.value === 'libre') ? 'block' : 'none'; });
+        aiKeySave.addEventListener('click', function () {
+          if (!window.KeyboardMaestro) return;
+          window.KeyboardMaestro.SetVariable('memora_or_key', aiKey.value.trim());
+          var model = (aiModel.value === '__custom__') ? aiModelCustom.value.trim() : aiModel.value;
+          window.KeyboardMaestro.SetVariable('memora_or_model', model);
+          aiKeyMsg.textContent = 'Enregistré ✓';
+          setTimeout(function () { aiKeyMsg.textContent = ''; }, 2000);
+        });
+        var instructionMap = { 'Reformuler': 'Reformule ce texte.', 'Traduire': 'Traduis ce texte en anglais.', 'Corriger': "Corrige l'orthographe et la grammaire.", 'Raccourcir': 'Raccourcis ce texte.', 'Allonger': 'Développe ce texte.' };
+        aiRun.addEventListener('click', function () {
+          var sel = aiInstr.value;
+          var instruction = (sel === 'libre') ? aiInstrLibre.value.trim() : instructionMap[sel];
+          var texteEl2 = document.getElementById('at-texte');
+          if (!texteEl2) return;
+          var texte = texteEl2.value;
+          if (!texte) { aiResult.style.display = 'block'; aiResult.style.color = '#dc2626'; aiResult.textContent = "Saisissez d'abord du texte."; return; }
+          if (!window.KeyboardMaestro) { aiResult.style.display = 'block'; aiResult.style.color = '#dc2626'; aiResult.textContent = 'IA indisponible (Keyboard Maestro requis).'; return; }
+          aiRun.disabled = true; aiRun.textContent = '⏳…';
+          window.KeyboardMaestro.SetVariable('memora_ai_input', texte);
+          window.KeyboardMaestro.SetVariable('memora_ai_instruction', instruction);
+          window.KeyboardMaestro.SetVariable('memora_ai_result', '');
+          window.KeyboardMaestro.Trigger('MEMORA — IA Atelier');
+          var n = 0;
+          var pollId = setInterval(function () {
+            n++;
+            var r = window.KeyboardMaestro.GetVariable('memora_ai_result') || '';
+            if (r) {
+              clearInterval(pollId); aiRun.disabled = false; aiRun.textContent = '✨ Transformer'; aiResult.style.display = 'block';
+              if (r.indexOf('ERREUR') === 0) { aiResult.style.color = '#dc2626'; aiResult.textContent = r; aiUse.style.display = 'none'; }
+              else { aiResult.style.color = ''; aiResult.textContent = r; aiUse.style.display = 'inline-block'; aiUse.dataset.text = r; }
+            } else if (n &gt;= 50) {
+              clearInterval(pollId); aiRun.disabled = false; aiRun.textContent = '✨ Transformer'; aiResult.style.display = 'block'; aiResult.style.color = '#dc2626'; aiResult.textContent = 'Délai dépassé. Réessayez.';
+            }
+          }, 600);
+        });
+        aiUse.addEventListener('click', function () {
+          var texteEl2 = document.getElementById('at-texte');
+          if (!texteEl2) return;
+          texteEl2.value = aiUse.dataset.text || '';
+          aiResult.style.display = 'none'; aiUse.style.display = 'none';
+        });
+      }
+      initAtelierIA();
+
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') fermer();
       });
@@ -970,7 +1088,7 @@ return out</string>
 			<key>CreationDate</key>
 			<real>802964806.77613902</real>
 			<key>ModificationDate</key>
-			<real>803046597.19361901</real>
+			<real>803065130.041592</real>
 			<key>Name</key>
 			<string>Atelier MEMORA</string>
 			<key>Triggers</key>
@@ -1043,6 +1161,129 @@ return "OK"</string>
 			<array/>
 			<key>UID</key>
 			<string>A2A8A7D3-5119-4D54-A1D6-351C2CBB480F</string>
+		</dict>
+		<dict>
+			<key>Actions</key>
+			<array>
+				<dict>
+					<key>ActionUID</key>
+					<integer>156727</integer>
+					<key>DisplayKind</key>
+					<string>Variable</string>
+					<key>HonourFailureSettings</key>
+					<true/>
+					<key>IncludeStdErr</key>
+					<true/>
+					<key>IncludedVariables</key>
+					<array>
+						<string>9999</string>
+					</array>
+					<key>MacroActionType</key>
+					<string>ExecuteShellScript</string>
+					<key>NotifyOnFailure</key>
+					<false/>
+					<key>Path</key>
+					<string></string>
+					<key>Source</key>
+					<string>Nothing</string>
+					<key>StopOnFailure</key>
+					<false/>
+					<key>Text</key>
+					<string>/usr/bin/env python3 &lt;&lt;'MEMORA_PY'
+import os
+import json
+import sys
+import urllib.request
+import urllib.error
+
+def main():
+    key = os.getenv("KMVAR_memora_or_key")
+    if not key:
+        print("ERREUR: clé OpenRouter manquante (réglez-la via le bouton Profil)")
+        sys.exit(0)
+    model = os.getenv("KMVAR_memora_or_model") or "openai/gpt-4o-mini"
+    instruction = os.getenv("KMVAR_memora_ai_instruction") or ""
+    input_text = os.getenv("KMVAR_memora_ai_input") or ""
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Authorization": "Bearer " + key,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://memora.solutions",
+        "X-Title": "MEMORA"
+    }
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "Tu es un assistant de rédaction. Renvoie UNIQUEMENT le texte transformé, sans préambule, sans guillemets, sans explication."},
+            {"role": "user", "content": instruction + "\n\n--- TEXTE ---\n" + input_text}
+        ],
+        "temperature": 0.4
+    }
+    data = json.dumps(payload).encode("utf-8")
+    try:
+        req = urllib.request.Request(url, data=data, headers=headers)
+        with urllib.request.urlopen(req, timeout=60) as response:
+            result = json.loads(response.read().decode("utf-8"))
+            if result.get("choices"):
+                print(result["choices"][0]["message"]["content"].strip())
+            else:
+                print("ERREUR: Réponse inattendue du serveur.")
+            sys.exit(0)
+    except urllib.error.HTTPError as e:
+        om = ""
+        try:
+            ej = json.loads(e.read().decode("utf-8"))
+            om = ej.get("error", {}).get("message", "")
+        except Exception:
+            pass
+        if e.code == 429:
+            if ":free" in model:
+                print("ERREUR: Limite du modèle GRATUIT atteinte. Réessayez plus tard, ou choisissez un autre modèle (réglages via Profil).")
+            else:
+                print("ERREUR: Trop de requêtes (limite de débit). Patientez un instant et réessayez." + ((" (" + om + ")") if om else ""))
+        elif e.code in (401, 403):
+            print("ERREUR: Clé OpenRouter invalide ou non autorisée. Vérifiez votre clé dans le Profil.")
+        elif e.code == 402:
+            print("ERREUR: Crédits OpenRouter insuffisants pour ce modèle. Ajoutez des crédits, ou utilisez un modèle gratuit (suffixe :free).")
+        elif e.code == 404:
+            print("ERREUR: Modèle introuvable : vérifiez le nom du modèle dans le Profil.")
+        else:
+            print("ERREUR: HTTP " + str(e.code) + " - " + (om if om else "erreur serveur"))
+        sys.exit(0)
+    except urllib.error.URLError:
+        print("ERREUR: Connexion impossible (réseau ou OpenRouter indisponible).")
+        sys.exit(0)
+    except Exception as e:
+        print("ERREUR: " + str(e))
+        sys.exit(0)
+
+if __name__ == "__main__":
+    main()
+
+MEMORA_PY
+</string>
+					<key>TimeOutAbortsMacro</key>
+					<false/>
+					<key>TrimResults</key>
+					<true/>
+					<key>TrimResultsNew</key>
+					<true/>
+					<key>UseText</key>
+					<true/>
+					<key>Variable</key>
+					<string>memora_ai_result</string>
+				</dict>
+			</array>
+			<key>CreationDate</key>
+			<real>803064519.39235795</real>
+			<key>ModificationDate</key>
+			<real>803064519.50503194</real>
+			<key>Name</key>
+			<string>MEMORA — IA Atelier</string>
+			<key>Triggers</key>
+			<array/>
+			<key>UID</key>
+			<string>C653E9E0-8165-4388-B690-964375A2C787</string>
 		</dict>
 	</array>
 	<key>Name</key>

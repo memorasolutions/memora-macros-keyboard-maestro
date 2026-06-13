@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.17.0] - 2026-06-13
+
+### Ajouté
+- **Assistant ✨ IA dans l'Atelier** *(parité avec Snippets)* : l'éditeur de texte de **`;atelier`** dispose maintenant du même assistant IA — **Reformuler · Traduire · Corriger · Raccourcir · Allonger** ou instruction libre — avec aperçu et bouton **« Utiliser ce texte »**. Réglage **clé OpenRouter + modèle** (menu 3 catégories) intégré dans la fenêtre, et **helper IA dédié** (« MEMORA — IA Atelier ») pour rester **indépendant** de Snippets. Validé avec un vrai appel OpenRouter.
+
 ## [8.16.0] - 2026-06-13
 
 ### Modifié

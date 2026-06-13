@@ -40,6 +40,7 @@ Créez de **vraies macros Keyboard Maestro indépendantes**, facilement, sans to
 - Rédigez votre **texte** en utilisant le même panneau de variables que Snippets.
 - Cliquez **Créer** → la macro autonome est ajoutée dans le groupe **« Mes textes MEMORA »** de Keyboard Maestro. Elle fonctionne immédiatement, dans toutes vos apps.
 - **Macros à variables** : à chaque déclenchement, une petite fenêtre de remplissage s'ouvre, demande les valeurs et insère le texte complété.
+- **Assistant ✨ IA intégré** : transformez le texte de votre macro (reformuler, traduire, corriger, raccourcir…) avec aperçu, directement dans l'Atelier — votre clé OpenRouter se règle dans la fenêtre.
 - **Gérez vos macros** depuis l'Atelier : **✎ Ouvrir dans Keyboard Maestro** (pour aller plus loin) · **🗑 Supprimer** (avec confirmation, sans popup bloquant).
 
 ---
@@ -117,7 +118,7 @@ Ces jetons s'insèrent en cliquant un bouton dans le panneau de variables (ou en
 
 ## Assistant IA (OpenRouter)
 
-L'éditeur de snippet inclut un assistant IA (Reformuler, Traduire, Corriger, Raccourcir, Allonger, ou instruction libre) avec aperçu avant insertion.
+L'éditeur de snippet **et l'Atelier** incluent un assistant IA (Reformuler, Traduire, Corriger, Raccourcir, Allonger, ou instruction libre) avec aperçu avant insertion.
 
 1. Créez un compte et une clé sur **[openrouter.ai](https://openrouter.ai)**.
 2. Dans `;mem`, ouvrez **👤 Profil**, collez votre **clé OpenRouter** et **choisissez un modèle** dans la liste déroulante (ou « Autre… » pour saisir un identifiant précis).

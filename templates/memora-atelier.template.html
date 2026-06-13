@@ -158,6 +158,60 @@
           <span class='field-hint'>Cliquez ou glissez pour insérer un champ ; il sera demandé au moment de l'insertion. Les jetons <strong>{{moi:champ}}</strong> utilisent vos informations personnelles. <strong>{{presse-papier}}</strong> colle le contenu du presse-papier au moment de l'insertion.</span>
         </div>
 
+        <!-- Assistant IA (transforme le texte ci-dessus) -->
+        <div class='form-group'>
+          <label>✨ Assistant IA <em style='font-weight:400;color:var(--text2);'>(transforme le texte ci-dessus)</em></label>
+          <select id='ai-instr'>
+            <option value='Reformuler'>Reformuler</option>
+            <option value='Traduire'>Traduire en anglais</option>
+            <option value='Corriger'>Corriger l'orthographe</option>
+            <option value='Raccourcir'>Raccourcir</option>
+            <option value='Allonger'>Allonger</option>
+            <option value='libre'>Instruction libre…</option>
+          </select>
+          <input type='text' id='ai-instr-libre' style='display:none;margin-top:6px;' placeholder='Votre instruction…'>
+          <button type='button' id='ai-run' class='btn btn-secondary btn-sm' style='margin-top:6px;'>✨ Transformer</button>
+          <div id='ai-result' style='display:none;margin-top:8px;padding:8px;border:1px solid var(--border);border-radius:8px;white-space:pre-wrap;font-size:13px;'></div>
+          <button type='button' id='ai-use' class='btn btn-primary btn-sm' style='display:none;margin-top:6px;'>Utiliser ce texte</button>
+          <details style='margin-top:8px;'>
+            <summary style='cursor:pointer;font-size:12px;color:var(--text2);'>⚙ Clé &amp; modèle IA</summary>
+            <div style='margin-top:6px;'>
+              <input type='password' id='ai-key' placeholder='sk-or-…' autocomplete='off'>
+              <select id='ai-model' style='margin-top:6px;'>
+                <optgroup label='⭐ Populaires'>
+                  <option value='openai/gpt-5'>GPT-5</option>
+                  <option value='openai/gpt-4o'>GPT-4o</option>
+                  <option value='google/gemini-2.5-pro'>Gemini 2.5 Pro</option>
+                  <option value='deepseek/deepseek-r1'>DeepSeek R1</option>
+                  <option value='mistralai/mistral-large'>Mistral Large</option>
+                </optgroup>
+                <optgroup label='💲 Économiques (low-cost)'>
+                  <option value='openai/gpt-4o-mini'>GPT-4o mini (recommandé)</option>
+                  <option value='openai/gpt-5-mini'>GPT-5 mini</option>
+                  <option value='google/gemini-2.5-flash'>Gemini 2.5 Flash</option>
+                  <option value='google/gemini-2.5-flash-lite'>Gemini 2.5 Flash-Lite</option>
+                  <option value='deepseek/deepseek-chat'>DeepSeek Chat</option>
+                  <option value='meta-llama/llama-3.3-70b-instruct'>Llama 3.3 70B</option>
+                  <option value='qwen/qwen-2.5-72b-instruct'>Qwen 2.5 72B</option>
+                </optgroup>
+                <optgroup label='🆓 Gratuits (limités)'>
+                  <option value='openai/gpt-oss-120b:free'>GPT-OSS 120B (gratuit)</option>
+                  <option value='openai/gpt-oss-20b:free'>GPT-OSS 20B (gratuit)</option>
+                  <option value='meta-llama/llama-3.3-70b-instruct:free'>Llama 3.3 70B (gratuit)</option>
+                  <option value='google/gemma-4-31b-it:free'>Gemma 4 31B (gratuit)</option>
+                  <option value='qwen/qwen3-coder:free'>Qwen3 Coder (gratuit)</option>
+                  <option value='qwen/qwen3-next-80b-a3b-instruct:free'>Qwen3 Next 80B (gratuit)</option>
+                </optgroup>
+                <option value='__custom__'>Autre…</option>
+              </select>
+              <input type='text' id='ai-model-custom' style='display:none;margin-top:6px;' placeholder='ex. mistralai/mistral-7b-instruct'>
+              <button type='button' id='ai-key-save' class='btn btn-secondary btn-sm' style='margin-top:6px;'>Enregistrer la clé</button>
+              <span id='ai-key-msg' style='margin-left:8px;font-size:12px;color:var(--text2);'></span>
+            </div>
+          </details>
+          <span class='field-hint'>Clé OpenRouter (openrouter.ai), conservée sur votre Mac. Si vous épuisez un modèle gratuit, l'assistant vous prévient.</span>
+        </div>
+
         <div class='btns'>
           <button class='btn btn-secondary' type='button' id='cancel-btn'>Fermer</button>
           <button class='btn btn-primary' type='submit' id='create-btn'>Créer la macro</button>
@@ -406,6 +460,72 @@
 
       document.getElementById('cancel-btn').addEventListener('click', fermer);
       document.getElementById('close-btn').addEventListener('click',  fermer);
+
+      /* ── Assistant IA (OpenRouter) ── */
+      function initAtelierIA() {
+        var aiKey = document.getElementById('ai-key');
+        var aiModel = document.getElementById('ai-model');
+        var aiModelCustom = document.getElementById('ai-model-custom');
+        var aiInstr = document.getElementById('ai-instr');
+        var aiInstrLibre = document.getElementById('ai-instr-libre');
+        var aiRun = document.getElementById('ai-run');
+        var aiResult = document.getElementById('ai-result');
+        var aiUse = document.getElementById('ai-use');
+        var aiKeySave = document.getElementById('ai-key-save');
+        var aiKeyMsg = document.getElementById('ai-key-msg');
+        if (!aiKey || !aiModel || !aiModelCustom || !aiInstr || !aiInstrLibre || !aiRun || !aiResult || !aiUse || !aiKeySave || !aiKeyMsg) return;
+        var knownModels = ['openai/gpt-5','openai/gpt-4o','google/gemini-2.5-pro','deepseek/deepseek-r1','mistralai/mistral-large','openai/gpt-4o-mini','openai/gpt-5-mini','google/gemini-2.5-flash','google/gemini-2.5-flash-lite','deepseek/deepseek-chat','meta-llama/llama-3.3-70b-instruct','qwen/qwen-2.5-72b-instruct','openai/gpt-oss-120b:free','openai/gpt-oss-20b:free','meta-llama/llama-3.3-70b-instruct:free','google/gemma-4-31b-it:free','qwen/qwen3-coder:free','qwen/qwen3-next-80b-a3b-instruct:free'];
+        var km = window.KeyboardMaestro;
+        aiKey.value = (km ? km.GetVariable('memora_or_key') : '') || '';
+        var savedModel = (km ? km.GetVariable('memora_or_model') : '') || '';
+        if (knownModels.indexOf(savedModel) !== -1) { aiModel.value = savedModel; }
+        else if (savedModel) { aiModel.value = '__custom__'; aiModelCustom.style.display = 'block'; aiModelCustom.value = savedModel; }
+        else { aiModel.value = 'openai/gpt-4o-mini'; }
+        aiModel.addEventListener('change', function () { aiModelCustom.style.display = (aiModel.value === '__custom__') ? 'block' : 'none'; });
+        aiInstr.addEventListener('change', function () { aiInstrLibre.style.display = (aiInstr.value === 'libre') ? 'block' : 'none'; });
+        aiKeySave.addEventListener('click', function () {
+          if (!window.KeyboardMaestro) return;
+          window.KeyboardMaestro.SetVariable('memora_or_key', aiKey.value.trim());
+          var model = (aiModel.value === '__custom__') ? aiModelCustom.value.trim() : aiModel.value;
+          window.KeyboardMaestro.SetVariable('memora_or_model', model);
+          aiKeyMsg.textContent = 'Enregistré ✓';
+          setTimeout(function () { aiKeyMsg.textContent = ''; }, 2000);
+        });
+        var instructionMap = { 'Reformuler': 'Reformule ce texte.', 'Traduire': 'Traduis ce texte en anglais.', 'Corriger': "Corrige l'orthographe et la grammaire.", 'Raccourcir': 'Raccourcis ce texte.', 'Allonger': 'Développe ce texte.' };
+        aiRun.addEventListener('click', function () {
+          var sel = aiInstr.value;
+          var instruction = (sel === 'libre') ? aiInstrLibre.value.trim() : instructionMap[sel];
+          var texteEl2 = document.getElementById('at-texte');
+          if (!texteEl2) return;
+          var texte = texteEl2.value;
+          if (!texte) { aiResult.style.display = 'block'; aiResult.style.color = '#dc2626'; aiResult.textContent = "Saisissez d'abord du texte."; return; }
+          if (!window.KeyboardMaestro) { aiResult.style.display = 'block'; aiResult.style.color = '#dc2626'; aiResult.textContent = 'IA indisponible (Keyboard Maestro requis).'; return; }
+          aiRun.disabled = true; aiRun.textContent = '⏳…';
+          window.KeyboardMaestro.SetVariable('memora_ai_input', texte);
+          window.KeyboardMaestro.SetVariable('memora_ai_instruction', instruction);
+          window.KeyboardMaestro.SetVariable('memora_ai_result', '');
+          window.KeyboardMaestro.Trigger('MEMORA — IA Atelier');
+          var n = 0;
+          var pollId = setInterval(function () {
+            n++;
+            var r = window.KeyboardMaestro.GetVariable('memora_ai_result') || '';
+            if (r) {
+              clearInterval(pollId); aiRun.disabled = false; aiRun.textContent = '✨ Transformer'; aiResult.style.display = 'block';
+              if (r.indexOf('ERREUR') === 0) { aiResult.style.color = '#dc2626'; aiResult.textContent = r; aiUse.style.display = 'none'; }
+              else { aiResult.style.color = ''; aiResult.textContent = r; aiUse.style.display = 'inline-block'; aiUse.dataset.text = r; }
+            } else if (n >= 50) {
+              clearInterval(pollId); aiRun.disabled = false; aiRun.textContent = '✨ Transformer'; aiResult.style.display = 'block'; aiResult.style.color = '#dc2626'; aiResult.textContent = 'Délai dépassé. Réessayez.';
+            }
+          }, 600);
+        });
+        aiUse.addEventListener('click', function () {
+          var texteEl2 = document.getElementById('at-texte');
+          if (!texteEl2) return;
+          texteEl2.value = aiUse.dataset.text || '';
+          aiResult.style.display = 'none'; aiUse.style.display = 'none';
+        });
+      }
+      initAtelierIA();
 
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') fermer();
