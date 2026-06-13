@@ -169,6 +169,7 @@
     <div class='main-zone'>
       <div class='header'>
         <div class='search'><input type='text' id='search-input' placeholder='Rechercher un snippet…' aria-label='Rechercher un snippet'></div>
+        <button class='close-btn' id='resize-btn' title='Agrandir la fenêtre' aria-label='Agrandir ou réduire la fenêtre'>⤢</button>
         <button class='close-btn' id='profil-btn' aria-label='Mon profil' title='Mon profil'>👤</button>
         <button class='close-btn' id='lib-btn' title='Importer / Exporter la bibliothèque' aria-label='Bibliothèque'>📚</button>
         <button class='close-btn' id='close-btn' aria-label='Fermer'>✕</button>
@@ -403,7 +404,6 @@
             "</div>" +
           "</div>" +
           "<div class='form-group'><label for='edit-dossier'>Dossier (optionnel)</label><input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'><datalist id='folder-list'>" + getFolders().map(f => "<option value=\"" + escapeHtml(f) + "\"></option>").join('') + "</datalist></div>" +
-          "<div class='checkbox-group'><input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "><label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'>Pré-coché à l’ouverture</label></div>" +
           "<div class='help'><strong>Variables :</strong><ul>" +
             "<li><code>{{date}}</code> → mois et année (ex. juin 2026)</li>" +
             "<li><code>{{date:complet}}</code> → date longue (ex. vendredi 12 juin 2026)</li>" +
@@ -508,7 +508,7 @@
       const terme = t.value.trim();
       if (!terme) { t.classList.add('input-error'); t.focus(); return; } // validation inline (pas d'alert natif)
       const old = editingIndex >= 0 ? snippets[editingIndex] : null;
-      const tile = { terme, texte: document.getElementById('edit-texte').value, coché: document.getElementById('edit-coche').checked, dossier: document.getElementById('edit-dossier').value.trim(), favori: old ? !!old.favori : false, usage: old ? (typeof old.usage === 'number' ? old.usage : 0) : 0 };
+      const tile = { terme, texte: document.getElementById('edit-texte').value, coché: old ? !!old.coché : false, dossier: document.getElementById('edit-dossier').value.trim(), favori: old ? !!old.favori : false, usage: old ? (typeof old.usage === 'number' ? old.usage : 0) : 0 };
       if (editingIndex === -1) snippets.push(tile); else snippets[editingIndex] = tile;
       persist(); closeEdit(); render();
     }
@@ -709,6 +709,25 @@
       if (window.KeyboardMaestro) { clip = window.KeyboardMaestro.GetVariable('memora_clip') || ''; }
       render();
       document.getElementById('profil-btn').addEventListener('click', openProfil);
+
+      /* ── Bouton agrandir / réduire la fenêtre (ResizeWindow) ── */
+      function wireResize() {
+        var resizeBtn = document.getElementById('resize-btn');
+        if (!resizeBtn || !window.KeyboardMaestro || !window.KeyboardMaestro.ResizeWindow) return;
+        var agrandi = false;
+        resizeBtn.addEventListener('click', function () {
+          var sw = screen.availWidth || screen.width || 1440;
+          var sh = screen.availHeight || screen.height || 900;
+          var w, h;
+          if (!agrandi) { w = Math.round(sw * 0.95); h = Math.round(sh * 0.95); resizeBtn.title = 'Réduire la fenêtre'; }
+          else { w = Math.min(1500, Math.round(sw * 0.92)); h = Math.round(sh * 0.88); resizeBtn.title = 'Agrandir la fenêtre'; }
+          var left = Math.round((sw - w) / 2);
+          var top = Math.round((sh - h) / 2);
+          window.KeyboardMaestro.ResizeWindow(left + ',' + top + ',' + w + ',' + h);
+          agrandi = !agrandi;
+        });
+      }
+      wireResize();
       document.getElementById('lib-btn').addEventListener('click', openLibrary);
       document.getElementById('search-input').addEventListener('input', memora_debounce(render, 150));
       document.getElementById('add-snippet').addEventListener('click', () => openEdit(-1));

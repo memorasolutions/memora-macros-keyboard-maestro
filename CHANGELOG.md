@@ -4,6 +4,14 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.18.0] - 2026-06-13
+
+### Modifié
+- **Bouton ⤢ Agrandir / Réduire** dans `;mem` : un bouton dans la barre du haut **bascule la fenêtre** entre ~1500 px et **~95 % de l'écran** (via l'API `ResizeWindow` de Keyboard Maestro) — pratique pour ajuster la taille une fois la fenêtre ouverte, les « Custom HTML Prompt » de KM n'ayant pas de poignées de redimensionnement natives.
+
+### Retiré
+- **Option « Pré-coché à l'ouverture »** dans l'éditeur de snippet (peu utile, source de confusion) : la sélection se fait simplement en **cliquant un snippet** (clic = cocher / décocher).
+
 ## [8.17.0] - 2026-06-13
 
 ### Ajouté
