@@ -180,6 +180,10 @@
 
     /* ── Section IA dans l'éditeur de snippet ── */
     .ai-section{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;flex-direction:column;gap:0;}
+    .tab-nav{display:flex;gap:4px;margin:2px 0 12px;border-bottom:1px solid var(--border);}
+    .tab-btn{padding:7px 14px;border:none;background:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+    .tab-btn:hover{color:var(--text);}
+    .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
     .ai-section-title{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.1px;}
     .ai-btns{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
     .ai-btns button{padding:4px 11px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text2);font-size:12px;cursor:pointer;transition:background .13s,color .13s,border-color .13s;}
@@ -359,7 +363,6 @@
           "&lt;div class='card-preview'&gt;" + escapeHtml(s.texte) + "&lt;/div&gt;" +
           "&lt;div class='card-actions'&gt;" +
             "&lt;button class='fav-btn" + (s.favori ? ' on' : '') + "' data-index='" + index + "' aria-label='Favori' aria-pressed='" + (s.favori ? 'true' : 'false') + "' title='Favori'&gt;" + (s.favori ? '★' : '☆') + "&lt;/button&gt;" +
-            "&lt;button class='abbr-btn' data-index='" + index + "' aria-label='Créer une abréviation' title='Créer une abréviation (raccourci de saisie) — ouvre Atelier'&gt;⚡&lt;/button&gt;" +
             "&lt;button class='edit-btn' data-index='" + index + "' aria-label='Modifier'&gt;✎&lt;/button&gt;" +
             "&lt;button class='move-up' data-index='" + index + "' aria-label='Monter' " + (index === 0 ? 'disabled' : '') + "&gt;▲&lt;/button&gt;" +
             "&lt;button class='move-down' data-index='" + index + "' aria-label='Descendre' " + (index === last ? 'disabled' : '') + "&gt;▼&lt;/button&gt;" +
@@ -397,6 +400,12 @@
       ov.innerHTML =
         "&lt;div class='modal'&gt;" +
           "&lt;h2 id='edit-title'&gt;" + (isNew ? 'Ajouter un snippet' : 'Modifier le snippet') + "&lt;/h2&gt;" +
+          "&lt;div class='tab-nav' role='tablist'&gt;" +
+            "&lt;button type='button' class='tab-btn active' data-tabsel='contenu'&gt;✍️ Contenu&lt;/button&gt;" +
+            "&lt;button type='button' class='tab-btn' data-tabsel='abbr'&gt;⌨️ Abréviation&lt;/button&gt;" +
+            "&lt;button type='button' class='tab-btn' data-tabsel='ia'&gt;✨ IA&lt;/button&gt;" +
+          "&lt;/div&gt;" +
+          "&lt;div class='tab-panel' data-tab='contenu'&gt;" +
           "&lt;div class='form-group'&gt;&lt;label for='edit-terme'&gt;Terme&lt;/label&gt;&lt;input type='text' id='edit-terme' value=\"" + escapeHtml(s.terme) + "\"&gt;&lt;/div&gt;" +
           "&lt;div class='form-group'&gt;&lt;label for='edit-texte'&gt;Texte&lt;/label&gt;" +
           "&lt;div class='md-toolbar'&gt;" +
@@ -425,6 +434,27 @@
               "&lt;button type='button' data-token='{{presse-papier}}'&gt;+ Presse-papier&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{calc:1 + 1}}'&gt;+ Calculé&lt;/button&gt;" +
             "&lt;/div&gt;&lt;/div&gt;" +
+          "&lt;div class='form-group'&gt;&lt;label for='edit-dossier'&gt;Dossier (optionnel)&lt;/label&gt;&lt;input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'&gt;&lt;datalist id='folder-list'&gt;" + getFolders().map(f =&gt; "&lt;option value=\"" + escapeHtml(f) + "\"&gt;&lt;/option&gt;").join('') + "&lt;/datalist&gt;&lt;/div&gt;" +
+          "&lt;div class='help'&gt;&lt;strong&gt;Variables :&lt;/strong&gt;&lt;ul&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{date}}&lt;/code&gt; → mois et année (ex. juin 2026)&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{date:complet}}&lt;/code&gt; → date longue (ex. vendredi 12 juin 2026)&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{date:court}}&lt;/code&gt; → date courte (ex. 12/06/2026)&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{datechoix:Étiquette}}&lt;/code&gt; → sélecteur de date demandé à l'insertion&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{champ:Étiquette}}&lt;/code&gt; → champ texte demandé à l'insertion&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{choix:Étiquette=A|B|C}}&lt;/code&gt; → menu déroulant&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{alea:A|B|C}}&lt;/code&gt; → valeur au hasard&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{moment}}&lt;/code&gt; → Matin / Après-midi / Soir (selon l'heure)&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{moi:champ}}&lt;/code&gt; → votre profil (prenom, courriel, entreprise…) ; éditez via 👤&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{presse-papier}}&lt;/code&gt; → le contenu de votre presse-papier&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{calc:Prix * Quantité}}&lt;/code&gt; → calcul (référence d'autres champs possible)&lt;/li&gt;" +
+          "&lt;/ul&gt;&lt;em&gt;Astuce : cliquez ou glissez les boutons ci-dessus pour insérer un champ au curseur.&lt;/em&gt;&lt;/div&gt;" +
+          "&lt;/div&gt;" +
+          "&lt;div class='tab-panel' data-tab='abbr' style='display:none;'&gt;" +
+            "&lt;p style='font-size:13px;color:var(--text2);line-height:1.5;'&gt;Créez un raccourci de saisie (ex. &lt;code&gt;;sig&lt;/code&gt;) qui insère ce snippet directement, sans ouvrir cette fenêtre.&lt;/p&gt;" +
+            "&lt;button class='btn btn-primary' id='edit-abbr-btn' type='button'&gt;⌨️ Créer un raccourci (ouvre l'Atelier)&lt;/button&gt;" +
+            "&lt;p class='help' style='margin-top:8px;'&gt;Le nom et le texte seront pré-remplis dans l'Atelier ; vous y choisirez le déclencheur. Nécessite l'outil Atelier.&lt;/p&gt;" +
+          "&lt;/div&gt;" +
+          "&lt;div class='tab-panel' data-tab='ia' style='display:none;'&gt;" +
           "&lt;div class='ai-section'&gt;" +
             "&lt;div class='ai-section-title'&gt;✨ IA&lt;/div&gt;" +
             "&lt;div class='ai-btns'&gt;" +
@@ -447,25 +477,28 @@
               "&lt;/div&gt;" +
             "&lt;/div&gt;" +
           "&lt;/div&gt;" +
-          "&lt;div class='form-group'&gt;&lt;label for='edit-dossier'&gt;Dossier (optionnel)&lt;/label&gt;&lt;input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'&gt;&lt;datalist id='folder-list'&gt;" + getFolders().map(f =&gt; "&lt;option value=\"" + escapeHtml(f) + "\"&gt;&lt;/option&gt;").join('') + "&lt;/datalist&gt;&lt;/div&gt;" +
-          "&lt;div class='help'&gt;&lt;strong&gt;Variables :&lt;/strong&gt;&lt;ul&gt;" +
-            "&lt;li&gt;&lt;code&gt;{{date}}&lt;/code&gt; → mois et année (ex. juin 2026)&lt;/li&gt;" +
-            "&lt;li&gt;&lt;code&gt;{{date:complet}}&lt;/code&gt; → date longue (ex. vendredi 12 juin 2026)&lt;/li&gt;" +
-            "&lt;li&gt;&lt;code&gt;{{date:court}}&lt;/code&gt; → date courte (ex. 12/06/2026)&lt;/li&gt;" +
-            "&lt;li&gt;&lt;code&gt;{{datechoix:Étiquette}}&lt;/code&gt; → sélecteur de date demandé à l'insertion&lt;/li&gt;" +
-            "&lt;li&gt;&lt;code&gt;{{champ:Étiquette}}&lt;/code&gt; → champ texte demandé à l'insertion&lt;/li&gt;" +
-            "&lt;li&gt;&lt;code&gt;{{choix:Étiquette=A|B|C}}&lt;/code&gt; → menu déroulant&lt;/li&gt;" +
-            "&lt;li&gt;&lt;code&gt;{{alea:A|B|C}}&lt;/code&gt; → valeur au hasard&lt;/li&gt;" +
-            "&lt;li&gt;&lt;code&gt;{{moment}}&lt;/code&gt; → Matin / Après-midi / Soir (selon l'heure)&lt;/li&gt;" +
-            "&lt;li&gt;&lt;code&gt;{{moi:champ}}&lt;/code&gt; → votre profil (prenom, courriel, entreprise…) ; éditez via 👤&lt;/li&gt;" +
-            "&lt;li&gt;&lt;code&gt;{{presse-papier}}&lt;/code&gt; → le contenu de votre presse-papier&lt;/li&gt;" +
-            "&lt;li&gt;&lt;code&gt;{{calc:Prix * Quantité}}&lt;/code&gt; → calcul (référence d'autres champs possible)&lt;/li&gt;" +
-          "&lt;/ul&gt;&lt;em&gt;Astuce : cliquez ou glissez les boutons ci-dessus pour insérer un champ au curseur.&lt;/em&gt;&lt;/div&gt;" +
+          "&lt;/div&gt;" +
           "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='edit-cancel' type='button'&gt;Annuler&lt;/button&gt;" +
           "&lt;button class='btn btn-primary' id='edit-save' type='button'&gt;" + (isNew ? 'Ajouter' : 'Enregistrer') + "&lt;/button&gt;&lt;/div&gt;" +
         "&lt;/div&gt;";
       document.body.appendChild(ov);
       memora_a11yModal(ov, 'edit-title');
+      ov.querySelectorAll('.tab-btn').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var sel = b.dataset.tabsel;
+          ov.querySelectorAll('.tab-btn').forEach(function (x) { x.classList.toggle('active', x === b); });
+          ov.querySelectorAll('.tab-panel').forEach(function (p) { p.style.display = (p.dataset.tab === sel) ? '' : 'none'; });
+        });
+      });
+      var abbrBtn = ov.querySelector('#edit-abbr-btn');
+      if (abbrBtn) abbrBtn.addEventListener('click', function () {
+        if (!window.KeyboardMaestro) return;
+        var t = document.getElementById('edit-terme'), x = document.getElementById('edit-texte');
+        window.KeyboardMaestro.SetVariable('memora_prefill_nom', t ? t.value : '');
+        window.KeyboardMaestro.SetVariable('memora_prefill_texte', x ? x.value : '');
+        window.KeyboardMaestro.Trigger('Atelier MEMORA');
+        window.KeyboardMaestro.Cancel('Cancel');
+      });
       ov.querySelectorAll('.var-toolbar button').forEach(b =&gt; {
         b.addEventListener('click', () =&gt; insertToken(b.dataset.token));
         b.setAttribute('draggable', 'true');
@@ -838,15 +871,6 @@
         else if (e.target.matches('.move-up')) move(i, -1);
         else if (e.target.matches('.move-down')) move(i, 1);
         else if (e.target.matches('.fav-btn')) { snippets[i].favori = !snippets[i].favori; persist(); render(); }
-        else if (e.target.matches('.abbr-btn')) {
-          const sn = snippets[i];
-          if (window.KeyboardMaestro &amp;&amp; sn) {
-            window.KeyboardMaestro.SetVariable('memora_prefill_nom', sn.terme || '');
-            window.KeyboardMaestro.SetVariable('memora_prefill_texte', sn.texte || '');
-            window.KeyboardMaestro.Trigger('Atelier MEMORA');
-            window.KeyboardMaestro.Cancel('Cancel');
-          }
-        }
         else if (e.target.closest('.drag-handle')) { /* glisser, pas insérer */ }
         else { insertOne(i); }
       });

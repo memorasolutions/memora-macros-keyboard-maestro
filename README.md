@@ -24,7 +24,7 @@ Une fenêtre élégante pour **insérer vos textes réutilisables** dans n'impor
 - **Profil 👤** : renseignez vos infos une seule fois (prénom, courriel, entreprise…) → réutilisées partout via `{{moi:…}}`.
 - **Assistant IA (OpenRouter)** : reformuler · traduire · corriger · raccourcir votre texte, avec aperçu avant insertion. Vous saisissez **votre propre clé** (via 👤) ; elle reste sur votre Mac.
 - **Import / Export JSON** (📚) : sauvegardez, migrez ou partagez votre bibliothèque.
-- **Abréviation ⚡** : transformez un snippet en **raccourci de saisie** (ex. tapez `;sig` → le texte s'insère directement, sans ouvrir la fenêtre). Le bouton **⚡** ouvre l'Atelier pré-rempli ; saisissez le déclencheur et créez. *(Nécessite l'outil Atelier.)*
+- **Abréviation** : transformez un snippet en **raccourci de saisie** (ex. tapez `;sig` → le texte s'insère directement, sans ouvrir la fenêtre). Dans l'édition d'un snippet (**✎**), onglet **« Abréviation »** → ouvre l'Atelier pré-rempli ; saisissez le déclencheur et créez. *(Nécessite l'outil Atelier.)*
 - Mode sombre automatique, fenêtre adaptée à votre écran, accessible (WCAG 2.2).
 
 ---

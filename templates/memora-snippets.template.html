@@ -136,6 +136,10 @@
 
     /* ── Section IA dans l'éditeur de snippet ── */
     .ai-section{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;flex-direction:column;gap:0;}
+    .tab-nav{display:flex;gap:4px;margin:2px 0 12px;border-bottom:1px solid var(--border);}
+    .tab-btn{padding:7px 14px;border:none;background:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+    .tab-btn:hover{color:var(--text);}
+    .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
     .ai-section-title{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.1px;}
     .ai-btns{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
     .ai-btns button{padding:4px 11px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text2);font-size:12px;cursor:pointer;transition:background .13s,color .13s,border-color .13s;}
@@ -315,7 +319,6 @@
           "<div class='card-preview'>" + escapeHtml(s.texte) + "</div>" +
           "<div class='card-actions'>" +
             "<button class='fav-btn" + (s.favori ? ' on' : '') + "' data-index='" + index + "' aria-label='Favori' aria-pressed='" + (s.favori ? 'true' : 'false') + "' title='Favori'>" + (s.favori ? '★' : '☆') + "</button>" +
-            "<button class='abbr-btn' data-index='" + index + "' aria-label='Créer une abréviation' title='Créer une abréviation (raccourci de saisie) — ouvre Atelier'>⚡</button>" +
             "<button class='edit-btn' data-index='" + index + "' aria-label='Modifier'>✎</button>" +
             "<button class='move-up' data-index='" + index + "' aria-label='Monter' " + (index === 0 ? 'disabled' : '') + ">▲</button>" +
             "<button class='move-down' data-index='" + index + "' aria-label='Descendre' " + (index === last ? 'disabled' : '') + ">▼</button>" +
@@ -353,6 +356,12 @@
       ov.innerHTML =
         "<div class='modal'>" +
           "<h2 id='edit-title'>" + (isNew ? 'Ajouter un snippet' : 'Modifier le snippet') + "</h2>" +
+          "<div class='tab-nav' role='tablist'>" +
+            "<button type='button' class='tab-btn active' data-tabsel='contenu'>✍️ Contenu</button>" +
+            "<button type='button' class='tab-btn' data-tabsel='abbr'>⌨️ Abréviation</button>" +
+            "<button type='button' class='tab-btn' data-tabsel='ia'>✨ IA</button>" +
+          "</div>" +
+          "<div class='tab-panel' data-tab='contenu'>" +
           "<div class='form-group'><label for='edit-terme'>Terme</label><input type='text' id='edit-terme' value=\"" + escapeHtml(s.terme) + "\"></div>" +
           "<div class='form-group'><label for='edit-texte'>Texte</label>" +
           "<div class='md-toolbar'>" +
@@ -381,6 +390,27 @@
               "<button type='button' data-token='{{presse-papier}}'>+ Presse-papier</button>" +
               "<button type='button' data-token='{{calc:1 + 1}}'>+ Calculé</button>" +
             "</div></div>" +
+          "<div class='form-group'><label for='edit-dossier'>Dossier (optionnel)</label><input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'><datalist id='folder-list'>" + getFolders().map(f => "<option value=\"" + escapeHtml(f) + "\"></option>").join('') + "</datalist></div>" +
+          "<div class='help'><strong>Variables :</strong><ul>" +
+            "<li><code>{{date}}</code> → mois et année (ex. juin 2026)</li>" +
+            "<li><code>{{date:complet}}</code> → date longue (ex. vendredi 12 juin 2026)</li>" +
+            "<li><code>{{date:court}}</code> → date courte (ex. 12/06/2026)</li>" +
+            "<li><code>{{datechoix:Étiquette}}</code> → sélecteur de date demandé à l'insertion</li>" +
+            "<li><code>{{champ:Étiquette}}</code> → champ texte demandé à l'insertion</li>" +
+            "<li><code>{{choix:Étiquette=A|B|C}}</code> → menu déroulant</li>" +
+            "<li><code>{{alea:A|B|C}}</code> → valeur au hasard</li>" +
+            "<li><code>{{moment}}</code> → Matin / Après-midi / Soir (selon l'heure)</li>" +
+            "<li><code>{{moi:champ}}</code> → votre profil (prenom, courriel, entreprise…) ; éditez via 👤</li>" +
+            "<li><code>{{presse-papier}}</code> → le contenu de votre presse-papier</li>" +
+            "<li><code>{{calc:Prix * Quantité}}</code> → calcul (référence d'autres champs possible)</li>" +
+          "</ul><em>Astuce : cliquez ou glissez les boutons ci-dessus pour insérer un champ au curseur.</em></div>" +
+          "</div>" +
+          "<div class='tab-panel' data-tab='abbr' style='display:none;'>" +
+            "<p style='font-size:13px;color:var(--text2);line-height:1.5;'>Créez un raccourci de saisie (ex. <code>;sig</code>) qui insère ce snippet directement, sans ouvrir cette fenêtre.</p>" +
+            "<button class='btn btn-primary' id='edit-abbr-btn' type='button'>⌨️ Créer un raccourci (ouvre l'Atelier)</button>" +
+            "<p class='help' style='margin-top:8px;'>Le nom et le texte seront pré-remplis dans l'Atelier ; vous y choisirez le déclencheur. Nécessite l'outil Atelier.</p>" +
+          "</div>" +
+          "<div class='tab-panel' data-tab='ia' style='display:none;'>" +
           "<div class='ai-section'>" +
             "<div class='ai-section-title'>✨ IA</div>" +
             "<div class='ai-btns'>" +
@@ -403,25 +433,28 @@
               "</div>" +
             "</div>" +
           "</div>" +
-          "<div class='form-group'><label for='edit-dossier'>Dossier (optionnel)</label><input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'><datalist id='folder-list'>" + getFolders().map(f => "<option value=\"" + escapeHtml(f) + "\"></option>").join('') + "</datalist></div>" +
-          "<div class='help'><strong>Variables :</strong><ul>" +
-            "<li><code>{{date}}</code> → mois et année (ex. juin 2026)</li>" +
-            "<li><code>{{date:complet}}</code> → date longue (ex. vendredi 12 juin 2026)</li>" +
-            "<li><code>{{date:court}}</code> → date courte (ex. 12/06/2026)</li>" +
-            "<li><code>{{datechoix:Étiquette}}</code> → sélecteur de date demandé à l'insertion</li>" +
-            "<li><code>{{champ:Étiquette}}</code> → champ texte demandé à l'insertion</li>" +
-            "<li><code>{{choix:Étiquette=A|B|C}}</code> → menu déroulant</li>" +
-            "<li><code>{{alea:A|B|C}}</code> → valeur au hasard</li>" +
-            "<li><code>{{moment}}</code> → Matin / Après-midi / Soir (selon l'heure)</li>" +
-            "<li><code>{{moi:champ}}</code> → votre profil (prenom, courriel, entreprise…) ; éditez via 👤</li>" +
-            "<li><code>{{presse-papier}}</code> → le contenu de votre presse-papier</li>" +
-            "<li><code>{{calc:Prix * Quantité}}</code> → calcul (référence d'autres champs possible)</li>" +
-          "</ul><em>Astuce : cliquez ou glissez les boutons ci-dessus pour insérer un champ au curseur.</em></div>" +
+          "</div>" +
           "<div class='btns'><button class='btn btn-secondary' id='edit-cancel' type='button'>Annuler</button>" +
           "<button class='btn btn-primary' id='edit-save' type='button'>" + (isNew ? 'Ajouter' : 'Enregistrer') + "</button></div>" +
         "</div>";
       document.body.appendChild(ov);
       memora_a11yModal(ov, 'edit-title');
+      ov.querySelectorAll('.tab-btn').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var sel = b.dataset.tabsel;
+          ov.querySelectorAll('.tab-btn').forEach(function (x) { x.classList.toggle('active', x === b); });
+          ov.querySelectorAll('.tab-panel').forEach(function (p) { p.style.display = (p.dataset.tab === sel) ? '' : 'none'; });
+        });
+      });
+      var abbrBtn = ov.querySelector('#edit-abbr-btn');
+      if (abbrBtn) abbrBtn.addEventListener('click', function () {
+        if (!window.KeyboardMaestro) return;
+        var t = document.getElementById('edit-terme'), x = document.getElementById('edit-texte');
+        window.KeyboardMaestro.SetVariable('memora_prefill_nom', t ? t.value : '');
+        window.KeyboardMaestro.SetVariable('memora_prefill_texte', x ? x.value : '');
+        window.KeyboardMaestro.Trigger('Atelier MEMORA');
+        window.KeyboardMaestro.Cancel('Cancel');
+      });
       ov.querySelectorAll('.var-toolbar button').forEach(b => {
         b.addEventListener('click', () => insertToken(b.dataset.token));
         b.setAttribute('draggable', 'true');
@@ -794,15 +827,6 @@
         else if (e.target.matches('.move-up')) move(i, -1);
         else if (e.target.matches('.move-down')) move(i, 1);
         else if (e.target.matches('.fav-btn')) { snippets[i].favori = !snippets[i].favori; persist(); render(); }
-        else if (e.target.matches('.abbr-btn')) {
-          const sn = snippets[i];
-          if (window.KeyboardMaestro && sn) {
-            window.KeyboardMaestro.SetVariable('memora_prefill_nom', sn.terme || '');
-            window.KeyboardMaestro.SetVariable('memora_prefill_texte', sn.texte || '');
-            window.KeyboardMaestro.Trigger('Atelier MEMORA');
-            window.KeyboardMaestro.Cancel('Cancel');
-          }
-        }
         else if (e.target.closest('.drag-handle')) { /* glisser, pas insérer */ }
         else { insertOne(i); }
       });

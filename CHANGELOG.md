@@ -4,6 +4,12 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.22.0] - 2026-06-13
+
+### Modifié
+- **Édition d'un snippet réorganisée en 3 onglets** : **✍️ Contenu** (terme, texte, variables, Markdown) · **⌨️ Abréviation** (créer un raccourci de saisie) · **✨ IA** (assistant). Plus clair, moins chargé.
+- **Bouton ⚡ retiré des cartes** : la création d'abréviation vit désormais dans l'onglet **« Abréviation »** de l'édition (✎) — fin de la confusion entre ✎ (éditer) et ⚡. *(Bonnes pratiques UX 2026 : 1 action primaire visible + édition détaillée en 2-3 onglets.)*
+
 ## [8.21.0] - 2026-06-13
 
 ### Ajouté
