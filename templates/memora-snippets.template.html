@@ -613,15 +613,29 @@
         "<input type='password' id='prof-or-key' autocomplete='off' value=\"" + escapeHtml(orKey) + "\" placeholder='sk-or-…'></div>" +
         "<div class='form-group'><label for='prof-or-model'>Modèle IA</label>" +
         "<select id='prof-or-model'>" +
-        "<optgroup label='Payants (recommandés)'>" +
-        "<option value='openai/gpt-4o-mini'>GPT-4o mini — rapide &amp; économique (recommandé)</option>" +
-        "<option value='openai/gpt-4.1-mini'>GPT-4.1 mini</option>" +
-        "<option value='google/gemini-2.5-flash'>Gemini 2.5 Flash</option>" +
-        "<option value='deepseek/deepseek-chat'>DeepSeek Chat</option>" +
+        "<optgroup label='⭐ Populaires'>" +
+        "<option value='openai/gpt-5'>GPT-5</option>" +
+        "<option value='openai/gpt-4o'>GPT-4o</option>" +
+        "<option value='google/gemini-2.5-pro'>Gemini 2.5 Pro</option>" +
+        "<option value='deepseek/deepseek-r1'>DeepSeek R1 (raisonnement)</option>" +
+        "<option value='mistralai/mistral-large'>Mistral Large</option>" +
         "</optgroup>" +
-        "<optgroup label='Gratuits (:free — limités)'>" +
+        "<optgroup label='💲 Économiques (low-cost)'>" +
+        "<option value='openai/gpt-4o-mini'>GPT-4o mini — éco (recommandé)</option>" +
+        "<option value='openai/gpt-5-mini'>GPT-5 mini</option>" +
+        "<option value='google/gemini-2.5-flash'>Gemini 2.5 Flash</option>" +
+        "<option value='google/gemini-2.5-flash-lite'>Gemini 2.5 Flash-Lite</option>" +
+        "<option value='deepseek/deepseek-chat'>DeepSeek Chat</option>" +
+        "<option value='meta-llama/llama-3.3-70b-instruct'>Llama 3.3 70B</option>" +
+        "<option value='qwen/qwen-2.5-72b-instruct'>Qwen 2.5 72B</option>" +
+        "</optgroup>" +
+        "<optgroup label='🆓 Gratuits (limités)'>" +
+        "<option value='openai/gpt-oss-120b:free'>GPT-OSS 120B (gratuit)</option>" +
+        "<option value='openai/gpt-oss-20b:free'>GPT-OSS 20B (gratuit)</option>" +
+        "<option value='meta-llama/llama-3.3-70b-instruct:free'>Llama 3.3 70B (gratuit)</option>" +
         "<option value='google/gemma-4-31b-it:free'>Gemma 4 31B (gratuit)</option>" +
-        "<option value='google/gemma-4-26b-a4b-it:free'>Gemma 4 26B (gratuit)</option>" +
+        "<option value='qwen/qwen3-coder:free'>Qwen3 Coder (gratuit)</option>" +
+        "<option value='qwen/qwen3-next-80b-a3b-instruct:free'>Qwen3 Next 80B (gratuit)</option>" +
         "</optgroup>" +
         "<option value='__custom__'>Autre… (saisir un identifiant OpenRouter)</option>" +
         "</select>" +
@@ -634,7 +648,7 @@
       const selectEl = ov.querySelector('#prof-or-model');
       const customEl = ov.querySelector('#prof-or-model-custom');
       if (selectEl && customEl) {
-        const knownValues = ['openai/gpt-4o-mini', 'openai/gpt-4.1-mini', 'google/gemini-2.5-flash', 'deepseek/deepseek-chat', 'google/gemma-4-31b-it:free', 'google/gemma-4-26b-a4b-it:free'];
+        const knownValues = ['openai/gpt-5','openai/gpt-4o','google/gemini-2.5-pro','deepseek/deepseek-r1','mistralai/mistral-large','openai/gpt-4o-mini','openai/gpt-5-mini','google/gemini-2.5-flash','google/gemini-2.5-flash-lite','deepseek/deepseek-chat','meta-llama/llama-3.3-70b-instruct','qwen/qwen-2.5-72b-instruct','openai/gpt-oss-120b:free','openai/gpt-oss-20b:free','meta-llama/llama-3.3-70b-instruct:free','google/gemma-4-31b-it:free','qwen/qwen3-coder:free','qwen/qwen3-next-80b-a3b-instruct:free'];
         if (knownValues.includes(orModel)) {
           selectEl.value = orModel;
           customEl.style.display = 'none';

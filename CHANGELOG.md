@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.15.0] - 2026-06-13
+
+### Modifié
+- **Menu « Modèle IA » enrichi, organisé en 3 catégories** : **⭐ Populaires** (GPT-5, GPT-4o, Gemini 2.5 Pro, DeepSeek R1, Mistral Large), **💲 Économiques (low-cost)** (GPT-4o mini, GPT-5 mini, Gemini 2.5 Flash / Flash-Lite, DeepSeek Chat, Llama 3.3 70B, Qwen 2.5 72B) et **🆓 Gratuits (limités)** (GPT-OSS 120B/20B, Llama 3.3 70B, Gemma 4 31B, Qwen3 Coder, Qwen3 Next 80B). 18 modèles vérifiés valides + option **« Autre… »** pour saisir n'importe quel identifiant OpenRouter.
+
 ## [8.14.0] - 2026-06-13
 
 ### Modifié

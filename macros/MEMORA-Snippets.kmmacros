@@ -657,15 +657,29 @@
         "&lt;input type='password' id='prof-or-key' autocomplete='off' value=\"" + escapeHtml(orKey) + "\" placeholder='sk-or-…'&gt;&lt;/div&gt;" +
         "&lt;div class='form-group'&gt;&lt;label for='prof-or-model'&gt;Modèle IA&lt;/label&gt;" +
         "&lt;select id='prof-or-model'&gt;" +
-        "&lt;optgroup label='Payants (recommandés)'&gt;" +
-        "&lt;option value='openai/gpt-4o-mini'&gt;GPT-4o mini — rapide &amp;amp; économique (recommandé)&lt;/option&gt;" +
-        "&lt;option value='openai/gpt-4.1-mini'&gt;GPT-4.1 mini&lt;/option&gt;" +
-        "&lt;option value='google/gemini-2.5-flash'&gt;Gemini 2.5 Flash&lt;/option&gt;" +
-        "&lt;option value='deepseek/deepseek-chat'&gt;DeepSeek Chat&lt;/option&gt;" +
+        "&lt;optgroup label='⭐ Populaires'&gt;" +
+        "&lt;option value='openai/gpt-5'&gt;GPT-5&lt;/option&gt;" +
+        "&lt;option value='openai/gpt-4o'&gt;GPT-4o&lt;/option&gt;" +
+        "&lt;option value='google/gemini-2.5-pro'&gt;Gemini 2.5 Pro&lt;/option&gt;" +
+        "&lt;option value='deepseek/deepseek-r1'&gt;DeepSeek R1 (raisonnement)&lt;/option&gt;" +
+        "&lt;option value='mistralai/mistral-large'&gt;Mistral Large&lt;/option&gt;" +
         "&lt;/optgroup&gt;" +
-        "&lt;optgroup label='Gratuits (:free — limités)'&gt;" +
+        "&lt;optgroup label='💲 Économiques (low-cost)'&gt;" +
+        "&lt;option value='openai/gpt-4o-mini'&gt;GPT-4o mini — éco (recommandé)&lt;/option&gt;" +
+        "&lt;option value='openai/gpt-5-mini'&gt;GPT-5 mini&lt;/option&gt;" +
+        "&lt;option value='google/gemini-2.5-flash'&gt;Gemini 2.5 Flash&lt;/option&gt;" +
+        "&lt;option value='google/gemini-2.5-flash-lite'&gt;Gemini 2.5 Flash-Lite&lt;/option&gt;" +
+        "&lt;option value='deepseek/deepseek-chat'&gt;DeepSeek Chat&lt;/option&gt;" +
+        "&lt;option value='meta-llama/llama-3.3-70b-instruct'&gt;Llama 3.3 70B&lt;/option&gt;" +
+        "&lt;option value='qwen/qwen-2.5-72b-instruct'&gt;Qwen 2.5 72B&lt;/option&gt;" +
+        "&lt;/optgroup&gt;" +
+        "&lt;optgroup label='🆓 Gratuits (limités)'&gt;" +
+        "&lt;option value='openai/gpt-oss-120b:free'&gt;GPT-OSS 120B (gratuit)&lt;/option&gt;" +
+        "&lt;option value='openai/gpt-oss-20b:free'&gt;GPT-OSS 20B (gratuit)&lt;/option&gt;" +
+        "&lt;option value='meta-llama/llama-3.3-70b-instruct:free'&gt;Llama 3.3 70B (gratuit)&lt;/option&gt;" +
         "&lt;option value='google/gemma-4-31b-it:free'&gt;Gemma 4 31B (gratuit)&lt;/option&gt;" +
-        "&lt;option value='google/gemma-4-26b-a4b-it:free'&gt;Gemma 4 26B (gratuit)&lt;/option&gt;" +
+        "&lt;option value='qwen/qwen3-coder:free'&gt;Qwen3 Coder (gratuit)&lt;/option&gt;" +
+        "&lt;option value='qwen/qwen3-next-80b-a3b-instruct:free'&gt;Qwen3 Next 80B (gratuit)&lt;/option&gt;" +
         "&lt;/optgroup&gt;" +
         "&lt;option value='__custom__'&gt;Autre… (saisir un identifiant OpenRouter)&lt;/option&gt;" +
         "&lt;/select&gt;" +
@@ -678,7 +692,7 @@
       const selectEl = ov.querySelector('#prof-or-model');
       const customEl = ov.querySelector('#prof-or-model-custom');
       if (selectEl &amp;&amp; customEl) {
-        const knownValues = ['openai/gpt-4o-mini', 'openai/gpt-4.1-mini', 'google/gemini-2.5-flash', 'deepseek/deepseek-chat', 'google/gemma-4-31b-it:free', 'google/gemma-4-26b-a4b-it:free'];
+        const knownValues = ['openai/gpt-5','openai/gpt-4o','google/gemini-2.5-pro','deepseek/deepseek-r1','mistralai/mistral-large','openai/gpt-4o-mini','openai/gpt-5-mini','google/gemini-2.5-flash','google/gemini-2.5-flash-lite','deepseek/deepseek-chat','meta-llama/llama-3.3-70b-instruct','qwen/qwen-2.5-72b-instruct','openai/gpt-oss-120b:free','openai/gpt-oss-20b:free','meta-llama/llama-3.3-70b-instruct:free','google/gemma-4-31b-it:free','qwen/qwen3-coder:free','qwen/qwen3-next-80b-a3b-instruct:free'];
         if (knownValues.includes(orModel)) {
           selectEl.value = orModel;
           customEl.style.display = 'none';
