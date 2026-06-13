@@ -936,6 +936,18 @@ return out</string>
       }
       initAtelierIA();
 
+      /* ── Pré-remplissage depuis un snippet (pont Snippets → Atelier) ── */
+      if (window.KeyboardMaestro) {
+        var pfNom = window.KeyboardMaestro.GetVariable('memora_prefill_nom') || '';
+        var pfTexte = window.KeyboardMaestro.GetVariable('memora_prefill_texte') || '';
+        if (pfNom || pfTexte) {
+          if (nomEl &amp;&amp; pfNom) nomEl.value = pfNom;
+          if (texteEl &amp;&amp; pfTexte) texteEl.value = pfTexte;
+          try { window.KeyboardMaestro.SetVariable('memora_prefill_nom', ''); window.KeyboardMaestro.SetVariable('memora_prefill_texte', ''); } catch (e) {}
+          if (trigEl) { trigEl.focus(); }
+        }
+      }
+
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') fermer();
       });
@@ -1088,7 +1100,7 @@ return out</string>
 			<key>CreationDate</key>
 			<real>802964806.77613902</real>
 			<key>ModificationDate</key>
-			<real>803065130.041592</real>
+			<real>803074401.29863203</real>
 			<key>Name</key>
 			<string>Atelier MEMORA</string>
 			<key>Triggers</key>

@@ -315,6 +315,7 @@
           "<div class='card-preview'>" + escapeHtml(s.texte) + "</div>" +
           "<div class='card-actions'>" +
             "<button class='fav-btn" + (s.favori ? ' on' : '') + "' data-index='" + index + "' aria-label='Favori' aria-pressed='" + (s.favori ? 'true' : 'false') + "' title='Favori'>" + (s.favori ? '★' : '☆') + "</button>" +
+            "<button class='abbr-btn' data-index='" + index + "' aria-label='Créer une abréviation' title='Créer une abréviation (raccourci de saisie) — ouvre Atelier'>⚡</button>" +
             "<button class='edit-btn' data-index='" + index + "' aria-label='Modifier'>✎</button>" +
             "<button class='move-up' data-index='" + index + "' aria-label='Monter' " + (index === 0 ? 'disabled' : '') + ">▲</button>" +
             "<button class='move-down' data-index='" + index + "' aria-label='Descendre' " + (index === last ? 'disabled' : '') + ">▼</button>" +
@@ -793,6 +794,15 @@
         else if (e.target.matches('.move-up')) move(i, -1);
         else if (e.target.matches('.move-down')) move(i, 1);
         else if (e.target.matches('.fav-btn')) { snippets[i].favori = !snippets[i].favori; persist(); render(); }
+        else if (e.target.matches('.abbr-btn')) {
+          const sn = snippets[i];
+          if (window.KeyboardMaestro && sn) {
+            window.KeyboardMaestro.SetVariable('memora_prefill_nom', sn.terme || '');
+            window.KeyboardMaestro.SetVariable('memora_prefill_texte', sn.texte || '');
+            window.KeyboardMaestro.Trigger('Atelier MEMORA');
+            window.KeyboardMaestro.Cancel('Cancel');
+          }
+        }
         else if (e.target.closest('.drag-handle')) { /* glisser, pas insérer */ }
         else { insertOne(i); }
       });

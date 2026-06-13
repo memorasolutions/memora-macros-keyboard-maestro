@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.21.0] - 2026-06-13
+
+### Ajouté
+- **Abréviation directe depuis un snippet** *(bouton ⚡)* : sur chaque snippet, le bouton **⚡** ouvre l'**Atelier pré-rempli** (nom + texte du snippet) — il ne reste qu'à saisir un **déclencheur « chaîne tapée »** (ex. `;sig`) et cliquer **Créer**. Taper l'abréviation insère alors le texte **directement**, sans ouvrir `;mem` (expansion de texte façon TypeDesk). Réutilise le moteur de macros éprouvé de l'Atelier. *(Nécessite l'outil Atelier installé.)*
+
 ## [8.20.0] - 2026-06-13
 
 ### Modifié

@@ -527,6 +527,18 @@
       }
       initAtelierIA();
 
+      /* ── Pré-remplissage depuis un snippet (pont Snippets → Atelier) ── */
+      if (window.KeyboardMaestro) {
+        var pfNom = window.KeyboardMaestro.GetVariable('memora_prefill_nom') || '';
+        var pfTexte = window.KeyboardMaestro.GetVariable('memora_prefill_texte') || '';
+        if (pfNom || pfTexte) {
+          if (nomEl && pfNom) nomEl.value = pfNom;
+          if (texteEl && pfTexte) texteEl.value = pfTexte;
+          try { window.KeyboardMaestro.SetVariable('memora_prefill_nom', ''); window.KeyboardMaestro.SetVariable('memora_prefill_texte', ''); } catch (e) {}
+          if (trigEl) { trigEl.focus(); }
+        }
+      }
+
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') fermer();
       });
