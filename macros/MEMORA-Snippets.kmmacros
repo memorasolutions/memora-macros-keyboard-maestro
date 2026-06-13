@@ -656,21 +656,57 @@
         "&lt;div class='form-group'&gt;&lt;label for='prof-or-key'&gt;Clé API OpenRouter&lt;/label&gt;" +
         "&lt;input type='password' id='prof-or-key' autocomplete='off' value=\"" + escapeHtml(orKey) + "\" placeholder='sk-or-…'&gt;&lt;/div&gt;" +
         "&lt;div class='form-group'&gt;&lt;label for='prof-or-model'&gt;Modèle IA&lt;/label&gt;" +
-        "&lt;input type='text' id='prof-or-model' value=\"" + escapeHtml(orModel) + "\" placeholder='openai/gpt-4o-mini'&gt;&lt;/div&gt;" +
+        "&lt;select id='prof-or-model'&gt;" +
+        "&lt;optgroup label='Payants (recommandés)'&gt;" +
+        "&lt;option value='openai/gpt-4o-mini'&gt;GPT-4o mini — rapide &amp;amp; économique (recommandé)&lt;/option&gt;" +
+        "&lt;option value='openai/gpt-4.1-mini'&gt;GPT-4.1 mini&lt;/option&gt;" +
+        "&lt;option value='google/gemini-2.5-flash'&gt;Gemini 2.5 Flash&lt;/option&gt;" +
+        "&lt;option value='deepseek/deepseek-chat'&gt;DeepSeek Chat&lt;/option&gt;" +
+        "&lt;/optgroup&gt;" +
+        "&lt;optgroup label='Gratuits (:free — limités)'&gt;" +
+        "&lt;option value='google/gemma-4-31b-it:free'&gt;Gemma 4 31B (gratuit)&lt;/option&gt;" +
+        "&lt;option value='google/gemma-4-26b-a4b-it:free'&gt;Gemma 4 26B (gratuit)&lt;/option&gt;" +
+        "&lt;/optgroup&gt;" +
+        "&lt;option value='__custom__'&gt;Autre… (saisir un identifiant OpenRouter)&lt;/option&gt;" +
+        "&lt;/select&gt;" +
+        "&lt;input type='text' id='prof-or-model-custom' style='display:none;margin-top:6px;' placeholder='ex. mistralai/mistral-7b-instruct'&gt;&lt;/div&gt;" +
         "&lt;p style='font-size:12px;color:var(--text2);line-height:1.5;margin-top:-2px;'&gt;Obtenez une clé sur &lt;strong&gt;openrouter.ai&lt;/strong&gt;. Elle reste sur votre Mac (jamais partagée).&lt;/p&gt;" +
         "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='profil-cancel' type='button'&gt;Annuler&lt;/button&gt;" +
         "&lt;button class='btn btn-primary' id='profil-save' type='button'&gt;Enregistrer&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;";
       document.body.appendChild(ov);
       memora_a11yModal(ov, 'profil-title');
+      const selectEl = ov.querySelector('#prof-or-model');
+      const customEl = ov.querySelector('#prof-or-model-custom');
+      if (selectEl &amp;&amp; customEl) {
+        const knownValues = ['openai/gpt-4o-mini', 'openai/gpt-4.1-mini', 'google/gemini-2.5-flash', 'deepseek/deepseek-chat', 'google/gemma-4-31b-it:free', 'google/gemma-4-26b-a4b-it:free'];
+        if (knownValues.includes(orModel)) {
+          selectEl.value = orModel;
+          customEl.style.display = 'none';
+        } else if (orModel) {
+          selectEl.value = '__custom__';
+          customEl.style.display = 'block';
+          customEl.value = orModel;
+        } else {
+          selectEl.value = 'openai/gpt-4o-mini';
+          customEl.style.display = 'none';
+        }
+        selectEl.addEventListener('change', function() {
+          if (this.value === '__custom__') { customEl.style.display = 'block'; customEl.focus(); }
+          else { customEl.style.display = 'none'; }
+        });
+      }
       ov.querySelector('#profil-cancel').addEventListener('click', () =&gt; ov.remove());
       ov.querySelector('#profil-save').addEventListener('click', () =&gt; {
         ov.querySelectorAll('[data-key]').forEach(el =&gt; { profil[el.dataset.key] = el.value.trim(); });
         if (window.KeyboardMaestro) { try { window.KeyboardMaestro.SetVariable('memora_profil', JSON.stringify(profil)); } catch(e) { console.error('profil persist échec', e); } }
         if (window.KeyboardMaestro) {
-          const orKeyEl   = ov.querySelector('#prof-or-key');
-          const orModelEl = ov.querySelector('#prof-or-model');
-          try { if (orKeyEl)   window.KeyboardMaestro.SetVariable('memora_or_key',   orKeyEl.value.trim()); }   catch(e) {}
-          try { if (orModelEl) window.KeyboardMaestro.SetVariable('memora_or_model', orModelEl.value.trim()); } catch(e) {}
+          const orKeyEl = ov.querySelector('#prof-or-key');
+          try { if (orKeyEl) window.KeyboardMaestro.SetVariable('memora_or_key', orKeyEl.value.trim()); } catch(e) {}
+          const orSelEl = ov.querySelector('#prof-or-model');
+          const orCustomEl = ov.querySelector('#prof-or-model-custom');
+          let modelValue = '';
+          if (orSelEl) { modelValue = (orSelEl.value === '__custom__' &amp;&amp; orCustomEl) ? orCustomEl.value.trim() : orSelEl.value; }
+          try { window.KeyboardMaestro.SetVariable('memora_or_model', modelValue); } catch(e) {}
         }
         ov.remove();
         render();

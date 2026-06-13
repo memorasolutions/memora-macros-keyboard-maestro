@@ -120,7 +120,7 @@ Ces jetons s'insèrent en cliquant un bouton dans le panneau de variables (ou en
 L'éditeur de snippet inclut un assistant IA (Reformuler, Traduire, Corriger, Raccourcir, Allonger, ou instruction libre) avec aperçu avant insertion.
 
 1. Créez un compte et une clé sur **[openrouter.ai](https://openrouter.ai)**.
-2. Dans `;mem`, ouvrez **👤 Profil** et collez votre **clé OpenRouter** (et, au besoin, un **modèle**, ex. `openai/gpt-4o-mini`).
+2. Dans `;mem`, ouvrez **👤 Profil**, collez votre **clé OpenRouter** et **choisissez un modèle** dans la liste déroulante (ou « Autre… » pour saisir un identifiant précis).
 3. Dans l'édition d'un snippet, utilisez la section **✨ IA**.
 
 ### Choix du modèle

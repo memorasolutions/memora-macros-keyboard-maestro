@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.14.0] - 2026-06-13
+
+### Modifié
+- **Choix du modèle IA en liste déroulante** : dans **👤 Profil**, le modèle se choisit désormais dans un **menu déroulant** (modèles **payants** recommandés + modèles **gratuits** `:free`) — fini les fautes de frappe. Une option **« Autre… »** permet toujours de saisir librement n'importe quel identifiant OpenRouter.
+
 ## [8.13.0] - 2026-06-13
 
 ### Modifié
