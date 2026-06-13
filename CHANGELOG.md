@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.16.0] - 2026-06-13
+
+### Modifié
+- **Fenêtre plus grande + toujours redimensionnable** : `;mem` s'ouvre à une **largeur de base ~1500 px** (plafonnée à **92 % de l'écran** pour ne jamais déborder sur un portable), centrée, hauteur ~88 %, et **redimensionnable à la souris** en tout temps.
+
 ## [8.15.0] - 2026-06-13
 
 ### Modifié

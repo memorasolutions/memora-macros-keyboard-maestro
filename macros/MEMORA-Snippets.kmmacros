@@ -198,7 +198,7 @@
     .ai-action-row button:hover{background:var(--accent);color:#fff;}
   &lt;/style&gt;
 &lt;/head&gt;
-&lt;body data-kmwindow='SCREEN(Main,Left)+SCREEN(Main,Width)*0.08,SCREEN(Main,Top)+SCREEN(Main,Height)*0.08,SCREEN(Main,Width)*0.84,SCREEN(Main,Height)*0.84'&gt;
+&lt;body data-kmwindow='SCREEN(Main,Left)+(SCREEN(Main,Width)-MIN(1500,SCREEN(Main,Width)*0.92))/2,SCREEN(Main,Top)+SCREEN(Main,Height)*0.06,MIN(1500,SCREEN(Main,Width)*0.92),SCREEN(Main,Height)*0.88'&gt;
   &lt;div class='app-layout'&gt;
     &lt;!-- Sidebar : titre + navigation catégories --&gt;
     &lt;aside class='sidebar'&gt;
