@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.19.0] - 2026-06-13
+
+### Modifié
+- **Redimensionnement par curseur (slider), en direct** : le bouton **⤢** (à gauche de la barre du haut de `;mem`) ouvre un **curseur**. En le glissant, la **fenêtre se redimensionne en temps réel** (largeur de ~900 px à ~95 % de l'écran, largeur affichée en px). Astuce anti-décrochage : le **coin haut-gauche reste ancré** pendant le glissement → le curseur reste sous la souris (pas de perte de contrôle, contrairement à un redimensionnement qui recentrerait la fenêtre). Remplace l'ancien bouton bascule à 2 tailles.
+
 ## [8.18.0] - 2026-06-13
 
 ### Modifié

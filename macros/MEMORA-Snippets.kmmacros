@@ -212,8 +212,9 @@
     &lt;!-- Zone principale : barre supérieure + grille + footer --&gt;
     &lt;div class='main-zone'&gt;
       &lt;div class='header'&gt;
+        &lt;button class='close-btn' id='resize-btn' title='Redimensionner la fenêtre' aria-label='Redimensionner'&gt;⤢&lt;/button&gt;
+        &lt;span id='resize-panel' style='display:none;align-items:center;gap:8px;margin-left:4px;'&gt;&lt;input type='range' id='resize-slider' min='0' max='100' step='1' style='width:160px;' aria-label='Largeur de la fenêtre'&gt;&lt;span id='resize-label' style='font-size:12px;color:var(--text2);min-width:64px;'&gt;&lt;/span&gt;&lt;/span&gt;
         &lt;div class='search'&gt;&lt;input type='text' id='search-input' placeholder='Rechercher un snippet…' aria-label='Rechercher un snippet'&gt;&lt;/div&gt;
-        &lt;button class='close-btn' id='resize-btn' title='Agrandir la fenêtre' aria-label='Agrandir ou réduire la fenêtre'&gt;⤢&lt;/button&gt;
         &lt;button class='close-btn' id='profil-btn' aria-label='Mon profil' title='Mon profil'&gt;👤&lt;/button&gt;
         &lt;button class='close-btn' id='lib-btn' title='Importer / Exporter la bibliothèque' aria-label='Bibliothèque'&gt;📚&lt;/button&gt;
         &lt;button class='close-btn' id='close-btn' aria-label='Fermer'&gt;✕&lt;/button&gt;
@@ -754,22 +755,35 @@
       render();
       document.getElementById('profil-btn').addEventListener('click', openProfil);
 
-      /* ── Bouton agrandir / réduire la fenêtre (ResizeWindow) ── */
+      /* ── Slider de redimensionnement live (ResizeWindow, coin haut-gauche ancré) ── */
       function wireResize() {
-        var resizeBtn = document.getElementById('resize-btn');
-        if (!resizeBtn || !window.KeyboardMaestro || !window.KeyboardMaestro.ResizeWindow) return;
-        var agrandi = false;
-        resizeBtn.addEventListener('click', function () {
+        var btn = document.getElementById('resize-btn');
+        var panel = document.getElementById('resize-panel');
+        var slider = document.getElementById('resize-slider');
+        var label = document.getElementById('resize-label');
+        if (!btn || !panel || !slider || !label || !window.KeyboardMaestro || !window.KeyboardMaestro.ResizeWindow) return;
+        function metrics() {
           var sw = screen.availWidth || screen.width || 1440;
           var sh = screen.availHeight || screen.height || 900;
-          var w, h;
-          if (!agrandi) { w = Math.round(sw * 0.95); h = Math.round(sh * 0.95); resizeBtn.title = 'Réduire la fenêtre'; }
-          else { w = Math.min(1500, Math.round(sw * 0.92)); h = Math.round(sh * 0.88); resizeBtn.title = 'Agrandir la fenêtre'; }
-          var left = Math.round((sw - w) / 2);
-          var top = Math.round((sh - h) / 2);
-          window.KeyboardMaestro.ResizeWindow(left + ',' + top + ',' + w + ',' + h);
-          agrandi = !agrandi;
+          return { aL: Math.round(sw * 0.025), aT: Math.round(sh * 0.04), aH: Math.round(sh * 0.88), minW: 900, maxW: Math.round(sw * 0.95) };
+        }
+        function widthForVal(v) { var m = metrics(); return Math.round(m.minW + (m.maxW - m.minW) * (v / 100)); }
+        function apply(v) { var m = metrics(); var w = widthForVal(v); window.KeyboardMaestro.ResizeWindow(m.aL + ',' + m.aT + ',' + w + ',' + m.aH); label.textContent = w + ' px'; }
+        var m0 = metrics();
+        var initV = Math.max(0, Math.min(100, Math.round((1500 - m0.minW) / (m0.maxW - m0.minW) * 100)));
+        slider.value = initV;
+        label.textContent = widthForVal(initV) + ' px';
+        btn.addEventListener('click', function () {
+          if (panel.style.display === 'none' || panel.style.display === '') { panel.style.display = 'inline-flex'; apply(slider.value); slider.focus(); }
+          else { panel.style.display = 'none'; }
         });
+        var last = 0;
+        slider.addEventListener('input', function () {
+          label.textContent = widthForVal(slider.value) + ' px';
+          var now = (typeof performance !== 'undefined' &amp;&amp; performance.now) ? performance.now() : 0;
+          if (now - last &gt;= 70) { last = now; apply(slider.value); }
+        });
+        slider.addEventListener('change', function () { apply(slider.value); });
       }
       wireResize();
       document.getElementById('lib-btn').addEventListener('click', openLibrary);

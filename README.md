@@ -89,7 +89,7 @@ Prérequis : macOS avec **Keyboard Maestro 11+** installé.
 | Ouvrir dans KM | Bouton **✎** dans la liste des macros créées |
 | Supprimer une macro | Bouton **🗑** (confirmation intégrée) |
 
-> **Taille de la fenêtre** : `;mem` s'ouvre à ~**1500 px centrée**. Un **bouton ⤢** dans la barre du haut bascule entre cette taille et **~95 % de l'écran** (les « Custom HTML Prompt » de Keyboard Maestro n'ayant pas de poignées de redimensionnement natives ni de mode plein écran). *Remarque : ne **ré-importez pas** le `.kmmacros` pour mettre à jour une macro déjà installée — Keyboard Maestro créerait des doublons ; le téléchargement sert à une **nouvelle** installation.*
+> **Taille de la fenêtre** : `;mem` s'ouvre à ~**1500 px centrée**. Le **bouton ⤢** (à gauche de la barre du haut) ouvre un **curseur** pour **redimensionner la fenêtre en direct** (de ~900 px à ~95 % de l'écran) — les « Custom HTML Prompt » de Keyboard Maestro n'ayant pas de poignées de redimensionnement natives ni de mode plein écran. *Remarque : ne **ré-importez pas** le `.kmmacros` pour mettre à jour une macro déjà installée — Keyboard Maestro créerait des doublons ; le téléchargement sert à une **nouvelle** installation.*
 
 ---
 
