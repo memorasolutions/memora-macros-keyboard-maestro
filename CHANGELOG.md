@@ -4,6 +4,14 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.20.0] - 2026-06-13
+
+### Modifié
+- **Insertion en un seul geste** : **cliquer un snippet l'insère immédiatement** (plus de cases à cocher ni de bouton « Insérer »). Au **clavier** : **↑ / ↓** pour surligner, **Entrée** pour insérer. Les snippets à variables ouvrent la fenêtre de remplissage avant insertion, comme avant.
+
+### Retiré
+- Cases à cocher des cartes + bouton « Insérer » + compteur de sélection (l'assemblage de plusieurs snippets d'un coup, seul intérêt des cases, était rarement utilisé).
+
 ## [8.19.0] - 2026-06-13
 
 ### Modifié

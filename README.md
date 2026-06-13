@@ -15,7 +15,7 @@ Deux outils macOS propulsés par **Keyboard Maestro**, pensés pour être instal
 Une fenêtre élégante pour **insérer vos textes réutilisables** dans n'importe quelle application macOS.
 
 - Tapez **`;mem`** → la fenêtre s'ouvre.
-- **Cochez** un ou plusieurs snippets, cliquez **Insérer** (ou appuyez sur **Entrée**) → le texte est collé instantanément dans l'app active.
+- **Cliquez un snippet** → il est **inséré instantanément** dans l'app active. (Au clavier : **↑ / ↓** pour surligner, **Entrée** pour insérer.)
 - **Variables dynamiques** : à l'insertion, une petite fenêtre vous demande les valeurs manquantes (avec aperçu en direct).
 - **Panneau de variables** : cliquez ou **glissez-déposez** un bouton dans le texte pour insérer le bon jeton — pas besoin de mémoriser la syntaxe.
 - **Recherche** instantanée (floue, tolérante aux fautes) ; badge `{ }` sur les snippets à variables.
@@ -72,7 +72,7 @@ Prérequis : macOS avec **Keyboard Maestro 11+** installé.
 | Action | Comment |
 |--------|---------|
 | Ouvrir la fenêtre | Tapez **`;mem`** dans n'importe quelle app |
-| Insérer un snippet | Cochez-le, puis cliquez **Insérer** ou appuyez sur **Entrée** |
+| Insérer un snippet | **Cliquez-le** (ou surlignez avec **↑ / ↓** puis **Entrée**) |
 | Ajouter un snippet | Bouton **➕** dans la fenêtre |
 | Modifier un snippet | Bouton **✎** sur la carte |
 | Supprimer | Bouton **🗑** (suppression annulable) |

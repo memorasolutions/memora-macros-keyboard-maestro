@@ -103,6 +103,8 @@
     .drag-handle{cursor:grab;color:var(--text2);font-size:14px;opacity:.5;transition:opacity .14s;}
     .drag-handle:hover{opacity:1;}
     .card input[type='checkbox']{width:17px;height:17px;cursor:pointer;flex:none;accent-color:var(--accent);}
+    .card{cursor:pointer;}
+    .card.highlighted{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent);}
     .card-label{flex:1;cursor:pointer;font-weight:600;font-size:14px;word-break:break-word;line-height:1.35;}
     .badge{background:var(--accent-weak);color:var(--badge-text);padding:2px 7px;border-radius:6px;font-size:11.5px;font-weight:700;letter-spacing:.2px;}
     .card-actions{display:flex;gap:2px;justify-content:flex-end;}
@@ -224,8 +226,7 @@
         &lt;button class='add-btn' id='add-snippet' type='button' aria-label='Ajouter un snippet'&gt;➕ Ajouter un snippet&lt;/button&gt;
       &lt;/div&gt;
       &lt;div class='footer'&gt;
-        &lt;span class='count' id='count'&gt;0 sélectionné&lt;/span&gt;
-        &lt;button class='btn btn-primary' id='insert-btn' type='button' disabled&gt;Insérer&lt;/button&gt;
+        &lt;span class='count'&gt;Cliquez un snippet pour l'insérer — ou ↑ ↓ puis Entrée&lt;/span&gt;
       &lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
@@ -352,7 +353,6 @@
         card.innerHTML =
           "&lt;div class='card-header'&gt;" +
             "&lt;span class='drag-handle' draggable='true' title='Glisser pour réordonner' aria-hidden='true'&gt;⠿&lt;/span&gt;" +
-            "&lt;input type='checkbox' " + (s.coché ? 'checked' : '') + " data-index='" + index + "' aria-label='Cocher'&gt;" +
             "&lt;span class='card-label' data-index='" + index + "'&gt;" + escapeHtml(s.terme) + "&lt;/span&gt;" +
             (hasVars(s.texte) ? "&lt;span class='badge' title='Contient des variables'&gt;{ }&lt;/span&gt;" : '') +
           "&lt;/div&gt;" +
@@ -371,9 +371,7 @@
         e.textContent = snippets.length === 0 ? (loadError ? 'Données illisibles. Vérifiez la variable memora_snippets.' : 'Aucun snippet. Cliquez sur « Ajouter un snippet ».') : 'Aucun résultat pour cette recherche.';
         grid.appendChild(e);
       }
-      const n = snippets.filter(s =&gt; s.coché).length;
-      document.getElementById('count').textContent = n + (n &gt; 1 ? ' sélectionnés' : ' sélectionné');
-      document.getElementById('insert-btn').disabled = n === 0;
+      setHighlight(0);
     }
 
     function mdFormat(ta, kind) {
@@ -570,6 +568,45 @@
     function hideUndo() { clearTimeout(undoTimer); const bar = document.getElementById('undo-bar'); if (bar) bar.classList.remove('visible'); }
     function move(i, d) { const j = i + d; if (j &lt; 0 || j &gt;= snippets.length) return; const t = snippets[i]; snippets[i] = snippets[j]; snippets[j] = t; persist(); render(); }
 
+    var highlightPos = 0;
+    function visibleCards() {
+        var container = document.getElementById('snippets-grid');
+        if (!container) return [];
+        return Array.prototype.slice.call(container.querySelectorAll('.card'));
+    }
+    function applyHighlight() {
+        var cards = visibleCards(), i;
+        for (i = 0; i &lt; cards.length; i++) cards[i].classList.remove('highlighted');
+        if (!cards.length) { highlightPos = -1; return; }
+        if (highlightPos &lt; 0) highlightPos = 0;
+        if (highlightPos &gt;= cards.length) highlightPos = cards.length - 1;
+        var el = cards[highlightPos];
+        if (el) { el.classList.add('highlighted'); if (el.scrollIntoView) el.scrollIntoView({ block: 'nearest' }); }
+    }
+    function setHighlight(pos) { highlightPos = pos; applyHighlight(); }
+    function moveHighlight(delta) {
+        var cards = visibleCards();
+        if (!cards.length) return;
+        setHighlight(Math.max(0, Math.min(cards.length - 1, highlightPos + delta)));
+    }
+    function insertOne(index) {
+        var s = snippets[index];
+        if (!s) return;
+        var vars = collectVars([s]);
+        if (!vars || !vars.length) { s.usage = (s.usage || 0) + 1; persist(); submitText(assemble([s], {})); return; }
+        openFill(vars, [s]);
+    }
+    function insertHighlighted() {
+        var cards = visibleCards();
+        if (!cards.length) return;
+        var pos = highlightPos &gt;= 0 ? highlightPos : 0;
+        if (pos &gt;= cards.length) pos = cards.length - 1;
+        var el = cards[pos];
+        if (el &amp;&amp; el.dataset &amp;&amp; typeof el.dataset.index !== 'undefined') {
+            var idx = parseInt(el.dataset.index, 10);
+            if (!isNaN(idx)) insertOne(idx);
+        }
+    }
     function doInsert() {
       const checked = snippets.filter(s =&gt; s.coché);
       if (!checked.length) return;
@@ -790,7 +827,6 @@
       document.getElementById('search-input').addEventListener('input', memora_debounce(render, 150));
       document.getElementById('add-snippet').addEventListener('click', () =&gt; openEdit(-1));
       document.getElementById('close-btn').addEventListener('click', () =&gt; { if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel'); });
-      document.getElementById('insert-btn').addEventListener('click', doInsert);
 
       const grid = document.getElementById('snippets-grid');
       grid.addEventListener('click', e =&gt; {
@@ -800,9 +836,9 @@
         else if (e.target.matches('.delete-btn')) del(i);
         else if (e.target.matches('.move-up')) move(i, -1);
         else if (e.target.matches('.move-down')) move(i, 1);
-        else if (e.target.matches("input[type='checkbox']")) { snippets[i].coché = e.target.checked; persist(); render(); }
-        else if (e.target.matches('.card-label')) { snippets[i].coché = !snippets[i].coché; persist(); render(); }
         else if (e.target.matches('.fav-btn')) { snippets[i].favori = !snippets[i].favori; persist(); render(); }
+        else if (e.target.closest('.drag-handle')) { /* glisser, pas insérer */ }
+        else { insertOne(i); }
       });
 
       let dragIndex = -1;
@@ -830,13 +866,16 @@
       document.body.addEventListener('input', e =&gt; { if (e.target.id === 'edit-terme') e.target.classList.remove('input-error'); });
 
       document.addEventListener('keydown', e =&gt; {
+        const overlay = document.getElementById('fill-overlay') || document.getElementById('edit-overlay') || document.getElementById('lib-overlay') || document.getElementById('profil-overlay');
         if (e.key === 'Escape') {
-          const fill = document.getElementById('fill-overlay'); const ed = document.getElementById('edit-overlay'); const lib = document.getElementById('lib-overlay'); const pr = document.getElementById('profil-overlay');
-          if (fill) fill.remove(); else if (ed) ed.remove(); else if (lib) lib.remove(); else if (pr) pr.remove();
+          if (overlay) overlay.remove();
           else if (window.KeyboardMaestro) window.KeyboardMaestro.Cancel('Cancel');
-        } else if (e.key === 'Enter' &amp;&amp; !e.target.matches('input, textarea, select') &amp;&amp; !document.getElementById('edit-overlay') &amp;&amp; !document.getElementById('fill-overlay') &amp;&amp; !document.getElementById('lib-overlay')) {
-          doInsert();
+          return;
         }
+        if (overlay) return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); moveHighlight(1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); moveHighlight(-1); }
+        else if (e.key === 'Enter') { e.preventDefault(); insertHighlighted(); }
       });
     }
 
