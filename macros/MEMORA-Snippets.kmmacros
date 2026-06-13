@@ -801,7 +801,7 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156299</integer>
+					<integer>156309</integer>
 					<key>DisplayKind</key>
 					<string>Variable</string>
 					<key>HonourFailureSettings</key>
@@ -824,7 +824,6 @@
 					<false/>
 					<key>Text</key>
 					<string>/usr/bin/env python3 &lt;&lt;'MEMORA_PY'
-#!/usr/bin/env python3
 import os
 import json
 import sys
@@ -832,29 +831,65 @@ import urllib.request
 import urllib.error
 
 def main():
-    api_key = os.getenv("KMVAR_memora_or_key", "").strip()
-    if not api_key:
+    key = os.getenv("KMVAR_memora_or_key")
+    if not key:
         print("ERREUR: clé OpenRouter manquante (réglez-la via le bouton Profil)")
         sys.exit(0)
-    model = os.getenv("KMVAR_memora_or_model", "").strip() or "openai/gpt-4o-mini"
-    instruction = os.getenv("KMVAR_memora_ai_instruction", "").strip()
-    input_text = os.getenv("KMVAR_memora_ai_input", "").strip()
-    payload = {"model": model, "messages": [
-        {"role": "system", "content": "Tu es un assistant de rédaction. Renvoie UNIQUEMENT le texte transformé, sans préambule, sans guillemets, sans explication."},
-        {"role": "user", "content": f"{instruction}\n\n--- TEXTE ---\n{input_text}"}], "temperature": 0.4}
-    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json", "HTTP-Referer": "https://memora.solutions", "X-Title": "MEMORA"}
+    model = os.getenv("KMVAR_memora_or_model") or "openai/gpt-4o-mini"
+    instruction = os.getenv("KMVAR_memora_ai_instruction") or ""
+    input_text = os.getenv("KMVAR_memora_ai_input") or ""
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Authorization": "Bearer " + key,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://memora.solutions",
+        "X-Title": "MEMORA"
+    }
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "Tu es un assistant de rédaction. Renvoie UNIQUEMENT le texte transformé, sans préambule, sans guillemets, sans explication."},
+            {"role": "user", "content": instruction + "\n\n--- TEXTE ---\n" + input_text}
+        ],
+        "temperature": 0.4
+    }
+    data = json.dumps(payload).encode("utf-8")
     try:
-        req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions", data=json.dumps(payload).encode('utf-8'), headers=headers, method='POST')
-        with urllib.request.urlopen(req, timeout=30) as response:
-            data = json.loads(response.read().decode('utf-8'))
-            print(data['choices'][0]['message']['content'].strip())
+        req = urllib.request.Request(url, data=data, headers=headers)
+        with urllib.request.urlopen(req, timeout=60) as response:
+            result = json.loads(response.read().decode("utf-8"))
+            if result.get("choices"):
+                print(result["choices"][0]["message"]["content"].strip())
+            else:
+                print("ERREUR: Réponse inattendue du serveur.")
+            sys.exit(0)
     except urllib.error.HTTPError as e:
+        om = ""
         try:
-            ej = json.loads(e.read().decode('utf-8')); print(f"ERREUR: HTTP {e.code} - {ej.get('error',{}).get('message','?')}")
-        except Exception: print(f"ERREUR: HTTP {e.code}")
+            ej = json.loads(e.read().decode("utf-8"))
+            om = ej.get("error", {}).get("message", "")
+        except Exception:
+            pass
+        if e.code == 429:
+            if ":free" in model:
+                print("ERREUR: Limite du modèle GRATUIT atteinte. Réessayez plus tard, ou choisissez un autre modèle (réglages via Profil).")
+            else:
+                print("ERREUR: Trop de requêtes (limite de débit). Patientez un instant et réessayez." + ((" (" + om + ")") if om else ""))
+        elif e.code in (401, 403):
+            print("ERREUR: Clé OpenRouter invalide ou non autorisée. Vérifiez votre clé dans le Profil.")
+        elif e.code == 402:
+            print("ERREUR: Crédits OpenRouter insuffisants pour ce modèle. Ajoutez des crédits, ou utilisez un modèle gratuit (suffixe :free).")
+        elif e.code == 404:
+            print("ERREUR: Modèle introuvable : vérifiez le nom du modèle dans le Profil.")
+        else:
+            print("ERREUR: HTTP " + str(e.code) + " - " + (om if om else "erreur serveur"))
+        sys.exit(0)
+    except urllib.error.URLError:
+        print("ERREUR: Connexion impossible (réseau ou OpenRouter indisponible).")
         sys.exit(0)
     except Exception as e:
-        print(f"ERREUR: {str(e)}"); sys.exit(0)
+        print("ERREUR: " + str(e))
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()
@@ -876,7 +911,7 @@ MEMORA_PY
 			<key>CreationDate</key>
 			<real>803049125.77881205</real>
 			<key>ModificationDate</key>
-			<real>803049126.02801299</real>
+			<real>803049875.14177597</real>
 			<key>Name</key>
 			<string>MEMORA — IA</string>
 			<key>Triggers</key>

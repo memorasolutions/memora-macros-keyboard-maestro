@@ -121,6 +121,8 @@ L'éditeur de snippet inclut un assistant IA (Reformuler, Traduire, Corriger, Ra
 2. Dans `;mem`, ouvrez **👤 Profil** et collez votre **clé OpenRouter** (et, au besoin, un **modèle**, ex. `openai/gpt-4o-mini`).
 3. Dans l'édition d'un snippet, utilisez la section **✨ IA**.
 
+> **Modèles gratuits** : vous pouvez utiliser **n'importe quel modèle** OpenRouter, y compris les **gratuits** (suffixe `:free`, ex. `google/gemma-4-31b-it:free`). Si vous atteignez la **limite d'un modèle gratuit**, l'assistant vous prévient clairement (« Limite du modèle GRATUIT atteinte — réessayez plus tard, ou choisissez un autre modèle »). Des messages explicites couvrent aussi les crédits insuffisants, une clé invalide ou un modèle introuvable.
+
 > **Confidentialité** : votre clé reste **locale à votre Mac** (variable Keyboard Maestro `memora_or_key`), n'est **jamais incluse dans ce dépôt** ni partagée. L'appel réseau est fait par une action Keyboard Maestro « Execute Shell Script » (la clé n'apparaît pas dans la fenêtre).
 
 ---

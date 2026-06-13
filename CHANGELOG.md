@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.12.0] - 2026-06-13
+
+### Modifié
+- **Assistant IA — messages d'erreur clairs** : vous pouvez choisir **n'importe quel modèle** OpenRouter, y compris les **modèles gratuits** (suffixe `:free`). Si la **limite d'un modèle gratuit est atteinte**, l'assistant l'indique explicitement (« Limite du modèle GRATUIT atteinte — réessayez plus tard, ou choisissez un autre modèle »). Messages dédiés également pour : **crédits insuffisants** (402), **clé invalide** (401/403), **modèle introuvable** (404) et **limite de débit** (429). Validé avec de **vrais appels OpenRouter** (modèle payant `openai/gpt-4o-mini` et modèle gratuit `google/gemma-4-31b-it:free`).
+
 ## [8.11.0] - 2026-06-13
 
 ### Ajouté
