@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.10.0] - 2026-06-13
+
+### Ajouté
+- **Barre de mise en forme Markdown** dans l'éditeur de texte (Snippets **et** Atelier) : **gras**, *italique*, `code`, listes à puces / numérotées, liens — appliqués à la sélection. Le texte reste 100 % portable et s'affiche mis en forme dans les apps compatibles Markdown (le collage stylé natif n'étant pas fiable dans la fenêtre Keyboard Maestro).
+
 ## [8.9.0] - 2026-06-13
 
 ### Ajouté
