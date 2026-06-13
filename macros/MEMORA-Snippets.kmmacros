@@ -37,6 +37,8 @@
 					<integer>156305</integer>
 					<key>Floating</key>
 					<false/>
+					<key>AllowResize</key>
+					<true/>
 					<key>MacroActionType</key>
 					<string>CustomPrompt</string>
 					<key>Text</key>

@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.13.0] - 2026-06-13
+
+### Modifié
+- **Fenêtres redimensionnables par défaut** : les fenêtres **`;mem`** (Snippets) et **`;atelier`** (Atelier) s'ouvrent désormais **redimensionnables à la souris** (drapeau `AllowResize` de Keyboard Maestro activé dans l'action « Custom HTML Prompt »). On peut donc agrandir/réduire la fenêtre librement, en plus de sa taille initiale adaptée à l'écran. *(Installations existantes : re-téléchargez et ré-importez la macro, ou cochez « Resizable » dans le menu engrenage ⚙ de l'action.)*
+
 ## [8.12.0] - 2026-06-13
 
 ### Modifié

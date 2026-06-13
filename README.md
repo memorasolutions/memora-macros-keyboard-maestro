@@ -88,6 +88,8 @@ Prérequis : macOS avec **Keyboard Maestro 11+** installé.
 | Ouvrir dans KM | Bouton **✎** dans la liste des macros créées |
 | Supprimer une macro | Bouton **🗑** (confirmation intégrée) |
 
+> **Taille de la fenêtre** : les fenêtres `;mem` et `;atelier` s'ouvrent adaptées à votre écran et sont **redimensionnables à la souris** (tirez un coin ou un bord). *(Si une ancienne installation ne l'est pas encore : ré-importez la dernière version, ou cochez **Resizable** dans le menu engrenage ⚙ de l'action « Custom HTML Prompt » de la macro.)*
+
 ---
 
 ## Variables — tableau des jetons
