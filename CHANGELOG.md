@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.11.0] - 2026-06-13
+
+### Ajouté
+- **Assistant IA (OpenRouter)** : dans l'éditeur de snippet, transformez votre texte avec l'IA — **Reformuler · Traduire · Corriger · Raccourcir · Allonger** ou une instruction libre, avec **aperçu avant insertion**. Chaque utilisateur saisit **sa propre clé OpenRouter** (via le bouton **👤 Profil**) ; la clé reste **locale à votre Mac** (jamais partagée, jamais incluse dans le dépôt). L'appel réseau passe par une action « Execute Shell Script » — la clé n'est **jamais exposée** dans la fenêtre.
+
 ## [8.10.0] - 2026-06-13
 
 ### Ajouté

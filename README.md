@@ -22,6 +22,7 @@ Une fenêtre élégante pour **insérer vos textes réutilisables** dans n'impor
 - **Favoris ⭐**, vue **Fréquents**, **dossiers** et barre latérale de catégories.
 - **Gestion complète dans la fenêtre** : ➕ ajouter · ✎ modifier · 🗑 supprimer · glisser-déposer pour réordonner.
 - **Profil 👤** : renseignez vos infos une seule fois (prénom, courriel, entreprise…) → réutilisées partout via `{{moi:…}}`.
+- **Assistant IA (OpenRouter)** : reformuler · traduire · corriger · raccourcir votre texte, avec aperçu avant insertion. Vous saisissez **votre propre clé** (via 👤) ; elle reste sur votre Mac.
 - **Import / Export JSON** (📚) : sauvegardez, migrez ou partagez votre bibliothèque.
 - Mode sombre automatique, fenêtre adaptée à votre écran, accessible (WCAG 2.2).
 
@@ -109,6 +110,18 @@ Ces jetons s'insèrent en cliquant un bouton dans le panneau de variables (ou en
 | `{{presse-papier}}` | Contenu actuel du presse-papier |
 
 > Boutons Civilité dans le panneau → insèrent « Madame » ou « Monsieur » selon la sélection.
+
+---
+
+## Assistant IA (OpenRouter)
+
+L'éditeur de snippet inclut un assistant IA (Reformuler, Traduire, Corriger, Raccourcir, Allonger, ou instruction libre) avec aperçu avant insertion.
+
+1. Créez un compte et une clé sur **[openrouter.ai](https://openrouter.ai)**.
+2. Dans `;mem`, ouvrez **👤 Profil** et collez votre **clé OpenRouter** (et, au besoin, un **modèle**, ex. `openai/gpt-4o-mini`).
+3. Dans l'édition d'un snippet, utilisez la section **✨ IA**.
+
+> **Confidentialité** : votre clé reste **locale à votre Mac** (variable Keyboard Maestro `memora_or_key`), n'est **jamais incluse dans ce dépôt** ni partagée. L'appel réseau est fait par une action Keyboard Maestro « Execute Shell Script » (la clé n'apparaît pas dans la fenêtre).
 
 ---
 

@@ -14,7 +14,7 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156285</integer>
+					<integer>156301</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -24,7 +24,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156287</integer>
+					<integer>156303</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -34,7 +34,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156289</integer>
+					<integer>156305</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -173,6 +173,27 @@
       .chip{width:auto;flex-shrink:0;padding:5px 12px;border-radius:999px;border-color:var(--border);background:var(--surface);white-space:nowrap;}
       #undo-bar{left:50vw;}
     }
+
+    /* ── Section IA dans l'éditeur de snippet ── */
+    .ai-section{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;flex-direction:column;gap:0;}
+    .ai-section-title{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.1px;}
+    .ai-btns{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+    .ai-btns button{padding:4px 11px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text2);font-size:12px;cursor:pointer;transition:background .13s,color .13s,border-color .13s;}
+    .ai-btns button:hover{background:var(--accent-weak);color:var(--accent);border-color:var(--accent);}
+    .ai-btns button:disabled{opacity:.4;cursor:not-allowed;}
+    .ai-gen{padding:6px 14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--accent);color:#fff;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity .13s;}
+    .ai-gen:hover{opacity:.88;}
+    .ai-gen:disabled{opacity:.4;cursor:not-allowed;}
+    .ai-instr-row{display:flex;gap:6px;margin-top:8px;}
+    .ai-instr-row input{flex:1;padding:7px 11px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:13px;transition:border-color .15s,box-shadow .15s;}
+    .ai-instr-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent);outline:none;}
+    .ai-status{font-size:12.5px;color:var(--text2);margin-top:7px;padding:7px 10px;background:var(--surface);border-radius:8px;line-height:1.4;}
+    .ai-status.err{color:var(--danger);}
+    .ai-result-zone{margin-top:8px;display:flex;flex-direction:column;gap:6px;}
+    .ai-result{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);white-space:pre-wrap;word-break:break-word;max-height:130px;overflow-y:auto;line-height:1.45;}
+    .ai-action-row{display:flex;gap:6px;}
+    .ai-action-row button{padding:5px 13px;border:1px solid var(--accent);border-radius:8px;background:var(--accent-weak);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;transition:background .13s,color .13s;}
+    .ai-action-row button:hover{background:var(--accent);color:#fff;}
   &lt;/style&gt;
 &lt;/head&gt;
 &lt;body data-kmwindow='SCREEN(Main,Left)+SCREEN(Main,Width)*0.08,SCREEN(Main,Top)+SCREEN(Main,Height)*0.08,SCREEN(Main,Width)*0.84,SCREEN(Main,Height)*0.84'&gt;
@@ -401,6 +422,28 @@
               "&lt;button type='button' data-token='{{presse-papier}}'&gt;+ Presse-papier&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{calc:1 + 1}}'&gt;+ Calculé&lt;/button&gt;" +
             "&lt;/div&gt;&lt;/div&gt;" +
+          "&lt;div class='ai-section'&gt;" +
+            "&lt;div class='ai-section-title'&gt;✨ IA&lt;/div&gt;" +
+            "&lt;div class='ai-btns'&gt;" +
+              "&lt;button type='button' data-ai-preset='Reformule plus poliment, en conservant le sens'&gt;Reformuler&lt;/button&gt;" +
+              "&lt;button type='button' data-ai-preset='Traduis en anglais'&gt;Traduire en anglais&lt;/button&gt;" +
+              "&lt;button type='button' data-ai-preset=\"Corrige l'orthographe et la grammaire\"&gt;Corriger&lt;/button&gt;" +
+              "&lt;button type='button' data-ai-preset=\"Raccourcis ce texte en conservant l'essentiel\"&gt;Raccourcir&lt;/button&gt;" +
+              "&lt;button type='button' data-ai-preset='Développe ce texte avec plus de détails'&gt;Allonger&lt;/button&gt;" +
+            "&lt;/div&gt;" +
+            "&lt;div class='ai-instr-row'&gt;" +
+              "&lt;input type='text' id='ai-instr' placeholder='Ex. Reformule plus poliment…'&gt;" +
+              "&lt;button type='button' id='ai-gen-btn' class='ai-gen'&gt;Générer&lt;/button&gt;" +
+            "&lt;/div&gt;" +
+            "&lt;div id='ai-status' class='ai-status' style='display:none;'&gt;&lt;/div&gt;" +
+            "&lt;div id='ai-result-zone' class='ai-result-zone' style='display:none;'&gt;" +
+              "&lt;div id='ai-result' class='ai-result'&gt;&lt;/div&gt;" +
+              "&lt;div class='ai-action-row'&gt;" +
+                "&lt;button type='button' id='ai-use-btn'&gt;Utiliser&lt;/button&gt;" +
+                "&lt;button type='button' id='ai-insert-btn'&gt;Insérer au curseur&lt;/button&gt;" +
+              "&lt;/div&gt;" +
+            "&lt;/div&gt;" +
+          "&lt;/div&gt;" +
           "&lt;div class='form-group'&gt;&lt;label for='edit-dossier'&gt;Dossier (optionnel)&lt;/label&gt;&lt;input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'&gt;&lt;datalist id='folder-list'&gt;" + getFolders().map(f =&gt; "&lt;option value=\"" + escapeHtml(f) + "\"&gt;&lt;/option&gt;").join('') + "&lt;/datalist&gt;&lt;/div&gt;" +
           "&lt;div class='checkbox-group'&gt;&lt;input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "&gt;&lt;label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'&gt;Pré-coché à l’ouverture&lt;/label&gt;&lt;/div&gt;" +
           "&lt;div class='help'&gt;&lt;strong&gt;Variables :&lt;/strong&gt;&lt;ul&gt;" +
@@ -429,6 +472,76 @@
       ov.querySelectorAll('.md-toolbar [data-md]').forEach(b =&gt; {
         b.addEventListener('click', () =&gt; mdFormat(document.getElementById('edit-texte'), b.dataset.md));
       });
+      // ── Couche IA ──
+      (function() {
+        var ta2       = document.getElementById('edit-texte');
+        var aiStatus  = ov.querySelector('#ai-status');
+        var aiResZone = ov.querySelector('#ai-result-zone');
+        var aiResult  = ov.querySelector('#ai-result');
+        var aiInstr   = ov.querySelector('#ai-instr');
+        var aiGenBtn  = ov.querySelector('#ai-gen-btn');
+        var aiUseBtn  = ov.querySelector('#ai-use-btn');
+        var aiInsBtn  = ov.querySelector('#ai-insert-btn');
+        var aiPreset  = [...ov.querySelectorAll('[data-ai-preset]')];
+        function setAiStatus(msg, isErr) {
+          aiStatus.textContent = msg;
+          aiStatus.className = 'ai-status' + (isErr ? ' err' : '');
+          aiStatus.style.display = msg ? '' : 'none';
+        }
+        function setAiBusy(busy) {
+          aiGenBtn.disabled = busy;
+          aiPreset.forEach(function(b) { b.disabled = busy; });
+        }
+        function runAI(instr) {
+          instr = String(instr || '').trim();
+          if (!instr) { setAiStatus('Saisissez une instruction ou choisissez un bouton rapide.', false); return; }
+          if (!window.KeyboardMaestro) { setAiStatus('Keyboard Maestro non disponible.', true); return; }
+          var km = window.KeyboardMaestro;
+          km.SetVariable('memora_ai_input', ta2.value);
+          km.SetVariable('memora_ai_instruction', instr);
+          km.SetVariable('memora_ai_result', '');
+          km.Trigger('MEMORA — IA');
+          setAiStatus('Génération…', false);
+          aiResZone.style.display = 'none';
+          setAiBusy(true);
+          var elapsed = 0;
+          var ivl = setInterval(function() {
+            elapsed += 600;
+            var r = km.GetVariable('memora_ai_result') || '';
+            if (r) {
+              clearInterval(ivl);
+              setAiBusy(false);
+              setAiStatus('', false);
+              if (r.indexOf('ERREUR') === 0) {
+                setAiStatus(r, true);
+              } else {
+                aiResult.textContent = r;
+                aiResZone.style.display = '';
+              }
+            } else if (elapsed &gt;= 30000) {
+              clearInterval(ivl);
+              setAiBusy(false);
+              setAiStatus('Délai dépassé. Vérifiez la macro KM et votre clé API.', true);
+            }
+          }, 600);
+        }
+        aiGenBtn.addEventListener('click', function() { runAI(aiInstr.value); });
+        aiPreset.forEach(function(b) { b.addEventListener('click', function() { runAI(b.dataset.aiPreset); }); });
+        aiUseBtn.addEventListener('click', function() {
+          ta2.value = aiResult.textContent;
+          aiResZone.style.display = 'none';
+          setAiStatus('', false);
+        });
+        aiInsBtn.addEventListener('click', function() {
+          var pos = ta2.selectionStart !== undefined ? ta2.selectionStart : ta2.value.length;
+          var end = ta2.selectionEnd   !== undefined ? ta2.selectionEnd   : pos;
+          var r = aiResult.textContent;
+          ta2.value = ta2.value.slice(0, pos) + r + ta2.value.slice(end);
+          var newPos = pos + r.length;
+          ta2.focus();
+          ta2.setSelectionRange(newPos, newPos);
+        });
+      })();
       document.getElementById('edit-terme').focus();
     }
     function closeEdit() { const o = document.getElementById('edit-overlay'); if (o) o.remove(); }
@@ -533,8 +646,16 @@
         "&lt;div class='form-group'&gt;&lt;label for='pf-" + f.key + "'&gt;" + escapeHtml(f.label) + "&lt;/label&gt;" +
         "&lt;input type='text' id='pf-" + f.key + "' data-key='" + f.key + "' value=\"" + escapeHtml(profil[f.key] || '') + "\" placeholder='" + escapeHtml(f.label) + "…'&gt;&lt;/div&gt;"
       ).join('');
+      const orKey   = window.KeyboardMaestro ? (window.KeyboardMaestro.GetVariable('memora_or_key')   || '') : '';
+      const orModel = window.KeyboardMaestro ? (window.KeyboardMaestro.GetVariable('memora_or_model') || '') : '';
       ov.innerHTML =
         "&lt;div class='modal'&gt;&lt;h2 id='profil-title'&gt;Mon profil&lt;/h2&gt;" + inputs +
+        "&lt;hr style='border:none;border-top:1px solid var(--border);margin:6px 0 2px;'&gt;" +
+        "&lt;div class='form-group'&gt;&lt;label for='prof-or-key'&gt;Clé API OpenRouter&lt;/label&gt;" +
+        "&lt;input type='password' id='prof-or-key' autocomplete='off' value=\"" + escapeHtml(orKey) + "\" placeholder='sk-or-…'&gt;&lt;/div&gt;" +
+        "&lt;div class='form-group'&gt;&lt;label for='prof-or-model'&gt;Modèle IA&lt;/label&gt;" +
+        "&lt;input type='text' id='prof-or-model' value=\"" + escapeHtml(orModel) + "\" placeholder='openai/gpt-4o-mini'&gt;&lt;/div&gt;" +
+        "&lt;p style='font-size:12px;color:var(--text2);line-height:1.5;margin-top:-2px;'&gt;Obtenez une clé sur &lt;strong&gt;openrouter.ai&lt;/strong&gt;. Elle reste sur votre Mac (jamais partagée).&lt;/p&gt;" +
         "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='profil-cancel' type='button'&gt;Annuler&lt;/button&gt;" +
         "&lt;button class='btn btn-primary' id='profil-save' type='button'&gt;Enregistrer&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;";
       document.body.appendChild(ov);
@@ -543,6 +664,12 @@
       ov.querySelector('#profil-save').addEventListener('click', () =&gt; {
         ov.querySelectorAll('[data-key]').forEach(el =&gt; { profil[el.dataset.key] = el.value.trim(); });
         if (window.KeyboardMaestro) { try { window.KeyboardMaestro.SetVariable('memora_profil', JSON.stringify(profil)); } catch(e) { console.error('profil persist échec', e); } }
+        if (window.KeyboardMaestro) {
+          const orKeyEl   = ov.querySelector('#prof-or-key');
+          const orModelEl = ov.querySelector('#prof-or-model');
+          try { if (orKeyEl)   window.KeyboardMaestro.SetVariable('memora_or_key',   orKeyEl.value.trim()); }   catch(e) {}
+          try { if (orModelEl) window.KeyboardMaestro.SetVariable('memora_or_model', orModelEl.value.trim()); } catch(e) {}
+        }
         ov.remove();
         render();
       });
@@ -642,7 +769,7 @@
 					<key>Action</key>
 					<string>ByPasting</string>
 					<key>ActionUID</key>
-					<integer>156291</integer>
+					<integer>156307</integer>
 					<key>MacroActionType</key>
 					<string>InsertText</string>
 					<key>Text</key>
@@ -652,7 +779,7 @@
 			<key>CreationDate</key>
 			<real>802885377.75442004</real>
 			<key>ModificationDate</key>
-			<real>803046596.69817805</real>
+			<real>803049126.60761905</real>
 			<key>Name</key>
 			<string>MEMORA — Snippets</string>
 			<key>Triggers</key>
@@ -668,6 +795,94 @@
 			</array>
 			<key>UID</key>
 			<string>B2296510-525B-4BEC-80BA-5243969FD2C4</string>
+		</dict>
+		<dict>
+			<key>Actions</key>
+			<array>
+				<dict>
+					<key>ActionUID</key>
+					<integer>156299</integer>
+					<key>DisplayKind</key>
+					<string>Variable</string>
+					<key>HonourFailureSettings</key>
+					<true/>
+					<key>IncludeStdErr</key>
+					<true/>
+					<key>IncludedVariables</key>
+					<array>
+						<string>9999</string>
+					</array>
+					<key>MacroActionType</key>
+					<string>ExecuteShellScript</string>
+					<key>NotifyOnFailure</key>
+					<false/>
+					<key>Path</key>
+					<string></string>
+					<key>Source</key>
+					<string>Nothing</string>
+					<key>StopOnFailure</key>
+					<false/>
+					<key>Text</key>
+					<string>/usr/bin/env python3 &lt;&lt;'MEMORA_PY'
+#!/usr/bin/env python3
+import os
+import json
+import sys
+import urllib.request
+import urllib.error
+
+def main():
+    api_key = os.getenv("KMVAR_memora_or_key", "").strip()
+    if not api_key:
+        print("ERREUR: clé OpenRouter manquante (réglez-la via le bouton Profil)")
+        sys.exit(0)
+    model = os.getenv("KMVAR_memora_or_model", "").strip() or "openai/gpt-4o-mini"
+    instruction = os.getenv("KMVAR_memora_ai_instruction", "").strip()
+    input_text = os.getenv("KMVAR_memora_ai_input", "").strip()
+    payload = {"model": model, "messages": [
+        {"role": "system", "content": "Tu es un assistant de rédaction. Renvoie UNIQUEMENT le texte transformé, sans préambule, sans guillemets, sans explication."},
+        {"role": "user", "content": f"{instruction}\n\n--- TEXTE ---\n{input_text}"}], "temperature": 0.4}
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json", "HTTP-Referer": "https://memora.solutions", "X-Title": "MEMORA"}
+    try:
+        req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions", data=json.dumps(payload).encode('utf-8'), headers=headers, method='POST')
+        with urllib.request.urlopen(req, timeout=30) as response:
+            data = json.loads(response.read().decode('utf-8'))
+            print(data['choices'][0]['message']['content'].strip())
+    except urllib.error.HTTPError as e:
+        try:
+            ej = json.loads(e.read().decode('utf-8')); print(f"ERREUR: HTTP {e.code} - {ej.get('error',{}).get('message','?')}")
+        except Exception: print(f"ERREUR: HTTP {e.code}")
+        sys.exit(0)
+    except Exception as e:
+        print(f"ERREUR: {str(e)}"); sys.exit(0)
+
+if __name__ == "__main__":
+    main()
+
+MEMORA_PY
+</string>
+					<key>TimeOutAbortsMacro</key>
+					<false/>
+					<key>TrimResults</key>
+					<true/>
+					<key>TrimResultsNew</key>
+					<true/>
+					<key>UseText</key>
+					<true/>
+					<key>Variable</key>
+					<string>memora_ai_result</string>
+				</dict>
+			</array>
+			<key>CreationDate</key>
+			<real>803049125.77881205</real>
+			<key>ModificationDate</key>
+			<real>803049126.02801299</real>
+			<key>Name</key>
+			<string>MEMORA — IA</string>
+			<key>Triggers</key>
+			<array/>
+			<key>UID</key>
+			<string>B8245B49-4643-4792-914D-0A87E4B986AE</string>
 		</dict>
 	</array>
 	<key>Name</key>
