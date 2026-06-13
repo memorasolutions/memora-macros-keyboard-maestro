@@ -121,7 +121,36 @@ L'éditeur de snippet inclut un assistant IA (Reformuler, Traduire, Corriger, Ra
 2. Dans `;mem`, ouvrez **👤 Profil** et collez votre **clé OpenRouter** (et, au besoin, un **modèle**, ex. `openai/gpt-4o-mini`).
 3. Dans l'édition d'un snippet, utilisez la section **✨ IA**.
 
-> **Modèles gratuits** : vous pouvez utiliser **n'importe quel modèle** OpenRouter, y compris les **gratuits** (suffixe `:free`, ex. `google/gemma-4-31b-it:free`). Si vous atteignez la **limite d'un modèle gratuit**, l'assistant vous prévient clairement (« Limite du modèle GRATUIT atteinte — réessayez plus tard, ou choisissez un autre modèle »). Des messages explicites couvrent aussi les crédits insuffisants, une clé invalide ou un modèle introuvable.
+### Choix du modèle
+
+Vous pouvez utiliser **n'importe quel modèle** OpenRouter (réglé via **👤 Profil**) : un modèle **payant** (ex. `openai/gpt-4o-mini`) ou un modèle **gratuit** (suffixe `:free`, ex. `google/gemma-4-31b-it:free`). La liste à jour est sur **[openrouter.ai/models](https://openrouter.ai/models)**.
+
+### Limites des modèles gratuits
+
+Les modèles gratuits d'OpenRouter sont soumis à des **limites de débit** : un plafond **par minute** (quelques dizaines de requêtes) et un plafond **quotidien** propre à votre compte. C'est normal et géré côté OpenRouter (détails sur **[openrouter.ai/docs](https://openrouter.ai/docs)**).
+
+Quand vous atteignez la limite d'un modèle gratuit, l'assistant **ne plante pas** : il affiche un message clair, en rouge, dans la section **✨ IA** —
+
+> **Limite du modèle GRATUIT atteinte. Réessayez plus tard, ou choisissez un autre modèle (réglages via Profil).**
+
+**Que faire :**
+- **Patientez** un court instant (le plafond par minute se réinitialise vite), puis réessayez ; ou
+- **Changez de modèle** dans **👤 Profil** — un autre modèle gratuit, ou un modèle payant très bon marché (ex. `openai/gpt-4o-mini`) pour ne plus être limité.
+
+### Messages de l'assistant IA
+
+L'assistant traduit chaque cas en message clair (jamais de code d'erreur brut, jamais de fenêtre bloquante) :
+
+| Situation | Ce que l'assistant affiche |
+|-----------|----------------------------|
+| Limite d'un modèle **gratuit** atteinte | « Limite du modèle GRATUIT atteinte. Réessayez plus tard, ou choisissez un autre modèle (réglages via Profil). » |
+| Trop de requêtes (modèle payant) | « Trop de requêtes (limite de débit). Patientez un instant et réessayez. » |
+| Crédits OpenRouter insuffisants | « Crédits OpenRouter insuffisants pour ce modèle. Ajoutez des crédits, ou utilisez un modèle gratuit (suffixe `:free`). » |
+| Clé invalide ou non autorisée | « Clé OpenRouter invalide ou non autorisée. Vérifiez votre clé dans le Profil. » |
+| Nom de modèle erroné | « Modèle introuvable : vérifiez le nom du modèle dans le Profil. » |
+| Clé absente | « clé OpenRouter manquante (réglez-la via le bouton Profil) » |
+
+> *Comportement vérifié avec de vrais appels OpenRouter — modèle payant et modèle gratuit, dont un véritable dépassement de limite (HTTP 429).*
 
 > **Confidentialité** : votre clé reste **locale à votre Mac** (variable Keyboard Maestro `memora_or_key`), n'est **jamais incluse dans ce dépôt** ni partagée. L'appel réseau est fait par une action Keyboard Maestro « Execute Shell Script » (la clé n'apparaît pas dans la fenêtre).
 
