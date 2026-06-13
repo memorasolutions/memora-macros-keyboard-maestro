@@ -14,7 +14,7 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156249</integer>
+					<integer>156277</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -90,6 +90,9 @@
     const formatDate = () =&amp;gt; new Intl.DateTimeFormat('fr-CA', { month: 'long', year: 'numeric' }).format(new Date());
     const moment     = () =&amp;gt; { const h = new Date().getHours(); return h &amp;lt; 12 ? 'Matin' : (h &amp;lt; 18 ? 'Après-midi' : 'Soir'); };
 
+    // ── Calculateur arithmétique minimal pour {{calc:…}} ─────────────────────
+    function memora_calc(expr){if(typeof expr!=='string')return null;const tokens=[];let i=0;const len=expr.length;while(i&amp;lt;len){const c=expr[i];if(c===' '||c==='\t'||c==='\n'||c==='\r'){i++;continue;}if((c&amp;gt;='0'&amp;amp;&amp;amp;c&amp;lt;='9')||c==='.'){let num='';while(i&amp;lt;len&amp;amp;&amp;amp;((expr[i]&amp;gt;='0'&amp;amp;&amp;amp;expr[i]&amp;lt;='9')||expr[i]==='.')){num+=expr[i];i++;}if((num.match(/\./g)||[]).length&amp;gt;1)return null;tokens.push({type:'number',value:parseFloat(num)});continue;}if(c==='+'||c==='-'||c==='*'||c==='/'){tokens.push({type:'operator',value:c});i++;continue;}if(c==='('||c===')'){tokens.push({type:c,value:c});i++;continue;}return null;}const out=[];const ops=[];const prec={'+':1,'-':1,'*':2,'/':2,'u':3};for(let k=0;k&amp;lt;tokens.length;k++){const t=tokens[k];const prev=tokens[k-1];if(t.type==='number'){out.push(t.value);}else if(t.type==='operator'){let op=t.value;const unary=(op==='-')&amp;amp;&amp;amp;(!prev||prev.type==='operator'||prev.type==='(');if(unary)op='u';while(ops.length&amp;amp;&amp;amp;ops[ops.length-1]!=='('&amp;amp;&amp;amp;(prec[ops[ops.length-1]]&amp;gt;prec[op]||(prec[ops[ops.length-1]]===prec[op]&amp;amp;&amp;amp;op!=='u'))){out.push(ops.pop());}ops.push(op);}else if(t.type==='('){ops.push('(');}else if(t.type===')'){while(ops.length&amp;amp;&amp;amp;ops[ops.length-1]!=='(')out.push(ops.pop());if(!ops.length)return null;ops.pop();}}while(ops.length){const op=ops.pop();if(op==='('||op===')')return null;out.push(op);}const st=[];for(const tk of out){if(typeof tk==='number'){st.push(tk);}else if(tk==='u'){if(!st.length)return null;st.push(-st.pop());}else{if(st.length&amp;lt;2)return null;const b=st.pop(),a=st.pop();let r;if(tk==='+')r=a+b;else if(tk==='-')r=a-b;else if(tk==='*')r=a*b;else if(tk==='/'){if(b===0)return null;r=a/b;}else return null;st.push(r);}}if(st.length!==1)return null;return st[0];}
+
     // ── Profil global {{moi:champ}} — résolu automatiquement ─────────────────
     let profil = {};
     let clip = '';
@@ -128,6 +131,7 @@
       }
       r = r.replace(/{{moi:([^}]+)}}/g, (m, k) =&amp;gt; (profil[k.trim()] || ''));
       r = r.replace(/{{presse-papier}}/g, () =&amp;gt; clip);
+      r = r.replace(/{{calc:([^}]+)}}/g, function(m, expr){ let e = expr; Object.keys(values).sort(function(a,b){return b.length-a.length;}).forEach(function(label){ var num = parseFloat(String(values[label]).replace(',', '.')); e = e.split(label).join(isNaN(num) ? '0' : String(num)); }); var res = memora_calc(e); if(res === null || !isFinite(res)) return m; return String(Math.round(res*100)/100); });
       return r;
     }
 
@@ -270,7 +274,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156251</integer>
+					<integer>156279</integer>
 					<key>DisplayKind</key>
 					<string>None</string>
 					<key>HonourFailureSettings</key>
@@ -342,7 +346,7 @@ end tell</string>
 			<key>CreationDate</key>
 			<real>802964806.45176303</real>
 			<key>ModificationDate</key>
-			<real>802980391.11478305</real>
+			<real>803045511.29390204</real>
 			<key>Name</key>
 			<string>MEMORA — Créer macro</string>
 			<key>Triggers</key>
@@ -355,7 +359,7 @@ end tell</string>
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156265</integer>
+					<integer>156281</integer>
 					<key>DisplayKind</key>
 					<string>None</string>
 					<key>HonourFailureSettings</key>
@@ -397,7 +401,7 @@ return out</string>
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156267</integer>
+					<integer>156283</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -543,6 +547,7 @@ return out</string>
             &lt;button type='button' data-token='{{moi:courriel}}'&gt;+ Mon courriel&lt;/button&gt;
             &lt;button type='button' data-token='{{moi:entreprise}}'&gt;+ Mon entreprise&lt;/button&gt;
             &lt;button type='button' data-token='{{presse-papier}}'&gt;+ Presse-papier&lt;/button&gt;
+            &lt;button type='button' data-token='{{calc:1 + 1}}'&gt;+ Calculé&lt;/button&gt;
             &lt;button type='button' data-token='{{alea:Option 1|Option 2}}'&gt;+ Aléatoire&lt;/button&gt;
           &lt;/div&gt;
           &lt;span class='field-hint'&gt;Cliquez ou glissez pour insérer un champ ; il sera demandé au moment de l'insertion. Les jetons &lt;strong&gt;{{moi:champ}}&lt;/strong&gt; utilisent vos informations personnelles. &lt;strong&gt;{{presse-papier}}&lt;/strong&gt; colle le contenu du presse-papier au moment de l'insertion.&lt;/span&gt;
@@ -929,7 +934,7 @@ return out</string>
 			<key>CreationDate</key>
 			<real>802964806.77613902</real>
 			<key>ModificationDate</key>
-			<real>802983491.84025896</real>
+			<real>803045513.05770504</real>
 			<key>Name</key>
 			<string>Atelier MEMORA</string>
 			<key>Triggers</key>

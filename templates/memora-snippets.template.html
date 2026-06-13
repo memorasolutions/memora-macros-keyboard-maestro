@@ -173,6 +173,7 @@
     function insertToken(tok) { const ta = document.getElementById('edit-texte'); if (!ta) return; const s = ta.selectionStart, e = ta.selectionEnd; ta.value = ta.value.slice(0, s) + tok + ta.value.slice(e); const p = s + tok.length; ta.focus(); ta.setSelectionRange(p, p); }
     const escapeHtml = (str) => String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[s]));
     const rnd = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    function memora_calc(expr){if(typeof expr!=='string')return null;const tokens=[];let i=0;const len=expr.length;while(i<len){const c=expr[i];if(c===' '||c==='\t'||c==='\n'||c==='\r'){i++;continue;}if((c>='0'&&c<='9')||c==='.'){let num='';while(i<len&&((expr[i]>='0'&&expr[i]<='9')||expr[i]==='.')){num+=expr[i];i++;}if((num.match(/\./g)||[]).length>1)return null;tokens.push({type:'number',value:parseFloat(num)});continue;}if(c==='+'||c==='-'||c==='*'||c==='/'){tokens.push({type:'operator',value:c});i++;continue;}if(c==='('||c===')'){tokens.push({type:c,value:c});i++;continue;}return null;}const out=[];const ops=[];const prec={'+':1,'-':1,'*':2,'/':2,'u':3};for(let k=0;k<tokens.length;k++){const t=tokens[k];const prev=tokens[k-1];if(t.type==='number'){out.push(t.value);}else if(t.type==='operator'){let op=t.value;const unary=(op==='-')&&(!prev||prev.type==='operator'||prev.type==='(');if(unary)op='u';while(ops.length&&ops[ops.length-1]!=='('&&(prec[ops[ops.length-1]]>prec[op]||(prec[ops[ops.length-1]]===prec[op]&&op!=='u'))){out.push(ops.pop());}ops.push(op);}else if(t.type==='('){ops.push('(');}else if(t.type===')'){while(ops.length&&ops[ops.length-1]!=='(')out.push(ops.pop());if(!ops.length)return null;ops.pop();}}while(ops.length){const op=ops.pop();if(op==='('||op===')')return null;out.push(op);}const st=[];for(const tk of out){if(typeof tk==='number'){st.push(tk);}else if(tk==='u'){if(!st.length)return null;st.push(-st.pop());}else{if(st.length<2)return null;const b=st.pop(),a=st.pop();let r;if(tk==='+')r=a+b;else if(tk==='-')r=a-b;else if(tk==='*')r=a*b;else if(tk==='/'){if(b===0)return null;r=a/b;}else return null;st.push(r);}}if(st.length!==1)return null;return st[0];}
     const memora_debounce = (fn, d) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; };
 
     function fuzzy(q, text) { q = normalize(q); text = normalize(text); let i = 0; for (const c of text) { if (c === q[i]) i++; if (i >= q.length) return true; } return q.length === 0; }
@@ -210,6 +211,7 @@
       });
       r = r.replace(/{{moi:([^}]+)}}/g, (m, k) => (profil[k.trim()] || ''));
       r = r.replace(/{{presse-papier}}/g, () => clip);
+      r = r.replace(/{{calc:([^}]+)}}/g, function(m, expr){ let e = expr; Object.keys(values).sort(function(a,b){return b.length-a.length;}).forEach(function(label){ var num = parseFloat(String(values[label]).replace(',', '.')); e = e.split(label).join(isNaN(num) ? '0' : String(num)); }); var res = memora_calc(e); if(res === null || !isFinite(res)) return m; return String(Math.round(res*100)/100); });
       return r;
     }
     function assemble(checked, values) { return checked.map(s => resolve(s.texte, values)).join('\n\n'); }
@@ -326,6 +328,7 @@
               "<button type='button' data-token='{{moi:courriel}}'>+ Mon courriel</button>" +
               "<button type='button' data-token='{{moi:entreprise}}'>+ Mon entreprise</button>" +
               "<button type='button' data-token='{{presse-papier}}'>+ Presse-papier</button>" +
+              "<button type='button' data-token='{{calc:1 + 1}}'>+ Calculé</button>" +
             "</div></div>" +
           "<div class='form-group'><label for='edit-dossier'>Dossier (optionnel)</label><input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'><datalist id='folder-list'>" + getFolders().map(f => "<option value=\"" + escapeHtml(f) + "\"></option>").join('') + "</datalist></div>" +
           "<div class='checkbox-group'><input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "><label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'>Pré-coché à l’ouverture</label></div>" +
@@ -340,6 +343,7 @@
             "<li><code>{{moment}}</code> → Matin / Après-midi / Soir (selon l'heure)</li>" +
             "<li><code>{{moi:champ}}</code> → votre profil (prenom, courriel, entreprise…) ; éditez via 👤</li>" +
             "<li><code>{{presse-papier}}</code> → le contenu de votre presse-papier</li>" +
+            "<li><code>{{calc:Prix * Quantité}}</code> → calcul (référence d'autres champs possible)</li>" +
           "</ul><em>Astuce : cliquez ou glissez les boutons ci-dessus pour insérer un champ au curseur.</em></div>" +
           "<div class='btns'><button class='btn btn-secondary' id='edit-cancel' type='button'>Annuler</button>" +
           "<button class='btn btn-primary' id='edit-save' type='button'>" + (isNew ? 'Ajouter' : 'Enregistrer') + "</button></div>" +

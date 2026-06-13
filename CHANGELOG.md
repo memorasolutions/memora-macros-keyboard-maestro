@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.9.0] - 2026-06-13
+
+### Ajouté
+- **Champ calculé `{{calc:expression}}`** : effectue un calcul (`+ - * / ( )`, décimaux) qui peut **référencer d'autres champs** par leur nom — ex. `{{calc:Prix * Quantité}}` ou `{{calc:100 * 1.15}}`. Arithmétique **sûre** (évaluation maison, sans `eval`).
+
 ## [8.8.0] - 2026-06-12
 
 ### Ajouté

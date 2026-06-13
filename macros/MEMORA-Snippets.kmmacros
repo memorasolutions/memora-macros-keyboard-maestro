@@ -14,7 +14,7 @@
 			<array>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156257</integer>
+					<integer>156269</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -24,7 +24,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156259</integer>
+					<integer>156271</integer>
 					<key>MacroActionType</key>
 					<string>SetVariableToText</string>
 					<key>Text</key>
@@ -34,7 +34,7 @@
 				</dict>
 				<dict>
 					<key>ActionUID</key>
-					<integer>156261</integer>
+					<integer>156273</integer>
 					<key>Floating</key>
 					<false/>
 					<key>MacroActionType</key>
@@ -215,6 +215,7 @@
     function insertToken(tok) { const ta = document.getElementById('edit-texte'); if (!ta) return; const s = ta.selectionStart, e = ta.selectionEnd; ta.value = ta.value.slice(0, s) + tok + ta.value.slice(e); const p = s + tok.length; ta.focus(); ta.setSelectionRange(p, p); }
     const escapeHtml = (str) =&gt; String(str).replace(/[&amp;&lt;&gt;"']/g, s =&gt; ({ '&amp;': '&amp;amp;', '&lt;': '&amp;lt;', '&gt;': '&amp;gt;', '"': '&amp;quot;', "'": '&amp;#039;' }[s]));
     const rnd = (arr) =&gt; arr[Math.floor(Math.random() * arr.length)];
+    function memora_calc(expr){if(typeof expr!=='string')return null;const tokens=[];let i=0;const len=expr.length;while(i&lt;len){const c=expr[i];if(c===' '||c==='\t'||c==='\n'||c==='\r'){i++;continue;}if((c&gt;='0'&amp;&amp;c&lt;='9')||c==='.'){let num='';while(i&lt;len&amp;&amp;((expr[i]&gt;='0'&amp;&amp;expr[i]&lt;='9')||expr[i]==='.')){num+=expr[i];i++;}if((num.match(/\./g)||[]).length&gt;1)return null;tokens.push({type:'number',value:parseFloat(num)});continue;}if(c==='+'||c==='-'||c==='*'||c==='/'){tokens.push({type:'operator',value:c});i++;continue;}if(c==='('||c===')'){tokens.push({type:c,value:c});i++;continue;}return null;}const out=[];const ops=[];const prec={'+':1,'-':1,'*':2,'/':2,'u':3};for(let k=0;k&lt;tokens.length;k++){const t=tokens[k];const prev=tokens[k-1];if(t.type==='number'){out.push(t.value);}else if(t.type==='operator'){let op=t.value;const unary=(op==='-')&amp;&amp;(!prev||prev.type==='operator'||prev.type==='(');if(unary)op='u';while(ops.length&amp;&amp;ops[ops.length-1]!=='('&amp;&amp;(prec[ops[ops.length-1]]&gt;prec[op]||(prec[ops[ops.length-1]]===prec[op]&amp;&amp;op!=='u'))){out.push(ops.pop());}ops.push(op);}else if(t.type==='('){ops.push('(');}else if(t.type===')'){while(ops.length&amp;&amp;ops[ops.length-1]!=='(')out.push(ops.pop());if(!ops.length)return null;ops.pop();}}while(ops.length){const op=ops.pop();if(op==='('||op===')')return null;out.push(op);}const st=[];for(const tk of out){if(typeof tk==='number'){st.push(tk);}else if(tk==='u'){if(!st.length)return null;st.push(-st.pop());}else{if(st.length&lt;2)return null;const b=st.pop(),a=st.pop();let r;if(tk==='+')r=a+b;else if(tk==='-')r=a-b;else if(tk==='*')r=a*b;else if(tk==='/'){if(b===0)return null;r=a/b;}else return null;st.push(r);}}if(st.length!==1)return null;return st[0];}
     const memora_debounce = (fn, d) =&gt; { let t; return (...a) =&gt; { clearTimeout(t); t = setTimeout(() =&gt; fn(...a), d); }; };
 
     function fuzzy(q, text) { q = normalize(q); text = normalize(text); let i = 0; for (const c of text) { if (c === q[i]) i++; if (i &gt;= q.length) return true; } return q.length === 0; }
@@ -252,6 +253,7 @@
       });
       r = r.replace(/{{moi:([^}]+)}}/g, (m, k) =&gt; (profil[k.trim()] || ''));
       r = r.replace(/{{presse-papier}}/g, () =&gt; clip);
+      r = r.replace(/{{calc:([^}]+)}}/g, function(m, expr){ let e = expr; Object.keys(values).sort(function(a,b){return b.length-a.length;}).forEach(function(label){ var num = parseFloat(String(values[label]).replace(',', '.')); e = e.split(label).join(isNaN(num) ? '0' : String(num)); }); var res = memora_calc(e); if(res === null || !isFinite(res)) return m; return String(Math.round(res*100)/100); });
       return r;
     }
     function assemble(checked, values) { return checked.map(s =&gt; resolve(s.texte, values)).join('\n\n'); }
@@ -368,6 +370,7 @@
               "&lt;button type='button' data-token='{{moi:courriel}}'&gt;+ Mon courriel&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{moi:entreprise}}'&gt;+ Mon entreprise&lt;/button&gt;" +
               "&lt;button type='button' data-token='{{presse-papier}}'&gt;+ Presse-papier&lt;/button&gt;" +
+              "&lt;button type='button' data-token='{{calc:1 + 1}}'&gt;+ Calculé&lt;/button&gt;" +
             "&lt;/div&gt;&lt;/div&gt;" +
           "&lt;div class='form-group'&gt;&lt;label for='edit-dossier'&gt;Dossier (optionnel)&lt;/label&gt;&lt;input type='text' id='edit-dossier' list='folder-list' value=\"" + escapeHtml(s.dossier || '') + "\" placeholder='Ex. Courriel'&gt;&lt;datalist id='folder-list'&gt;" + getFolders().map(f =&gt; "&lt;option value=\"" + escapeHtml(f) + "\"&gt;&lt;/option&gt;").join('') + "&lt;/datalist&gt;&lt;/div&gt;" +
           "&lt;div class='checkbox-group'&gt;&lt;input type='checkbox' id='edit-coche' " + (s.coché ? 'checked' : '') + "&gt;&lt;label for='edit-coche' title='Le snippet sera déjà coché quand la fenêtre s’ouvre'&gt;Pré-coché à l’ouverture&lt;/label&gt;&lt;/div&gt;" +
@@ -382,6 +385,7 @@
             "&lt;li&gt;&lt;code&gt;{{moment}}&lt;/code&gt; → Matin / Après-midi / Soir (selon l'heure)&lt;/li&gt;" +
             "&lt;li&gt;&lt;code&gt;{{moi:champ}}&lt;/code&gt; → votre profil (prenom, courriel, entreprise…) ; éditez via 👤&lt;/li&gt;" +
             "&lt;li&gt;&lt;code&gt;{{presse-papier}}&lt;/code&gt; → le contenu de votre presse-papier&lt;/li&gt;" +
+            "&lt;li&gt;&lt;code&gt;{{calc:Prix * Quantité}}&lt;/code&gt; → calcul (référence d'autres champs possible)&lt;/li&gt;" +
           "&lt;/ul&gt;&lt;em&gt;Astuce : cliquez ou glissez les boutons ci-dessus pour insérer un champ au curseur.&lt;/em&gt;&lt;/div&gt;" +
           "&lt;div class='btns'&gt;&lt;button class='btn btn-secondary' id='edit-cancel' type='button'&gt;Annuler&lt;/button&gt;" +
           "&lt;button class='btn btn-primary' id='edit-save' type='button'&gt;" + (isNew ? 'Ajouter' : 'Enregistrer') + "&lt;/button&gt;&lt;/div&gt;" +
@@ -606,7 +610,7 @@
 					<key>Action</key>
 					<string>ByPasting</string>
 					<key>ActionUID</key>
-					<integer>156263</integer>
+					<integer>156275</integer>
 					<key>MacroActionType</key>
 					<string>InsertText</string>
 					<key>Text</key>
@@ -616,7 +620,7 @@
 			<key>CreationDate</key>
 			<real>802885377.75442004</real>
 			<key>ModificationDate</key>
-			<real>802983491.36047006</real>
+			<real>803045510.83572805</real>
 			<key>Name</key>
 			<string>MEMORA — Snippets</string>
 			<key>Triggers</key>
