@@ -4,6 +4,11 @@ Auteur : MEMORA solutions — https://memora.solutions — info@memora.ca
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/), versionnage [SemVer](https://semver.org/lang/fr/).
 
+## [8.23.0] - 2026-06-13
+
+### Modifié
+- **Cartes épurées (menu ⋯)** : les actions secondaires **▲ Monter · ▼ Descendre · 🗑 Supprimer** sont regroupées dans un **menu kebab ⋯**. Chaque carte n'affiche plus que **⭐ favori · ✎ éditer · ⋯** (de 5 boutons à 3) — conforme aux bonnes pratiques UX 2026 (action primaire visible + secondaire regroupé). Le réordonnage reste aussi possible par glisser-déposer (poignée ⠿).
+
 ## [8.22.0] - 2026-06-13
 
 ### Modifié

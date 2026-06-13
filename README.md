@@ -76,8 +76,8 @@ Prérequis : macOS avec **Keyboard Maestro 11+** installé.
 | Insérer un snippet | **Cliquez-le** (ou surlignez avec **↑ / ↓** puis **Entrée**) |
 | Ajouter un snippet | Bouton **➕** dans la fenêtre |
 | Modifier un snippet | Bouton **✎** sur la carte |
-| Supprimer | Bouton **🗑** (suppression annulable) |
-| Réordonner | Glisser-déposer par la poignée ⠿ |
+| Supprimer | Menu **⋯** → **🗑 Supprimer** (annulable) |
+| Réordonner | Glisser-déposer par la poignée ⠿ (ou menu **⋯** → Monter / Descendre) |
 | Filtrer | Barre latérale : Tous · ⭐ Favoris · 🕘 Fréquents · dossiers |
 | Éditer le profil | Bouton **👤** |
 
